@@ -1,0 +1,9 @@
+.formPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    // Permite que ocupe el espacio restante entre el header y footer
+    flex-grow: 1;
+
+}

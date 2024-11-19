@@ -1,0 +1,30 @@
+@use '../../../constants.scss' as *;
+
+.button {
+    color: black;
+    background-color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    padding: $size-md $size-xl;
+    border: 1px solid $primary-light;
+    border-radius: $size-sm;
+    cursor: pointer;
+    font-size: $font-sm;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:disabled {
+        background-color: $gray;
+        cursor: not-allowed;
+    }
+
+    &:hover {
+        background-color: $primary-light;
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.6);
+    }
+}

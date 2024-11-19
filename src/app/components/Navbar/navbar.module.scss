@@ -1,0 +1,31 @@
+@use '../../constants.scss' as *;
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+
+  >div {
+    display: flex;
+    flex-direction: row;
+    gap: $size-lg;
+  }
+}
+
+.active {
+  font-weight: bold;
+  color: #0070f3;
+}
+
+.link {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.link:hover {
+  color: #0070f3;
+}
