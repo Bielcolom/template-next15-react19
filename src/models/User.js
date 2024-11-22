@@ -5,9 +5,11 @@ const { Schema } = mongoose;
 const userSchema = new Schema(
   {
     name: {
-    type: String,
-    required: true,
-  },
+      type: String,
+      required: true,
+    },
+    userRoleId: { type: Schema.Types.ObjectId, ref: "userRole", required: true },
+
     email: {
       type: String,
       unique: true,
@@ -21,4 +23,4 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.User ||mongoose.model("User", userSchema);
+export default mongoose.models.User || mongoose.model("User", userSchema);
