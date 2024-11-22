@@ -4,16 +4,13 @@ import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
 import styles from "./navbar.module.scss";
 import Button from "../base/Button";
-import { useUserContext } from "context/UserContext";
 import { logout } from "@/app/(auth)/login/actions";
+import PropTypes from "prop-types";
 
-export const Navbar = () => {
-  const { userId, setUserId } = useUserContext();
+export const Navbar = ({ cookies }) => {
   const pathname = usePathname();
-
+  const userId = cookies?.userId;
   const handleLogout = () => {
-    localStorage.removeItem("userId");
-    setUserId(null);
     logout();
     redirect("/login");
   };
@@ -50,3 +47,13 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+Navbar.defaultProps = {
+  cookies: null,
+};
+
+Navbar.propTypes = {
+  cookies: PropTypes.object,
+};
+
+export default Navbar;

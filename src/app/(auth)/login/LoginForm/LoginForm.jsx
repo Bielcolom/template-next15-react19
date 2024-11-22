@@ -6,23 +6,16 @@ import { redirect, useRouter } from "next/navigation";
 import { login } from "../actions";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/components/base/Button";
-import { useUserContext } from "context/UserContext";
 
 export function LoginForm() {
   const router = useRouter();
   const [state, loginAction] = useActionState(login);
-  const { setUserId } = useUserContext();
 
   useEffect(() => {
     if (state?.success) {
-      if (state.userId) {
-        console.log(state);
-        localStorage.setItem("userId", state.userId);
-        setUserId(state.userId);
-      }
       redirect("/");
     }
-  }, [state?.success, state?.userId, setUserId, router]);
+  }, [state?.success, state?.userId, router]);
 
   return (
     <form action={loginAction} className={styles.form}>

@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { redirect } from "next/navigation";
 import { createSession, deleteSession } from "@/app/lib/session";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
@@ -62,7 +61,6 @@ export async function login(prevState, formData) {
 export async function logout() {
   try {
     await deleteSession();
-    redirect("/login");
   } catch (error) {
     console.error("Error in logout function:", error);
     return {

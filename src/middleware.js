@@ -1,9 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { decrypt } from "./app/lib/session";
 
 const PROTECTED_ROUTES = ["/"];
-const PUBLIC_ROUTES = ["/login"];
+const PUBLIC_ROUTES = ["/login", "/userRoles"];
 
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
@@ -11,20 +10,15 @@ export default async function middleware(req) {
   const isPublicRoute = PUBLIC_ROUTES.includes(path);
 
   const cookieStore = await cookies();
-  const cookie = cookieStore.get("session")?.value;
-
-  let session = null;
-  if (cookie) {
-    session = await decrypt(cookie);
-  }
+  const cookie = cookieStore.get("userId")?.value;
 
   // Redirigir si intenta acceder a rutas protegidas sin sesión válida
-  if (isProtectedRoute && !session?.userId) {
+  if (isProtectedRoute && !cookie) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
   // Redirigir si intenta acceder a rutas públicas con una sesión activa
-  if (isPublicRoute && session?.userId) {
+  if (isPublicRoute && cookie) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
 
