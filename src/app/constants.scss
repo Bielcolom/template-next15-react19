@@ -1,4 +1,5 @@
 @use "sass:color";
+
 // ***********
 // COLORS
 // ***********
@@ -36,7 +37,7 @@ $gray-dark: color.adjust($gray, $lightness: -10%);
 $gray-light: color.adjust($gray, $lightness: 10%);
 $gray-darker: color.adjust($gray, $lightness: -20%);
 $gray-lighter: color.adjust($gray, $lightness: 20%);
-$gray-border: 1px solid rgba(color.adjust($gray, $lightness: 10%), 0.5);
+$gray-border: 0.1rem solid rgba(color.adjust($gray, $lightness: 10%), 0.5); // 1px equiv.
 // B&W
 $background-gray: #f4f4f4;
 $white: #ffffff;
@@ -60,24 +61,24 @@ $color-contact-border: #B8B3B3;
 // ***********
 $primary-gradient: linear-gradient(90deg, $primary-lighter 0%, $secondary 100%);
 $primary-gradient-btn: linear-gradient(to right, $primary-lighter, $secondary, $primary-lighter);
-$card-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+$card-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2); // 10px equiv.
 $color-whatsapp: #25D366;
 $color-whatsapp-dark: #075E54;
 
 // ***********
 // PADDING, MARGIN AND RADIUS
 // ***********
-$size-xs: 2px;
-$size-sm: 4px;
-$size-md: 8px;
-$size-lg: 16px;
-$size-xl: 32px;
-$size-xxl: 64px;
-$size-xxxl: 128px;
+$size-xs: 0.2rem;
+$size-sm: 0.4rem; // 4px
+$size-md: 0.8rem; // 8px
+$size-lg: 1.6rem; // 16px
+$size-xl: 3.2rem; // 32px
+$size-xxl: 6.4rem; // 64px
+$size-xxxl: 12.8rem; // 128px
 
-$padding-section: 256px;
-$content-max-width: 1700px;
-$margin-top-section: 100px;
+$padding-section: 25.6rem; // 256px
+$content-max-width: 170rem; // 1700px
+$margin-top-section: 10rem; // 100px
 
 // ***********
 // TRANSITIONS
@@ -89,18 +90,18 @@ $transition-fast: 0.1s;
 // ***********
 // FONT
 // ***********
-$font-xxs: 12px;
-$font-xs: 14px;
-$font-sm: 16px;
-$font-md: 20px;
-$font-lg: 24px;
-$font-xl: 32px;
+$font-xxs: 1.2rem; // 12px
+$font-xs: 1.4rem; // 14px
+$font-sm: 1.6rem; // 16px
+$font-md: 2rem; // 20px
+$font-lg: 2.4rem; // 24px
+$font-xl: 3.2rem; // 32px
 
-$font-title: 100px;
-$font-title-lg: 64px;
-$font-title-sm: 45px;
+$font-title: 10rem; // 100px
+$font-title-lg: 6.4rem; // 64px
+$font-title-sm: 4.5rem; // 45px
 
-$font-subtitle: 40px;
+$font-subtitle: 4rem; // 40px
 
 $weight-light: 300;
 $weight-regular: 400;
@@ -111,22 +112,21 @@ $weight-black: 900;
 // ***********
 // SCREEN SIZES
 // ***********
-$screen-xs: 400px;
-$screen-sm: 576px;
-$screen-md: 768px;
-$screen-lg: 992px;
-$screen-xl: 1200px;
-
+$screen-xs: 40rem; // 400px
+$screen-sm: 57.6rem; // 576px
+$screen-md: 76.8rem; // 768px
+$screen-lg: 99.2rem; // 992px
+$screen-xl: 120rem; // 1200px
 
 // ***********
 // EXTRA SIZES
 // ***********
-$thirty: 30px;
-$forty: 40px;
-$fifty: 50px;
-$eighty: 80px;
-$one-hundred-fifty: 150px;
-$two-hundred: 200px;
-$two-hundred-fifty: 250px;
-$three-hundred: 300px;
-$screen-md-includes: 769px;
+$thirty: 3rem; // 30px
+$forty: 4rem; // 40px
+$fifty: 5rem; // 50px
+$eighty: 8rem; // 80px
+$one-hundred-fifty: 15rem; // 150px
+$two-hundred: 20rem; // 200px
+$two-hundred-fifty: 25rem; // 250px
+$three-hundred: 30rem; // 300px
+$screen-md-includes: 76.9rem; // 769px

@@ -1,6 +1,6 @@
+"use server";
+
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
 
 const DATABASE_URL = process.env.NEXT_PUBLIC_MONGODB_URI || "";
 

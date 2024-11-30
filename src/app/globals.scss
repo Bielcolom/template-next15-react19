@@ -10,11 +10,24 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  font-size: 10px;
 }
 
 body {
   color: $black;
   background: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+.content {
+  padding: 20px;
+
 }
 
 // Estilo para el modo oscuro
@@ -29,6 +42,7 @@ body {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-size: 1.8rem;
 }
 
 a {
@@ -38,15 +52,34 @@ a {
 
 header {
   background-color: $white;
-  padding: 10px 20px;
+  padding: 1rem 2rem;
   text-align: center;
 }
 
 footer {
   background-color: $white;
   color: black;
-  padding: 10px 20px;
+  padding: 1rem 2rem;
   text-align: center;
-  border-top: 1px solid $primary-light;
+  border-top: 0.1rem solid $primary-light;
   margin-top: auto;
+}
+
+.layout-with-sidebar {
+  display: flex;
+
+  >* {
+    margin-left: 125px;
+    transition: margin-left 0.3s ease-in-out;
+  }
+}
+
+.layout-no-sidebar {
+  display: flex;
+
+  >* {
+    margin-left: 0;
+    transition: margin-left 0.3s ease-in-out;
+  }
+
 }

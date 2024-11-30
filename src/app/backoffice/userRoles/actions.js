@@ -46,7 +46,7 @@ export async function getUserRoleById(userRoleId) {
             _id: userRole._id.toString(),
         };
 
-        return { userRole: serializedUserRole, errors: [] };
+        return serializedUserRole;
     } catch (error) {
         console.error("Error in getUserRoleById function:", error);
         return { userRole: null, errors: ["An error occurred while fetching the user role."] };

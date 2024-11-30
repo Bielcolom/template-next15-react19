@@ -36,7 +36,12 @@ export async function login(prevState, formData) {
       };
     }
 
-    const sessionCreation = await createSession(user._id.toString());
+    const formattedUser = {
+      ...user.toObject(),
+      _id: user._id.toString(),
+    };
+
+    const sessionCreation = await createSession(formattedUser);
     if (!sessionCreation) {
       return {
         errors: {
@@ -45,7 +50,7 @@ export async function login(prevState, formData) {
       };
     }
 
-    return { success: true, userId: user._id.toString() };
+    return { success: true, userId: formattedUser?._id };
 
   } catch (error) {
     console.error("Error in login function:", error);
@@ -56,7 +61,6 @@ export async function login(prevState, formData) {
     };
   }
 }
-
 
 export async function logout() {
   try {

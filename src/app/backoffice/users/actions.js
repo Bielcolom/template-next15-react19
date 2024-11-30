@@ -25,3 +25,18 @@ export async function findFiltered(userId) {
         return { user: null, errors: ["An error occurred while fetching the user."] };
     }
 }
+
+export async function getUserCount() {
+    "use server";
+    try {
+        await connectDB();
+
+        const userCount = await User.countDocuments();
+        return userCount;
+    } catch (error) {
+        console.error("Error in getUserCount function:", error);
+        return { count: null, errors: ["An error occurred while counting users."] };
+    }
+}
+
+

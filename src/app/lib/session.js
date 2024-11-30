@@ -1,15 +1,14 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { findFiltered } from "../users/actions";
-import { getUserRoleById } from "../userRoles/actions";
+import { getUserRoleById } from "../backoffice/userRoles/actions";
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
 
-async function createSession(userId) {
-  const user = await findFiltered(userId);
+async function createSession(user) {
+  const userId = user?._id;
   const userRole = await getUserRoleById(user?.userRoleId);
   console.log({ user, userRole });
   const permissions = userRole.permissions;

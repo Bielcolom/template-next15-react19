@@ -75,8 +75,13 @@ export async function register(prevState, formData) {
 
     await user.save();
 
+    const formattedUser = {
+      ...user.toObject(),
+      _id: user._id.toString(),
+    };
+
     // Crear una sesión para el usuario recién registrado
-    await createSession(user._id);
+    await createSession(formattedUser);
 
     // Redirigir al dashboard después del registro
     redirect("/");
