@@ -1,0 +1,17 @@
+@import '../../../constants.scss';
+
+.backofficeClient {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    color: black;
+    width: 25rem;
+    padding: $size-lg;
+
+    .text {}
+
+    .number {
+        font-weight: 600;
+    }
+}
