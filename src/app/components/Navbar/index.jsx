@@ -7,7 +7,7 @@ import Button from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
 import PropTypes from "prop-types";
 
-export const Navbar = ({ cookies }) => {
+export const Navbar = ({ cookies, isSidebarVisible }) => {
   const pathname = usePathname();
   const userId = cookies?.userId;
   const handleLogout = () => {
@@ -16,7 +16,10 @@ export const Navbar = ({ cookies }) => {
   };
 
   return (
-    <nav className={styles.nav}>
+    <nav
+      className={`${styles.nav} ${isSidebarVisible ? styles.navWithSidebar : styles.navFullWidth
+        }`}
+    >
       <div className={styles.leftElements}>
         <Link
           href="/"
@@ -54,6 +57,7 @@ Navbar.defaultProps = {
 
 Navbar.propTypes = {
   cookies: PropTypes.object,
+  isSidebarVisible: PropTypes.bool.isRequired,
 };
 
 export default Navbar;

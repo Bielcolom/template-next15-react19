@@ -1,18 +1,42 @@
 @use '../../constants.scss' as *;
 
 .nav {
+  position: fixed;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  padding: 2rem;
+  background-color: $white;
 
-  >div {
+
+  .leftElements {
     display: flex;
     flex-direction: row;
-    gap: $size-lg;
+    gap: $size-xl;
   }
+}
+
+.navFullWidth {
+  width: 100%;
+  transition: width 0.3s ease-in-out;
+
+  .leftElements {
+    margin-left: $size-xxl +$size-md;
+    transition: margin-left 0.3s ease-in-out;
+  }
+}
+
+.navWithSidebar {
+  width: calc(100% - 250px);
+  transition: width 0.3s ease-in-out;
+
+  .leftElements {
+    margin-left: 0;
+    transition: margin-left 0.3s ease-in-out;
+
+  }
+
 }
 
 .active {
