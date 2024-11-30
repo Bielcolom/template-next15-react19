@@ -1,27 +1,55 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const PROTECTED_ROUTES = ["/"];
-const PUBLIC_ROUTES = ["/login", "/userRoles"];
+import { decrypt } from "./app/lib/session";
+import { ROUTES } from "./utils/urls";
 
 export default async function middleware(req) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = PROTECTED_ROUTES.includes(path);
-  const isPublicRoute = PUBLIC_ROUTES.includes(path);
 
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get("userId")?.value;
+  const cookies = req.cookies;
+  const sessionCookie = cookies.get("session")?.value;
 
-  // Redirigir si intenta acceder a rutas protegidas sin sesión válida
-  if (isProtectedRoute && !cookie) {
+  const isPublicRoute = ROUTES.PUBLIC.includes(path);
+  const isPrivateRoute = ROUTES.PRIVATE.includes(path);
+  const isSuperAdminRoute = ROUTES.SUPERADMIN.includes(path);
+
+  try {
+    // Si no hay cookie de sesión
+    if (!sessionCookie) {
+      if (isPrivateRoute || isSuperAdminRoute) {
+        return NextResponse.redirect(new URL("/login", req.nextUrl));
+      }
+      return NextResponse.next();
+    }
+
+    // Decodificar la sesión
+    const payload = await decrypt(sessionCookie);
+
+    // Validar la expiración de la sesión
+    const now = new Date();
+    if (new Date(payload.expiresAt) < now) {
+      return NextResponse.redirect(new URL("/login", req.nextUrl));
+    }
+
+    // Verificar permisos según la ruta
+    if (isPrivateRoute && !payload.permissions.includes("admin_access")) {
+      return NextResponse.redirect(new URL("/", req.nextUrl));
+    }
+
+    if (isSuperAdminRoute && !payload.permissions.includes("superadmin_access")) {
+      return NextResponse.redirect(new URL("/", req.nextUrl));
+    }
+
+    // Redirigir si intenta acceder a rutas públicas con sesión activa
+    if (isPublicRoute) {
+      return NextResponse.redirect(new URL("/", req.nextUrl));
+    }
+
+    // Continuar si todas las verificaciones pasan
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware Error:", error.message);
+
+    // Redirigir si hay un error en la sesión
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
-
-  // Redirigir si intenta acceder a rutas públicas con una sesión activa
-  if (isPublicRoute && cookie) {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
-  }
-
-  // Continuar con la solicitud si no hay redirección
-  return NextResponse.next();
 }
