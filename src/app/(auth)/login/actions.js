@@ -14,9 +14,10 @@ const loginSchema = z.object({
     .trim(),
 });
 
-export async function login(prevState, formData) {
+export async function login(formData) {
   try {
-    const result = loginSchema.safeParse(Object.fromEntries(formData));
+    // Validate formData using the schema
+    const result = loginSchema.safeParse(formData);
     if (!result.success) {
       return {
         errors: result.error.flatten().fieldErrors,

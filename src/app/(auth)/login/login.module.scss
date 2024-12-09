@@ -1,9 +1,15 @@
+@use '../../constants.scss';
+
 .formPage {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    // Permite que ocupe el espacio restante entre el header y footer
-    flex-grow: 1;
+    height: 80%;
+    gap: constants.$size-lg;
 
+    .logo {
+        width: 500px;
+        border-radius: 10%;
+    }
 }

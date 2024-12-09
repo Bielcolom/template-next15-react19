@@ -1,50 +1,86 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useFormStatus } from "react-dom";
-import { redirect, useRouter } from "next/navigation";
-import { login } from "../actions";
+import { useState, useEffect } from "react";
+import { redirect } from "next/navigation";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/components/base/Button";
+import Input from "@/app/components/base/Input";
+import { login } from "../actions";
 
 export function LoginForm() {
-  const router = useRouter();
-  const [state, loginAction] = useActionState(login);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (state?.success) {
+    if (success) {
       redirect("/");
     }
-  }, [state?.success, state?.userId, router]);
+  }, [success]);
+
+  const handleChange = (value, field) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await login(formData);
+      if (response?.success) {
+        setSuccess(true);
+      } else {
+        setError(response?.errors || "An error occurred");
+      }
+    } catch {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <form action={loginAction} className={styles.form}>
-      <div className={styles.inputContainer}>
-        <input id="email" name="email" />
-      </div>
-      {state?.errors?.email && (
-        <p className={styles.error}>{state.errors.email}</p>
-      )}
+    <form onSubmit={handleSubmit} className={styles.form}>
 
       <div className={styles.inputContainer}>
-        <input id="password" name="password" type="password" />
+        <Input
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={(value) => handleChange(value, "email")}
+          error={!!error?.email}
+          errorText={error?.email}
+          infoText="We'll never share your email."
+        />
       </div>
-      {state?.errors?.password && (
-        <p className={styles.error}>{state.errors.password}</p>
-      )}
-      <SubmitButton />
+
+      <div className={styles.inputContainer}>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          value={formData.password}
+          onChange={(value) => handleChange(value, "password")}
+          error={!!error?.password}
+          errorText={error?.password}
+          showPassword={true}
+        />
+      </div>
+
+      <Button
+        disabled={loading}
+        type="submit"
+        text={loading ? "Logging in..." : "Login"}
+        className={styles.submitButton}
+      />
     </form>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button
-      disabled={pending}
-      type="submit"
-      text={pending ? "Logging in..." : "Login"}
-    />
   );
 }

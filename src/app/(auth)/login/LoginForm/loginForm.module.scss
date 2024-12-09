@@ -1,29 +1,17 @@
+@use '../../../constants.scss';
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-width: 300px;
-}
+  gap: constants.$size-md;
+  width: 40%;
 
-.inputContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  .submitButton {
+    background-color: constants.$white;
+    border-color: constants.$white;
 
-  input {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-
-    &:focus {
-      outline: none;
-      border-color: #0070f3;
+    &:hover {
+      background-color: constants.$gray-lighter;
     }
   }
-}
-
-.error {
-  color: #ef4444;
-  font-size: 0.875rem;
 }

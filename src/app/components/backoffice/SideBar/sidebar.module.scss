@@ -1,4 +1,4 @@
-@import '../../../constants.scss';
+@use '../../../constants.scss';
 
 .containerSidebar {
     position: relative;
@@ -53,28 +53,46 @@
 
     .buttonShowSidebar {
         position: fixed;
-        top: 2rem;
+        top: 2.5rem;
         transition: left 0.3s ease-in-out;
-        z-index: 10;
+        z-index: 11;
+        background-color: transparent;
 
         &.withSidebar {
             left: 180px;
+            transform: rotate(0deg);
+            /* Rotación de 180 grados */
+            transition: transform 0.3s ease, left 0.3s ease;
+            /* Para suavizar la transición */
+
         }
 
         &.noSidebar {
             left: 15px;
+            transform: rotate(180deg);
+            /* Sin rotación cuando no hay sidebar */
+            transition: transform 0.3s ease, left 0.3s ease;
+            /* Para suavizar la transición */
         }
 
-        padding: 10px 20px;
-        background-color: #0070f3;
-        color: white;
+        padding: 0px 0px;
+        color: constants.$black;
         border: none;
         border-radius: 4px;
         font-size: 1rem;
         cursor: pointer;
 
         &:hover {
-            background-color: #005bb5;
+            background-color: transparent;
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 0px transparent;
+            border-color: transparent;
+        }
+
+        svg {
+            font-size: constants.$size-xl;
         }
     }
 }

@@ -22,12 +22,14 @@ body {
 }
 
 main {
+  display: flex;
   flex: 1;
 }
 
 .content {
-  padding: 20px;
-
+  flex: 1;
+  padding-inline: 20px;
+  margin: 8rem 0 0 0;
 }
 
 // Estilo para el modo oscuro
@@ -65,21 +67,24 @@ footer {
   margin-top: auto;
 }
 
-.layout-with-sidebar {
-  display: flex;
+.layout-general {
+  height: 100%;
 
-  >* {
-    margin-left: 125px;
-    transition: margin-left 0.3s ease-in-out;
-  }
-}
+  &.with-sidebar {
+    display: flex;
 
-.layout-no-sidebar {
-  display: flex;
-
-  >* {
-    margin-left: 0;
-    transition: margin-left 0.3s ease-in-out;
+    >* {
+      margin-left: 125px;
+      transition: margin-left 0.3s ease-in-out;
+    }
   }
 
+  &.no-sidebar {
+    display: flex;
+
+    >* {
+      margin-left: 0;
+      transition: margin-left 0.3s ease-in-out;
+    }
+  }
 }

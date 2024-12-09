@@ -8,6 +8,7 @@ const Button = ({
     disabled = false,
     className,
     style = {},
+    iconLeft,
     ...props
 }) => {
     return (
@@ -19,6 +20,7 @@ const Button = ({
             style={style}
             {...props}
         >
+            {iconLeft && <span className={styles.iconLeft}>{iconLeft}</span>}
             {text}
         </button>
     );
@@ -31,6 +33,7 @@ Button.propTypes = {
     disabled: PropTypes.bool,
     className: PropTypes.string,
     style: PropTypes.object,
+    iconLeft: PropTypes.node,
 };
 
 export default Button;

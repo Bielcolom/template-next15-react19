@@ -15,7 +15,8 @@ const PageWrapper = ({ children }) => {
     const [isSidebarVisible, setSidebarVisible] = useState(false);
 
     return (
-        <div className={isSidebarVisible ? "layout-with-sidebar" : "layout-no-sidebar"}>
+        <div className={`layout-general ${isSidebarVisible ? "with-sidebar" : "no-sidebar"}`}
+        >
             {pathisSuperAdminProtected(pathname) && (
                 <Sidebar
                     permissions={permissions}
