@@ -8,6 +8,8 @@
   align-items: center;
   padding: 2rem;
   background-color: $white;
+  height: 8rem;
+  z-index: 10;
 
 
   .leftElements {
@@ -22,7 +24,7 @@
   transition: width 0.3s ease-in-out;
 
   .leftElements {
-    margin-left: $size-xxl +$size-md;
+    margin-left: $size-xxl + $size-md;
     transition: margin-left 0.3s ease-in-out;
   }
 }

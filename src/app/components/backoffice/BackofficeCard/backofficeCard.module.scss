@@ -1,4 +1,4 @@
-@import '../../../constants.scss';
+@use '../../../constants.scss';
 
 .backofficeClient {
     display: flex;
@@ -7,9 +7,7 @@
     background-color: white;
     color: black;
     width: 25rem;
-    padding: $size-lg;
-
-    .text {}
+    padding: constants.$size-lg;
 
     .number {
         font-weight: 600;
