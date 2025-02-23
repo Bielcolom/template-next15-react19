@@ -1,34 +1,103 @@
-@use '../../../constants.scss' as *;
+@use "../../../constants.scss" as *;
 
 .button {
-    color: black;
-    background-color: $primary;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 500;
-    padding: $size-md $size-xl;
-    border: 1px solid $primary-light;
+    padding: $size-md $size-lg;
     border-radius: $size-sm;
     cursor: pointer;
     font-size: $font-sm;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 
-    &:disabled {
+    >span {
+        font-size: unset;
+    }
+
+    &.btnPress {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transform: scale(0.98);
+    }
+
+    &.inverted {
+        background-color: $white;
+        color: $primary;
+        border-color: $primary;
+    }
+
+    &.disabled {
         background-color: $gray;
         cursor: not-allowed;
     }
 
-    &:hover {
+    &:focus {
+        outline: none;
+    }
+
+    &.primary {
+        background-color: $primary;
+    }
+
+    &.primaryDark {
+        background-color: $primary-dark;
+    }
+
+    &.primaryDarker {
+        background-color: $primary-darker;
+    }
+
+    &.primaryLight {
         background-color: $primary-light;
     }
 
-    &:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.6);
+    &.primaryLighter {
+        background-color: $primary-lighter;
+        border-color: $primary-lighter;
     }
 
-    .iconLeft {
-        margin-right: 8px;
+    &.secondary {
+        background-color: $secondary;
+    }
+
+    &.secondaryDark {
+        background-color: $secondary-dark;
+    }
+
+    &.secondaryDarker {
+        background-color: $secondary-darker;
+    }
+
+    &.secondaryLight {
+        background-color: $secondary-light;
+    }
+
+    &.secondaryLighter {
+        background-color: $secondary-lighter;
+    }
+
+    &.accent {
+        background-color: $accent;
+    }
+
+    &.gray {
+        background-color: $gray;
+    }
+
+    &.black {
+        background-color: $black;
+    }
+
+    &.white {
+        background-color: $white;
+    }
+
+    &.transparent {
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: 0px 0px 0px 0px;
+
+        &:hover {
+            background-color: transparent;
+        }
     }
 }
