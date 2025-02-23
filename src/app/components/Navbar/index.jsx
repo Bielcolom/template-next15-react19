@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
 import styles from "./navbar.module.scss";
-import Button from "../base/Button";
+import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
 import PropTypes from "prop-types";
+import { userIsAdminOrMore } from "@/utils/helpers";
+import Icon from "../base/Icon";
 
-export const Navbar = ({ cookies, isSidebarVisible }) => {
+export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
   const pathname = usePathname();
   const userId = cookies?.userId;
   const handleLogout = () => {
@@ -41,10 +43,24 @@ export const Navbar = ({ cookies, isSidebarVisible }) => {
         </Link>
       </div>
       <div className={styles.rightElements}>
+        {userIsAdminOrMore(permissions) &&
+          <Link
+            href="/backoffice"
+            className={styles.link}
+          >
+            Backoffice
+          </Link>
+        }
         {userId ? (
-          <Button text={"Logout"} onClick={handleLogout} />
+          <Button
+            text={<Icon icon="logout" />}
+            styleType={BUTTON_STYLE_TYPES.transparent}
+            onClick={handleLogout} />
         ) : (
-          <Button text={"Login"} onClick={() => redirect("login")} />
+          <Button
+            text="Login"
+            styleType={BUTTON_STYLE_TYPES.transparent}
+            onClick={() => redirect("login")} />
         )}
       </div>
     </nav>
@@ -53,9 +69,11 @@ export const Navbar = ({ cookies, isSidebarVisible }) => {
 
 Navbar.defaultProps = {
   cookies: null,
+  permissions: PropTypes.array,
 };
 
 Navbar.propTypes = {
+  permissions: [],
   cookies: PropTypes.object,
   isSidebarVisible: PropTypes.bool.isRequired,
 };

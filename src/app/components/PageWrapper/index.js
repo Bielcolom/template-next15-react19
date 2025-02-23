@@ -25,7 +25,7 @@ const PageWrapper = ({ children }) => {
                 />
             )}
             <main>
-                <Navbar cookies={cookies} isSidebarVisible={isSidebarVisible} />
+                <Navbar cookies={cookies} permissions={permissions} isSidebarVisible={isSidebarVisible} />
                 <div className="content">
                     {children}
                 </div>

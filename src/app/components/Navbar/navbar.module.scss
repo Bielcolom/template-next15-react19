@@ -17,6 +17,15 @@
     flex-direction: row;
     gap: $size-xl;
   }
+
+  .rightElements {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $size-lg;
+
+    .link {}
+  }
 }
 
 .navFullWidth {
