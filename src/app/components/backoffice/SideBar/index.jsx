@@ -5,11 +5,11 @@ import {
     BACKOFFICE_USERROLES_URL,
 } from "@/utils/urls";
 import styles from "./sidebar.module.scss";
-import { userIsAdmin, userIsSuperAdmin } from "@/utils/helpers";
+import { userIsAdminOrMore, userIsSuperAdmin } from "@/utils/helpers";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Button from "../../base/Button";
-import { FaLongArrowAltRight } from "react-icons/fa";
+import Icon from "../../base/Icon";
 
 export default function Sidebar({ cookies, permissions, onVisibilityChange }) {
     const [isVisible, setIsVisible] = useState(false);
@@ -26,12 +26,12 @@ export default function Sidebar({ cookies, permissions, onVisibilityChange }) {
             <Button
                 className={`${styles.buttonShowSidebar} ${isVisible ? styles.withSidebar : styles.noSidebar}`}
                 onClick={toggleSidebar}
-                text={<FaLongArrowAltRight />}
+                text={<Icon icon="chevron_left" />}
             />
             <div className={`${styles.sidebar} ${isVisible ? "" : styles.hidden}`}>
                 <nav>
                     <ul>
-                        {userIsAdmin(permissions) && (
+                        {userIsAdminOrMore(permissions) && (
                             <li>
                                 <a href={BACKOFFICE_URL}>Home</a>
                             </li>
@@ -50,8 +50,8 @@ export default function Sidebar({ cookies, permissions, onVisibilityChange }) {
 }
 
 Sidebar.propTypes = {
-    permissions: PropTypes.arrayOf(PropTypes.string),
-    cookies: PropTypes.objectOf(PropTypes.string),
+    permissions: PropTypes.array,
+    cookies: PropTypes.object,
     onVisibilityChange: PropTypes.func,
 
 };
