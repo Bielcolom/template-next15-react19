@@ -1,9 +1,18 @@
-import BackofficeClient from "./BackofficeClient";
+import { getUserCount } from "./users/actions";
+import BackofficeCard from "@/app/components/backoffice/BackofficeCard";
 
 export default async function BackofficePage() {
+    const userCount = await getUserCount();
+
     return (
-        <div >
-            <BackofficeClient />
+        <div>
+            <div className="backoffice-client">
+                <BackofficeCard
+                    text="Users"
+                    icon="icon"
+                    number={userCount}
+                />
+            </div>
         </div>
     );
 }
