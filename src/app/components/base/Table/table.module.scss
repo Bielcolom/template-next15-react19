@@ -1,78 +1,98 @@
-/* table.module.scss */
+@use '../../../constants.scss' as *;
 
 .tableContainer {
-    margin: 20px auto;
-    padding: 10px;
-    max-width: 100%;
-    font-family: Arial, sans-serif;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-weight: 400;
+    max-height: 570px;
+    overflow-y: scroll;
+    scrollbar-color: $white $primary;
+    border: 1px solid $primary;
 
     .genericTable {
+        background-color: $background-gray-lighter;
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
-        color: black;
+        font-size: $font-xs;
 
-        th,
-        td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: $primary;
         }
 
         th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 14px;
-        }
-
-        td {
-            font-size: 13px;
+            background-color: $primary;
+            padding: $size-md $size-lg;
+            color: $white;
+            text-align: center;
+            font-weight: 600;
         }
 
         tbody {
+            overflow-y: auto;
+            min-height: 200px;
+            max-height: 570px;
+            width: 100%;
+            z-index: 1;
+            color: $black;
+
+            .noResults {
+                width: 100%;
+                text-align: center;
+                font-size: 16px;
+                color: $black;
+                background-color: $white;
+
+                td {
+                    padding: $size-md;
+                    background-color: $color-warning;
+
+                    >* {
+                        padding-inline: $size-lg;
+                    }
+
+                    >i {
+                        font-size: $font-lg;
+                    }
+                }
+            }
+
             tr {
-                &:nth-child(odd) {
-                    background-color: #f9f9f9;
+                &.data {
+                    &.evenRow {
+                        background-color: $background-gray;
+                    }
+
+                    &.oddRow {
+                        background-color: $white;
+                    }
                 }
 
-                &:hover {
-                    background-color: #f1f1f1;
+                td {
+                    border-bottom: 1px solid #ddd;
+                    text-align: center;
+                    padding: $size-sm 0;
+
+                    &.cell-error {
+                        color: $color-error;
+                    }
+
+                    white-space: nowrap;
+                    padding-inline: $size-md;
+                }
+
+                .notFound {
+                    font-weight: 600;
+                    color: $color-warning;
                 }
             }
         }
     }
+}
 
-
-    .actions-column {
-        display: flex;
-        gap: 8px;
-
-        & button {
-            padding: 5px 8px;
-            font-size: 12px;
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-
-            &:hover {
-                background-color: #007bff;
-                color: #fff;
-                border-color: #007bff;
-            }
-        }
-    }
-
-    .loading {
-        text-align: center;
-        font-size: 16px;
-        color: #555;
-        margin: 20px 0;
-    }
+.loading {
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+    margin: 20px 0;
 }
