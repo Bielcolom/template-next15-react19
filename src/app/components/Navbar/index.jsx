@@ -55,7 +55,9 @@ export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
           <Button
             text={<Icon icon="logout" />}
             styleType={BUTTON_STYLE_TYPES.transparent}
-            onClick={handleLogout} />
+            onClick={handleLogout}
+          />
+
         ) : (
           <Button
             text="Login"

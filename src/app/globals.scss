@@ -15,7 +15,7 @@ body {
 
 body {
   color: $black;
-  background: $white;
+  background: $tertiary;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -30,14 +30,6 @@ main {
   flex: 1;
   padding-inline: 20px;
   margin: 8rem 0 0 0;
-}
-
-// Estilo para el modo oscuro
-@media (prefers-color-scheme: dark) {
-  body {
-    color: $white;
-    background: $black;
-  }
 }
 
 * {

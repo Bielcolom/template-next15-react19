@@ -7,7 +7,7 @@
     .sidebar {
         width: 250px;
         height: 100vh;
-        border-right: 3px solid #ddd;
+        border-right: 0px solid #ddd;
         padding: 20px;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -15,6 +15,7 @@
         left: 0;
         transition: transform 0.3s ease-in-out;
         transform: translateX(0);
+        background-color: constants.$secondary;
 
         nav {
             margin-top: 20px;
@@ -32,7 +33,7 @@
                         font-weight: bold;
 
                         &:hover {
-                            color: #0070f3;
+                            color: constants.$tertiary;
                         }
                     }
                 }
@@ -55,7 +56,16 @@
         top: 2.5rem;
         transition: left 0.3s ease-in-out;
         z-index: 11;
-        background-color: constants.$white;
+        background-color: constants.$secondary;
+        padding: 0px 0px;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+
+        span {
+            color: constants.$white;
+        }
+
 
         &.withSidebar {
             left: 180px;
@@ -74,12 +84,6 @@
             /* Para suavizar la transición */
         }
 
-        padding: 0px 0px;
-        color: constants.$black;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
 
         &:focus {
             box-shadow: 0 0 0 0px transparent;

@@ -21,7 +21,7 @@ export default function UserRolesPage() {
     }, []);
 
     return (
-        <div className={styles.formPage}>
+        <div className={styles.userRolesPage}>
             <Table data={userRoles} loading={loading} />
         </div>
     );

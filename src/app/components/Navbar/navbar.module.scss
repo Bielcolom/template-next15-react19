@@ -7,7 +7,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 2rem;
-  background-color: $white;
+  background-color: $secondary;
   height: 8rem;
   z-index: 10;
 
@@ -24,7 +24,11 @@
     align-items: center;
     gap: $size-lg;
 
-    .link {}
+    button {
+      span {
+        color: $white;
+      }
+    }
   }
 }
 
@@ -57,10 +61,10 @@
 
 .link {
   text-decoration: none;
-  color: #333;
+  color: $white;
   transition: color 0.3s;
 }
 
 .link:hover {
-  color: #0070f3;
+  color: $tertiary-dark;
 }
