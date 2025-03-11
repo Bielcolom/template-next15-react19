@@ -1,8 +1,9 @@
+"use server";
+
 import { connectDB } from "@/utils/connectDB";
 import User from "@/models/User";
 
 export async function findFiltered(userId) {
-    "use server";
 
     try {
         await connectDB();
@@ -27,7 +28,6 @@ export async function findFiltered(userId) {
 }
 
 export async function getUserCount() {
-    "use server";
     try {
         await connectDB();
 
@@ -38,5 +38,3 @@ export async function getUserCount() {
         return { count: null, errors: ["An error occurred while counting users."] };
     }
 }
-
-

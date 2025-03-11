@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import { cookies } from "next/headers";
 import "./globals.scss";
 import { decrypt } from "./lib/session";
-import PageWrapper from "./components/PageWrapper";
+import PageWrapper from "./[lang]/components/PageWrapper";
 import { SessionProvider } from "./context/sessionProvider";
 
 const geistSans = localFont({

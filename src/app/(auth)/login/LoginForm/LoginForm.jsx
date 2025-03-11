@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
 import styles from "./loginForm.module.scss";
-import Button from "@/app/components/base/Button";
-import Input from "@/app/components/base/Input";
+import Button from "@/app/[lang]/components/base/Button";
+import Input from "@/app/[lang]/components/base/Input";
 import { login } from "../actions";
 
 export function LoginForm() {

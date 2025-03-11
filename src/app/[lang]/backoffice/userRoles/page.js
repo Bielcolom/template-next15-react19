@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getUserRoles } from "./actions";
-import Table from "@/app/components/base/Table";
+import { getUserRoles } from "../../../backoffice/userRoles/actions";
+import Table from "@/app/[lang]/components/base/Table";
 import styles from "./userRoles.module.scss";
 
 export default function UserRolesPage() {

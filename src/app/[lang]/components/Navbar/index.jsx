@@ -8,6 +8,7 @@ import { logout } from "@/app/(auth)/login/actions";
 import PropTypes from "prop-types";
 import { userIsAdminOrMore } from "@/utils/helpers";
 import Icon from "../base/Icon";
+import LanguageSelector from "./LanguageSelector";
 
 export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
   const pathname = usePathname();
@@ -43,6 +44,7 @@ export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
         </Link>
       </div>
       <div className={styles.rightElements}>
+        <LanguageSelector />
         {userIsAdminOrMore(permissions) &&
           <Link
             href="/backoffice"
