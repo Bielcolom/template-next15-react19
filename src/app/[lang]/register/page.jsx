@@ -1,7 +1,7 @@
 "use client";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { register } from "./actions";
+import { register } from "../../(auth)/register/actions";
 
 export default function Register() {
   const [state, action] = useActionState(register);

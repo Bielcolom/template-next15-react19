@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
-import { login } from "../actions";
+import { login } from "@/app/(auth)/login/actions";
 
 export function LoginForm() {
   const [formData, setFormData] = useState({ email: "", password: "" });
