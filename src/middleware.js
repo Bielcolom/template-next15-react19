@@ -35,7 +35,6 @@ export default async function middleware(req) {
   const cookies = req.cookies;
   const sessionCookie = cookies.get("session")?.value;
 
-  console.warn({ pathWithoutLocale });
   const isPublicRoute = ROUTES.PUBLIC.includes(pathWithoutLocale);
   const isPrivateRoute = ROUTES.PRIVATE.includes(pathWithoutLocale);
   const isSuperAdminRoute = ROUTES.SUPERADMIN.includes(pathWithoutLocale);
@@ -43,10 +42,8 @@ export default async function middleware(req) {
   try {
     // Verificar si no hay una sesión activa
     if (!sessionCookie) {
-      console.warn("1");
       // Redirigir si es una ruta privada o de superadministrador sin sesión
       if (isPrivateRoute || isSuperAdminRoute) {
-        console.warn("1.1");
         return NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
       }
       return NextResponse.next();
@@ -58,27 +55,23 @@ export default async function middleware(req) {
     // Validar la expiración de la sesión
     const now = new Date();
     if (new Date(payload.expiresAt) < now) {
-      console.warn("2");
 
       return NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
     }
 
     // Verificar permisos según la ruta
     if (isPrivateRoute && !payload.permissions.includes("admin_access")) {
-      console.warn("3");
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }
 
     if (isSuperAdminRoute && !payload.permissions.includes("superadmin_access")) {
-      console.warn("4");
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }
 
     // Redirigir si intenta acceder a rutas públicas con sesión activa
     if (isPublicRoute) {
-      console.warn("5");
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }
@@ -86,8 +79,6 @@ export default async function middleware(req) {
     // Continuar si todas las verificaciones pasan
     return NextResponse.next();
   } catch (error) {
-    console.warn("6");
-
     console.error("Middleware Error:", error.message);
 
     // Redirigir si hay un error en la sesión

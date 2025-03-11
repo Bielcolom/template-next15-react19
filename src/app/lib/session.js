@@ -10,7 +10,6 @@ const encodedKey = new TextEncoder().encode(secretKey);
 async function createSession(user) {
   const userId = user?._id;
   const userRole = await getUserRoleById(user?.userRoleId);
-  console.log({ user, userRole });
   const permissions = userRole.permissions;
 
   // 7 Days
