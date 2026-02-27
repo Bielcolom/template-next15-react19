@@ -5,7 +5,7 @@ import {
   pathisSuperAdminProtected,
   stripLocaleFromPath,
   withLocalePath,
-} from "./helpers";
+} from "./index";
 
 describe("normalizePermissions", () => {
   it("returns an array unchanged", () => {

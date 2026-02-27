@@ -1,5 +1,5 @@
-import { ROLES } from "./constants";
-import { PRIVATE_ADMIN_URLS, PRIVATE_SUPERADMIN_URLS, PRIVATE_USER_URLS, PUBLIC_SIGNED_OUT_URLS } from "./urls";
+import { ROLES } from "../constants";
+import { PRIVATE_ADMIN_URLS, PRIVATE_SUPERADMIN_URLS, PRIVATE_USER_URLS, PUBLIC_SIGNED_OUT_URLS } from "../urls";
 
 const SUPPORTED_LOCALES = ["es", "en"];
 
