@@ -4,13 +4,13 @@ import PropTypes from "prop-types";
 import { usePathname } from "next/navigation";
 
 import Sidebar from "../backoffice/SideBar";
-import { pathisSuperAdminProtected } from "@/utils/helpers";
+import { pathisSuperAdminProtected, stripLocaleFromPath } from "@/utils/helpers";
 import Navbar from "../Navbar";
 import { useSession } from "@/app/context/sessionProvider";
 import { useState } from "react";
 
 const PageWrapper = ({ children }) => {
-    const pathname = usePathname();
+    const pathname = stripLocaleFromPath(usePathname());
     const { permissions, userId } = useSession();
     const [isSidebarVisible, setSidebarVisible] = useState(false);
 

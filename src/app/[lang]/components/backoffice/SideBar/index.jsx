@@ -10,6 +10,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import Button from "../../base/Button";
 import Icon from "../../base/Icon";
+import AppLink from "../../base/AppLink";
 
 export default function Sidebar({ userId, permissions, onVisibilityChange }) {
     const [isVisible, setIsVisible] = useState(false);
@@ -32,12 +33,12 @@ export default function Sidebar({ userId, permissions, onVisibilityChange }) {
                     <ul>
                         {userIsAdminOrMore(permissions) && (
                             <li>
-                                <a href={BACKOFFICE_URL}>Home</a>
+                                <AppLink href={BACKOFFICE_URL}>Home</AppLink>
                             </li>
                         )}
                         {userIsSuperAdmin(permissions) && (
                             <li>
-                                <a href={BACKOFFICE_USERROLES_URL}>User Roles</a>
+                                <AppLink href={BACKOFFICE_USERROLES_URL}>User Roles</AppLink>
                             </li>
                         )}
                     </ul>

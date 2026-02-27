@@ -1,13 +1,13 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useAppRouter } from "../hooks/useAppRouter";
 
 export default function About() {
-    const router = useRouter();
+    const appRouter = useAppRouter();
     return (
         <>
             <h1>About Us</h1>
             <button
-                onClick={() => router.push("/")}> Home
+                onClick={() => appRouter.push("/")}> Home
             </button>
         </>
 

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import styles from "./navbar.module.scss";
 import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
@@ -9,14 +7,16 @@ import PropTypes from "prop-types";
 import { userIsAdminOrMore } from "@/utils/helpers";
 import Icon from "../base/Icon";
 import LanguageSelector from "./LanguageSelector";
+import { useAppRouter } from "@/app/[lang]/hooks/useAppRouter";
+import AppLink from "../base/AppLink";
 
 export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
-  const pathname = usePathname();
-  const router = useRouter();
+  const appRouter = useAppRouter();
+  const pathWithoutLocale = appRouter.pathnameWithoutLocale;
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/login");
+    appRouter.replace("/login");
   };
 
   return (
@@ -25,34 +25,34 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
         }`}
     >
       <div className={styles.leftElements}>
-        <Link
+        <AppLink
           href="/"
-          className={`${styles.link} ${pathname === "/" ? styles.active : ""}`}
+          className={`${styles.link} ${pathWithoutLocale === "/" ? styles.active : ""}`}
         >
           Home
-        </Link>
-        <Link
+        </AppLink>
+        <AppLink
           href="/about"
-          className={`${styles.link} ${pathname === "/about" ? styles.active : ""}`}
+          className={`${styles.link} ${pathWithoutLocale === "/about" ? styles.active : ""}`}
         >
           About
-        </Link>
-        <Link
+        </AppLink>
+        <AppLink
           href="/products/1"
-          className={`${styles.link} ${pathname.startsWith("/products/1") ? styles.active : ""}`}
+          className={`${styles.link} ${pathWithoutLocale.startsWith("/products/1") ? styles.active : ""}`}
         >
           Product 1
-        </Link>
+        </AppLink>
       </div>
       <div className={styles.rightElements}>
         <LanguageSelector />
         {userIsAdminOrMore(permissions) &&
-          <Link
+          <AppLink
             href="/backoffice"
             className={styles.link}
           >
             Backoffice
-          </Link>
+          </AppLink>
         }
         {userId ? (
           <Button
@@ -65,7 +65,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
           <Button
             text="Login"
             styleType={BUTTON_STYLE_TYPES.transparent}
-            onClick={() => router.push("/login")} />
+            onClick={() => appRouter.push("/login")} />
         )}
       </div>
     </nav>
