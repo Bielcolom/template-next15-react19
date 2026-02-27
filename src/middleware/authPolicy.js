@@ -1,5 +1,6 @@
 import { normalizePermissions } from "../utils/helpers";
 import { ROUTES } from "../utils/urls";
+import { ROLES } from "../utils/constants";
 
 export const AUTH_ACTIONS = {
   ALLOW: "allow",
@@ -26,11 +27,13 @@ export const evaluateAuthPolicy = ({ pathWithoutLocale, payload }) => {
 
   const permissions = normalizePermissions(payload?.permissions);
 
-  if (isPrivateRoute && !permissions.includes("admin_access")) {
+  const isAdminOrSuperAdmin = permissions.includes(ROLES.ADMIN) || permissions.includes(ROLES.SUPERADMIN);
+
+  if (isPrivateRoute && !isAdminOrSuperAdmin) {
     return { action: AUTH_ACTIONS.REDIRECT_HOME, clearCookies: false };
   }
 
-  if (isSuperAdminRoute && !permissions.includes("superadmin_access")) {
+  if (isSuperAdminRoute && !permissions.includes(ROLES.SUPERADMIN)) {
     return { action: AUTH_ACTIONS.REDIRECT_HOME, clearCookies: false };
   }
 
