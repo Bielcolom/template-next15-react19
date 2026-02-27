@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { AUTH_ACTIONS, evaluateAuthPolicy } from "./middleware/authPolicy";
+import {
+  DEFAULT_LOCALE,
+  INDEX_URL,
+  LOGIN_URL,
+  SUPPORTED_LOCALES,
+  getLocalizedPath,
+} from "./utils/urls";
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 import { jwtVerify } from "jose";
 
-const locales = ["es", "en"];
-const defaultLocale = "es";
 const secretKey = process.env.SESSION_SECRET;
 if (!secretKey || secretKey.length < 32) {
   throw new Error("SESSION_SECRET must be defined and at least 32 characters long.");
@@ -17,7 +22,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const getLocale = (request) => {
   const headers = { "accept-language": request.headers.get("accept-language") || "es,en;q=0.5" };
   const languages = new Negotiator({ headers }).languages();
-  return match(languages, locales, defaultLocale);
+  return match(languages, SUPPORTED_LOCALES, DEFAULT_LOCALE);
 };
 
 const decryptSession = async (session = "") => {
@@ -43,7 +48,7 @@ const clearAuthCookies = (response) => {
 };
 
 const redirectToLogin = (req, locale, clearCookies = false) => {
-  const response = NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
+  const response = NextResponse.redirect(new URL(getLocalizedPath(LOGIN_URL, locale), req.nextUrl));
   return clearCookies ? clearAuthCookies(response) : response;
 };
 
@@ -53,7 +58,7 @@ const resolveAuthResponse = (req, locale, policyResult) => {
   }
 
   if (policyResult.action === AUTH_ACTIONS.REDIRECT_HOME) {
-    return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
+    return NextResponse.redirect(new URL(getLocalizedPath(INDEX_URL, locale), req.nextUrl));
   }
 
   return redirectToLogin(req, locale, policyResult.clearCookies);
@@ -62,7 +67,7 @@ const resolveAuthResponse = (req, locale, policyResult) => {
 export default async function middleware(req) {
   const { pathname } = req.nextUrl;
   const segments = pathname.split("/").filter(Boolean); // Filtra cualquier valor vacío
-  const requestLocale = locales.includes(segments[0]) ? segments[0] : null;
+  const requestLocale = SUPPORTED_LOCALES.includes(segments[0]) ? segments[0] : null;
   const locale = requestLocale || getLocale(req);
   const pathWithoutLocale = requestLocale
     ? `/${segments.slice(1).join("/")}`.replace(/\/$/, "") || "/"
@@ -73,7 +78,7 @@ export default async function middleware(req) {
 
   // Si no contiene un idioma válido en la URL, redirigir al idioma predeterminado
   if (!pathnameHasLocale) {
-    req.nextUrl.pathname = `/${locale}${pathname}`;
+    req.nextUrl.pathname = getLocalizedPath(pathname, locale);
     return NextResponse.redirect(req.nextUrl);
   }
 

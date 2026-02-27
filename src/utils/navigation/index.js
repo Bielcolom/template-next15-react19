@@ -1,4 +1,4 @@
-import { getLocaleFromPath, stripLocaleFromPath, withLocalePath } from "../helpers";
+import { getLocaleFromPath, stripLocaleFromPath, getLocalizedPath } from "../urls";
 
 export const buildLocalizedNavigation = (pathname) => {
   const locale = getLocaleFromPath(pathname) || "es";
@@ -7,7 +7,7 @@ export const buildLocalizedNavigation = (pathname) => {
   return {
     locale,
     pathnameWithoutLocale,
-    localizePath: (path) => withLocalePath(path, locale),
-    switchLocalePath: (nextLocale) => withLocalePath(pathnameWithoutLocale, nextLocale),
+    localizePath: (path) => getLocalizedPath(path, locale),
+    switchLocalePath: (nextLocale) => getLocalizedPath(pathnameWithoutLocale, nextLocale),
   };
 };

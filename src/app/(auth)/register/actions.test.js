@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { INDEX_URL } from "@/utils/urls";
 
 const mocks = vi.hoisted(() => {
   const userCtorMock = vi.fn();
@@ -129,6 +130,6 @@ describe("register action", () => {
       { name: "John Doe", userRoleId: "role-user", email: "john@example.com", password: "hashed", _id: "user-1" },
       ["user_access"]
     );
-    expect(mocks.redirectMock).toHaveBeenCalledWith("/");
+    expect(mocks.redirectMock).toHaveBeenCalledWith(INDEX_URL);
   });
 });

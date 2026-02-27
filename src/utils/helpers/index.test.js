@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ABOUT_URL, BACKOFFICE_URL, BACKOFFICE_USERROLES_URL, LOGIN_URL } from "../urls";
 import {
   getLocaleFromPath,
   normalizePermissions,
@@ -24,27 +25,27 @@ describe("normalizePermissions", () => {
 
 describe("locale path helpers", () => {
   it("detects locale from path", () => {
-    expect(getLocaleFromPath("/es/backoffice")).toBe("es");
+    expect(getLocaleFromPath(`/es${BACKOFFICE_URL}`)).toBe("es");
     expect(getLocaleFromPath("/en")).toBe("en");
-    expect(getLocaleFromPath("/backoffice")).toBeNull();
+    expect(getLocaleFromPath(BACKOFFICE_URL)).toBeNull();
   });
 
   it("strips locale and keeps canonical path", () => {
-    expect(stripLocaleFromPath("/es/backoffice")).toBe("/backoffice");
+    expect(stripLocaleFromPath(`/es${BACKOFFICE_URL}`)).toBe(BACKOFFICE_URL);
     expect(stripLocaleFromPath("/en")).toBe("/");
-    expect(stripLocaleFromPath("/about")).toBe("/about");
+    expect(stripLocaleFromPath(ABOUT_URL)).toBe(ABOUT_URL);
   });
 
   it("adds locale to canonical path", () => {
-    expect(withLocalePath("/backoffice", "es")).toBe("/es/backoffice");
+    expect(withLocalePath(BACKOFFICE_URL, "es")).toBe(`/es${BACKOFFICE_URL}`);
     expect(withLocalePath("/", "en")).toBe("/en");
-    expect(withLocalePath("/login", "xx")).toBe("/es/login");
+    expect(withLocalePath(LOGIN_URL, "xx")).toBe(`/es${LOGIN_URL}`);
   });
 });
 
 describe("route protection helpers", () => {
   it("matches superadmin protected canonical routes", () => {
-    expect(pathisSuperAdminProtected("/backoffice/userRoles")).toBe(true);
-    expect(pathisSuperAdminProtected("/about")).toBe(false);
+    expect(pathisSuperAdminProtected(BACKOFFICE_USERROLES_URL)).toBe(true);
+    expect(pathisSuperAdminProtected(ABOUT_URL)).toBe(false);
   });
 });

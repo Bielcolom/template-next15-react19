@@ -4,10 +4,10 @@ import PropTypes from "prop-types";
 import { usePathname } from "next/navigation";
 
 import Sidebar from "../backoffice/SideBar";
-import { pathisSuperAdminProtected, stripLocaleFromPath } from "@/utils/helpers";
 import Navbar from "../Navbar";
 import { useSession } from "@/app/context/sessionProvider";
 import { useState } from "react";
+import { pathisSuperAdminProtected, stripLocaleFromPath } from "@/utils/helpers";
 
 const PageWrapper = ({ children }) => {
     const pathname = stripLocaleFromPath(usePathname());

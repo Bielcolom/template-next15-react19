@@ -1,10 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 import { AUTH_ACTIONS, evaluateAuthPolicy } from "./authPolicy";
+import {
+  BACKOFFICE_URL,
+  BACKOFFICE_USERROLES_URL,
+  INDEX_URL,
+  LOGIN_URL,
+} from "@/utils/urls";
 
 describe("evaluateAuthPolicy", () => {
   it("redirects to login for private routes without session", () => {
     const result = evaluateAuthPolicy({
-      pathWithoutLocale: "/backoffice",
+      pathWithoutLocale: BACKOFFICE_URL,
       payload: null,
     });
 
@@ -16,7 +22,7 @@ describe("evaluateAuthPolicy", () => {
 
   it("allows public routes without session", () => {
     const result = evaluateAuthPolicy({
-      pathWithoutLocale: "/",
+      pathWithoutLocale: INDEX_URL,
       payload: null,
     });
 
@@ -28,7 +34,7 @@ describe("evaluateAuthPolicy", () => {
 
   it("redirects to home when logged user enters a public route", () => {
     const result = evaluateAuthPolicy({
-      pathWithoutLocale: "/login",
+      pathWithoutLocale: LOGIN_URL,
       payload: {
         expiresAt: "2099-01-01T00:00:00.000Z",
         permissions: ["user_access"],
@@ -46,7 +52,7 @@ describe("evaluateAuthPolicy", () => {
     vi.setSystemTime(new Date("2026-02-27T00:00:00.000Z"));
 
     const result = evaluateAuthPolicy({
-      pathWithoutLocale: "/backoffice",
+      pathWithoutLocale: BACKOFFICE_URL,
       payload: {
         expiresAt: "2026-02-20T00:00:00.000Z",
         permissions: ["admin_access"],
@@ -63,7 +69,7 @@ describe("evaluateAuthPolicy", () => {
 
   it("blocks admin route when user has no admin permission", () => {
     const result = evaluateAuthPolicy({
-      pathWithoutLocale: "/backoffice",
+      pathWithoutLocale: BACKOFFICE_URL,
       payload: {
         expiresAt: "2099-01-01T00:00:00.000Z",
         permissions: ["user_access"],
@@ -78,7 +84,7 @@ describe("evaluateAuthPolicy", () => {
 
   it("allows superadmin route when permission exists", () => {
     const result = evaluateAuthPolicy({
-      pathWithoutLocale: "/backoffice/userRoles",
+      pathWithoutLocale: BACKOFFICE_USERROLES_URL,
       payload: {
         expiresAt: "2099-01-01T00:00:00.000Z",
         permissions: ["superadmin_access"],

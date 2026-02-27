@@ -6,6 +6,7 @@ import styles from "./loginForm.module.scss";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
 import { login } from "@/app/(auth)/login/actions";
+import { INDEX_URL } from "@/utils/urls";
 
 export function LoginForm() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export function LoginForm() {
 
   useEffect(() => {
     if (success) {
-      router.replace("/");
+      router.replace(INDEX_URL);
     }
   }, [router, success]);
 

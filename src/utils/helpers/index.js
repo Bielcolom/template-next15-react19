@@ -1,7 +1,13 @@
 import { ROLES } from "../constants";
-import { PRIVATE_ADMIN_URLS, PRIVATE_SUPERADMIN_URLS, PRIVATE_USER_URLS, PUBLIC_SIGNED_OUT_URLS } from "../urls";
-
-const SUPPORTED_LOCALES = ["es", "en"];
+import {
+    PRIVATE_ADMIN_URLS,
+    PRIVATE_SUPERADMIN_URLS,
+    PRIVATE_USER_URLS,
+    PUBLIC_SIGNED_OUT_URLS,
+    getLocaleFromPath,
+    stripLocaleFromPath,
+    getLocalizedPath,
+} from "../urls";
 
 export const userIsSuperAdmin = (permissons) => permissons.includes(ROLES.SUPERADMIN);
 export const userIsAdmin = (permissons) => permissons.includes(ROLES.ADMIN);
@@ -19,27 +25,8 @@ export const normalizePermissions = (permissions) => {
 
     return [permissions];
 };
-export const getLocaleFromPath = (url) => {
-    const normalizedUrl = url?.startsWith("/") ? url : `/${url || ""}`;
-    const firstSegment = normalizedUrl.split("/").filter(Boolean)[0];
-    return SUPPORTED_LOCALES.includes(firstSegment) ? firstSegment : null;
-};
-export const stripLocaleFromPath = (url) => {
-    const normalizedUrl = url?.startsWith("/") ? url : `/${url || ""}`;
-    const segments = normalizedUrl.split("/").filter(Boolean);
-    if (!SUPPORTED_LOCALES.includes(segments[0])) {
-        return normalizedUrl === "" ? "/" : normalizedUrl;
-    }
-
-    const pathWithoutLocale = `/${segments.slice(1).join("/")}`.replace(/\/$/, "");
-    return pathWithoutLocale || "/";
-};
-export const withLocalePath = (url, locale) => {
-    const safePath = url?.startsWith("/") ? url : `/${url || ""}`;
-    const cleanPath = stripLocaleFromPath(safePath);
-    const safeLocale = SUPPORTED_LOCALES.includes(locale) ? locale : "es";
-    return cleanPath === "/" ? `/${safeLocale}` : `/${safeLocale}${cleanPath}`;
-};
+export { getLocaleFromPath, stripLocaleFromPath };
+export const withLocalePath = (url, locale) => getLocalizedPath(url, locale);
 
 export const pathisAdminProtected = (url) => -1 !== PRIVATE_ADMIN_URLS.indexOf(url);
 export const pathisSuperAdminProtected = (url) => -1 !== PRIVATE_SUPERADMIN_URLS.indexOf(url);

@@ -5,6 +5,7 @@ import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
 import PropTypes from "prop-types";
 import { userIsAdminOrMore } from "@/utils/helpers";
+import { ABOUT_URL, BACKOFFICE_URL, INDEX_URL, LOGIN_URL, PRODUCT_1_URL, PRODUCTS_URL } from "@/utils/urls";
 import Icon from "../base/Icon";
 import LanguageSelector from "./LanguageSelector";
 import { useAppRouter } from "@/app/[lang]/hooks/useAppRouter";
@@ -16,7 +17,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
 
   const handleLogout = async () => {
     await logout();
-    appRouter.replace("/login");
+    appRouter.replace(LOGIN_URL);
   };
 
   return (
@@ -26,20 +27,20 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
     >
       <div className={styles.leftElements}>
         <AppLink
-          href="/"
-          className={`${styles.link} ${pathWithoutLocale === "/" ? styles.active : ""}`}
+          href={INDEX_URL}
+          className={`${styles.link} ${pathWithoutLocale === INDEX_URL ? styles.active : ""}`}
         >
           Home
         </AppLink>
         <AppLink
-          href="/about"
-          className={`${styles.link} ${pathWithoutLocale === "/about" ? styles.active : ""}`}
+          href={ABOUT_URL}
+          className={`${styles.link} ${pathWithoutLocale === ABOUT_URL ? styles.active : ""}`}
         >
           About
         </AppLink>
         <AppLink
-          href="/products/1"
-          className={`${styles.link} ${pathWithoutLocale.startsWith("/products/1") ? styles.active : ""}`}
+          href={PRODUCT_1_URL}
+          className={`${styles.link} ${pathWithoutLocale.startsWith(PRODUCTS_URL) ? styles.active : ""}`}
         >
           Product 1
         </AppLink>
@@ -48,7 +49,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
         <LanguageSelector />
         {userIsAdminOrMore(permissions) &&
           <AppLink
-            href="/backoffice"
+            href={BACKOFFICE_URL}
             className={styles.link}
           >
             Backoffice
@@ -65,7 +66,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
           <Button
             text="Login"
             styleType={BUTTON_STYLE_TYPES.transparent}
-            onClick={() => appRouter.push("/login")} />
+            onClick={() => appRouter.push(LOGIN_URL)} />
         )}
       </div>
     </nav>

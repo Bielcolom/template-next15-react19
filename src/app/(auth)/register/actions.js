@@ -8,6 +8,7 @@ import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { redirect } from "next/navigation";
 import { ROLES } from "@/utils/constants";
+import { INDEX_URL } from "@/utils/urls";
 
 const registerSchema = z.object({
   name: z
@@ -100,7 +101,7 @@ export async function register(prevState, formData) {
     await createSession(formattedUser, [ROLES.USER]);
 
     // Redirigir al dashboard después del registro
-    redirect("/");
+    redirect(INDEX_URL);
 
   } catch (err) {
     if (err?.message === "NEXT_REDIRECT") {
