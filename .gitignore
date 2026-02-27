@@ -20,8 +20,6 @@ package-lock.json
 # next.js
 .next/
 /.next/
-\.next\
-.next\
 /out/
 
 # production
