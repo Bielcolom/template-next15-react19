@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { ROUTES } from "./utils/urls";
-import { normalizePermissions } from "./utils/helpers";
+import { AUTH_ACTIONS, evaluateAuthPolicy } from "./middleware/authPolicy";
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 import { jwtVerify } from "jose";
@@ -48,6 +47,18 @@ const redirectToLogin = (req, locale, clearCookies = false) => {
   return clearCookies ? clearAuthCookies(response) : response;
 };
 
+const resolveAuthResponse = (req, locale, policyResult) => {
+  if (policyResult.action === AUTH_ACTIONS.ALLOW) {
+    return NextResponse.next();
+  }
+
+  if (policyResult.action === AUTH_ACTIONS.REDIRECT_HOME) {
+    return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
+  }
+
+  return redirectToLogin(req, locale, policyResult.clearCookies);
+};
+
 export default async function middleware(req) {
   const { pathname } = req.nextUrl;
   const segments = pathname.split("/").filter(Boolean); // Filtra cualquier valor vacío
@@ -70,53 +81,18 @@ export default async function middleware(req) {
   const cookies = req.cookies;
   const sessionCookie = cookies.get("session")?.value;
 
-  const isPublicRoute = ROUTES.PUBLIC.includes(pathWithoutLocale);
-  const isPrivateRoute = ROUTES.PRIVATE.includes(pathWithoutLocale);
-  const isSuperAdminRoute = ROUTES.SUPERADMIN.includes(pathWithoutLocale);
-
   try {
-    // Verificar si no hay una sesión activa
     if (!sessionCookie) {
-      // Redirigir si es una ruta privada o de superadministrador sin sesión
-      if (isPrivateRoute || isSuperAdminRoute) {
-        return redirectToLogin(req, locale);
-      }
-      return NextResponse.next();
+      const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload: null });
+      return resolveAuthResponse(req, locale, policyResult);
     }
 
-    // Decodificar la sesión
     const payload = await decryptSession(sessionCookie);
-    const permissions = normalizePermissions(payload?.permissions);
-
-    // Validar la expiración de la sesión
-    const now = new Date();
-    if (new Date(payload.expiresAt) < now) {
-      return redirectToLogin(req, locale, true);
-    }
-
-    // Verificar permisos según la ruta
-    if (isPrivateRoute && !permissions.includes("admin_access")) {
-
-      return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
-    }
-
-    if (isSuperAdminRoute && !permissions.includes("superadmin_access")) {
-
-      return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
-    }
-
-    // Redirigir si intenta acceder a rutas públicas con sesión activa
-    if (isPublicRoute) {
-
-      return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
-    }
-
-    // Continuar si todas las verificaciones pasan
-    return NextResponse.next();
+    const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload });
+    return resolveAuthResponse(req, locale, policyResult);
   } catch (error) {
     console.error("Middleware Error:", error.message);
 
-    // Redirigir si hay un error en la sesión
     return redirectToLogin(req, locale, true);
   }
 }
