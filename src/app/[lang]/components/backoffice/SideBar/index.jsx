@@ -7,18 +7,13 @@ import {
 import styles from "./sidebar.module.scss";
 import { userIsAdminOrMore, userIsSuperAdmin } from "@/utils/helpers";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import Button from "../../base/Button";
 import Icon from "../../base/Icon";
 import AppLink from "../../base/AppLink";
 
-export default function Sidebar({ userId, permissions, onVisibilityChange }) {
-    const [isVisible, setIsVisible] = useState(false);
-
+export default function Sidebar({ isVisible, userId, permissions, onVisibilityChange }) {
     const toggleSidebar = () => {
-        const newVisibility = !isVisible;
-        setIsVisible(newVisibility);
-        onVisibilityChange(newVisibility);
+        onVisibilityChange(!isVisible);
     };
 
     return (
@@ -50,6 +45,7 @@ export default function Sidebar({ userId, permissions, onVisibilityChange }) {
 }
 
 Sidebar.propTypes = {
+    isVisible: PropTypes.bool,
     permissions: PropTypes.array,
     userId: PropTypes.string,
     onVisibilityChange: PropTypes.func,
@@ -57,6 +53,7 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
+    isVisible: false,
     permissions: [],
     userId: null,
     onVisibilityChange: () => { },
