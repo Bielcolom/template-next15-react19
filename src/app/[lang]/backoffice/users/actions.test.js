@@ -48,9 +48,12 @@ describe("backoffice users actions", () => {
       ROLES.SUPERADMIN,
     ]);
     expect(result).toEqual({
-      _id: "user-1",
-      userRoleId: "role-1",
-      email: "john@example.com",
+      data: {
+        _id: "user-1",
+        userRoleId: "role-1",
+        email: "john@example.com",
+      },
+      errors: [],
     });
   });
 
@@ -60,7 +63,7 @@ describe("backoffice users actions", () => {
     const result = await findFiltered("user-1");
 
     expect(result).toEqual({
-      user: null,
+      data: null,
       errors: ["Authentication required."],
     });
   });
@@ -71,7 +74,10 @@ describe("backoffice users actions", () => {
     mocks.countDocumentsMock.mockResolvedValueOnce(12);
 
     const result = await getUserCount();
-    expect(result).toBe(12);
+    expect(result).toEqual({
+      data: 12,
+      errors: [],
+    });
   });
 
   it("getUserCount returns permission error when forbidden", async () => {
@@ -80,7 +86,7 @@ describe("backoffice users actions", () => {
     const result = await getUserCount();
 
     expect(result).toEqual({
-      count: null,
+      data: null,
       errors: ["Insufficient permissions."],
     });
   });

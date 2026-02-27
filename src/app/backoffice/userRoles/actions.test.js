@@ -46,13 +46,16 @@ describe("backoffice userRoles actions", () => {
     const result = await getUserRoles();
 
     expect(mocks.requirePermissionMock).toHaveBeenCalledWith(ROLES.SUPERADMIN);
-    expect(result).toEqual([
-      {
-        _id: "role-1",
-        name: "Admin",
-        permissions: ["admin_access"],
-      },
-    ]);
+    expect(result).toEqual({
+      data: [
+        {
+          _id: "role-1",
+          name: "Admin",
+          permissions: ["admin_access"],
+        },
+      ],
+      errors: [],
+    });
   });
 
   it("getUserRoles returns auth error when unauthorized", async () => {
@@ -61,7 +64,7 @@ describe("backoffice userRoles actions", () => {
     const result = await getUserRoles();
 
     expect(result).toEqual({
-      elements: [],
+      data: [],
       errors: ["Authentication required."],
     });
   });
@@ -76,7 +79,7 @@ describe("backoffice userRoles actions", () => {
     const result = await getUserRoleById("missing");
 
     expect(result).toEqual({
-      userRole: null,
+      data: null,
       errors: ["User role not found."],
     });
   });
@@ -87,7 +90,7 @@ describe("backoffice userRoles actions", () => {
     const result = await getUserRoleById("role-1");
 
     expect(result).toEqual({
-      userRole: null,
+      data: null,
       errors: ["Insufficient permissions."],
     });
   });

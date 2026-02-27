@@ -5,6 +5,9 @@ import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
 
+const buildSuccess = (data) => ({ data, errors: [] });
+const buildError = (fallbackData, message) => ({ data: fallbackData, errors: [message] });
+
 export async function getUserRoles() {
     "use server";
 
@@ -13,9 +16,8 @@ export async function getUserRoles() {
         await connectDB();
 
         const userRoles = await UserRole.find({}).lean();
-
         if (!userRoles || userRoles.length === 0) {
-            return [];
+            return buildSuccess([]);
         }
 
         const serializedUserRoles = userRoles.map(role => ({
@@ -23,16 +25,16 @@ export async function getUserRoles() {
             _id: role._id.toString(),
         }));
 
-        return serializedUserRoles;
+        return buildSuccess(serializedUserRoles);
     } catch (error) {
         if (error?.message === "UNAUTHORIZED") {
-            return { elements: [], errors: ["Authentication required."] };
+            return buildError([], "Authentication required.");
         }
         if (error?.message === "FORBIDDEN") {
-            return { elements: [], errors: ["Insufficient permissions."] };
+            return buildError([], "Insufficient permissions.");
         }
         console.error("Error in getUserRoles function:", error);
-        return { elements: [], errors: ["An error occurred while fetching user roles."] };
+        return buildError([], "An error occurred while fetching user roles.");
     }
 }
 
@@ -47,7 +49,7 @@ export async function getUserRoleById(userRoleId) {
         const userRole = await UserRole.findById(userRoleId).lean();
 
         if (!userRole) {
-            return { userRole: null, errors: ["User role not found."] };
+            return buildError(null, "User role not found.");
         }
 
         // Serializar el _id a string
@@ -56,15 +58,15 @@ export async function getUserRoleById(userRoleId) {
             _id: userRole._id.toString(),
         };
 
-        return serializedUserRole;
+        return buildSuccess(serializedUserRole);
     } catch (error) {
         if (error?.message === "UNAUTHORIZED") {
-            return { userRole: null, errors: ["Authentication required."] };
+            return buildError(null, "Authentication required.");
         }
         if (error?.message === "FORBIDDEN") {
-            return { userRole: null, errors: ["Insufficient permissions."] };
+            return buildError(null, "Insufficient permissions.");
         }
         console.error("Error in getUserRoleById function:", error);
-        return { userRole: null, errors: ["An error occurred while fetching the user role."] };
+        return buildError(null, "An error occurred while fetching the user role.");
     }
 }

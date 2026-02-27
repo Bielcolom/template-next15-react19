@@ -5,6 +5,9 @@ import User from "@/models/User";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
 
+const buildSuccess = (data) => ({ data, errors: [] });
+const buildError = (fallbackData, message) => ({ data: fallbackData, errors: [message] });
+
 export async function findFiltered(userId) {
 
     try {
@@ -14,7 +17,7 @@ export async function findFiltered(userId) {
         const user = await User.findOne({ _id: userId }).lean();
 
         if (!user) {
-            return { user: null, errors: ["User not found."] };
+            return buildError(null, "User not found.");
         }
 
         // Convertir ObjectId a string si es necesario
@@ -23,16 +26,16 @@ export async function findFiltered(userId) {
             _id: user._id.toString(),
             userRoleId: user?.userRoleId.toString(),
         };
-        return serializedUser;
+        return buildSuccess(serializedUser);
     } catch (error) {
         if (error?.message === "UNAUTHORIZED") {
-            return { user: null, errors: ["Authentication required."] };
+            return buildError(null, "Authentication required.");
         }
         if (error?.message === "FORBIDDEN") {
-            return { user: null, errors: ["Insufficient permissions."] };
+            return buildError(null, "Insufficient permissions.");
         }
         console.error("Error in findFiltered function:", error);
-        return { user: null, errors: ["An error occurred while fetching the user."] };
+        return buildError(null, "An error occurred while fetching the user.");
     }
 }
 
@@ -42,15 +45,15 @@ export async function getUserCount() {
         await connectDB();
 
         const userCount = await User.countDocuments();
-        return userCount;
+        return buildSuccess(userCount);
     } catch (error) {
         if (error?.message === "UNAUTHORIZED") {
-            return { count: null, errors: ["Authentication required."] };
+            return buildError(null, "Authentication required.");
         }
         if (error?.message === "FORBIDDEN") {
-            return { count: null, errors: ["Insufficient permissions."] };
+            return buildError(null, "Insufficient permissions.");
         }
         console.error("Error in getUserCount function:", error);
-        return { count: null, errors: ["An error occurred while counting users."] };
+        return buildError(null, "An error occurred while counting users.");
     }
 }

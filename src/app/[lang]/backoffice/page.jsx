@@ -5,16 +5,18 @@ import { getDictionary } from "../dictionaries";
 
 export default async function BackofficePage({ params }) {
     const { lang } = await params;
-    const userCount = await getUserCount();
+    const { data: userCount, errors: countErrors } = await getUserCount();
     const dict = await getDictionary(lang, "common");
+    const safeUserCount = typeof userCount === "number" ? userCount : 0;
 
     return (
         <div>
+            {countErrors?.length > 0 && <p>{countErrors[0]}</p>}
             <div className="backoffice-client">
                 <BackofficeCard
                     text="Users"
                     icon="icon"
-                    number={userCount}
+                    number={safeUserCount}
                 />
             </div>
             <p>lang: {lang}</p>
