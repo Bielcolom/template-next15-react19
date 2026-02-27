@@ -11,7 +11,7 @@ import { useState } from "react";
 
 const PageWrapper = ({ children }) => {
     const pathname = usePathname();
-    const { permissions, cookies } = useSession();
+    const { permissions, userId } = useSession();
     const [isSidebarVisible, setSidebarVisible] = useState(false);
 
     return (
@@ -20,12 +20,12 @@ const PageWrapper = ({ children }) => {
             {pathisSuperAdminProtected(pathname) && (
                 <Sidebar
                     permissions={permissions}
-                    cookies={cookies}
+                    userId={userId}
                     onVisibilityChange={setSidebarVisible}
                 />
             )}
             <main>
-                <Navbar cookies={cookies} permissions={permissions} isSidebarVisible={isSidebarVisible} />
+                <Navbar userId={userId} permissions={permissions} isSidebarVisible={isSidebarVisible} />
                 <div className="content">
                     {children}
                 </div>

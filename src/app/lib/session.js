@@ -1,16 +1,13 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { getUserRoleById } from "../backoffice/userRoles/actions";
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
 
-async function createSession(user) {
+async function createSession(user, permissions = []) {
   const userId = user?._id;
-  const userRole = await getUserRoleById(user?.userRoleId);
-  const permissions = userRole.permissions;
 
   // 7 Days
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);

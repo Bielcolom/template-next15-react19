@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
 import { login } from "@/app/(auth)/login/actions";
 
 export function LoginForm() {
+  const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,9 +16,9 @@ export function LoginForm() {
 
   useEffect(() => {
     if (success) {
-      redirect("/");
+      router.replace("/");
     }
-  }, [success]);
+  }, [router, success]);
 
   const handleChange = (value, field) => {
     setFormData((prev) => ({

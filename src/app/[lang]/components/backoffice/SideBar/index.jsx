@@ -11,9 +11,8 @@ import { useState } from "react";
 import Button from "../../base/Button";
 import Icon from "../../base/Icon";
 
-export default function Sidebar({ cookies, permissions, onVisibilityChange }) {
+export default function Sidebar({ userId, permissions, onVisibilityChange }) {
     const [isVisible, setIsVisible] = useState(false);
-    const user = cookies?.user ? JSON.parse(cookies.user) : {};
 
     const toggleSidebar = () => {
         const newVisibility = !isVisible;
@@ -42,7 +41,7 @@ export default function Sidebar({ cookies, permissions, onVisibilityChange }) {
                             </li>
                         )}
                     </ul>
-                    <p>{user._id}</p>
+                    <p>{userId}</p>
                 </nav>
             </div>
         </div>
@@ -51,13 +50,13 @@ export default function Sidebar({ cookies, permissions, onVisibilityChange }) {
 
 Sidebar.propTypes = {
     permissions: PropTypes.array,
-    cookies: PropTypes.object,
+    userId: PropTypes.string,
     onVisibilityChange: PropTypes.func,
 
 };
 
 Sidebar.defaultProps = {
     permissions: [],
-    cookies: {},
+    userId: null,
     onVisibilityChange: () => { },
 };

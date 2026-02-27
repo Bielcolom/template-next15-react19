@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createSession, deleteSession } from "@/app/lib/session";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
+import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 
 const loginSchema = z.object({
@@ -42,7 +43,10 @@ export async function login(formData) {
       _id: user._id.toString(),
     };
 
-    const sessionCreation = await createSession(formattedUser);
+    const userRole = await UserRole.findById(user.userRoleId).lean();
+    const permissions = userRole?.permissions ? [userRole.permissions] : [];
+
+    const sessionCreation = await createSession(formattedUser, permissions);
     if (!sessionCreation) {
       return {
         errors: {

@@ -3,9 +3,11 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
+import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { redirect } from "next/navigation";
+import { ROLES } from "@/utils/constants";
 
 const registerSchema = z.object({
   name: z
@@ -39,7 +41,7 @@ export async function register(prevState, formData) {
     };
   }
 
-  const { email, password, confirmPassword } = result.data;
+  const { name, email, password, confirmPassword } = result.data;
 
   // Verificar si las contraseñas coinciden
   if (password !== confirmPassword) {
@@ -67,8 +69,22 @@ export async function register(prevState, formData) {
     // Hashear la contraseña con bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const baseUserRole = await UserRole.findOne({
+      permissions: ROLES.USER,
+    }).lean();
+
+    if (!baseUserRole) {
+      return {
+        errors: {
+          email: ["Default user role is not configured."],
+        },
+      };
+    }
+
     // Crear el nuevo usuario en la base de datos
     const user = new User({
+      name,
+      userRoleId: baseUserRole._id,
       email,
       password: hashedPassword,
     });
@@ -81,7 +97,7 @@ export async function register(prevState, formData) {
     };
 
     // Crear una sesión para el usuario recién registrado
-    await createSession(formattedUser);
+    await createSession(formattedUser, [ROLES.USER]);
 
     // Redirigir al dashboard después del registro
     redirect("/");

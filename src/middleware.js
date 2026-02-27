@@ -1,17 +1,25 @@
 import { NextResponse } from "next/server";
-import { decrypt } from "./app/lib/session";
 import { ROUTES } from "./utils/urls";
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
+import { jwtVerify } from "jose";
 
 const locales = ["es", "en"];
 const defaultLocale = "es";
+const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
 
 // Función para obtener el idioma preferido de la cabecera "Accept-Language"
 const getLocale = (request) => {
   const headers = { "accept-language": request.headers.get("accept-language") || "es,en;q=0.5" };
   const languages = new Negotiator({ headers }).languages();
   return match(languages, locales, defaultLocale);
+};
+
+const decryptSession = async (session = "") => {
+  const { payload } = await jwtVerify(session, encodedKey, {
+    algorithms: ["HS256"],
+  });
+  return payload;
 };
 
 export default async function middleware(req) {
@@ -50,7 +58,7 @@ export default async function middleware(req) {
     }
 
     // Decodificar la sesión
-    const payload = await decrypt(sessionCookie);
+    const payload = await decryptSession(sessionCookie);
 
     // Validar la expiración de la sesión
     const now = new Date();
@@ -60,12 +68,12 @@ export default async function middleware(req) {
     }
 
     // Verificar permisos según la ruta
-    if (isPrivateRoute && !payload.permissions.includes("admin_access")) {
+    if (isPrivateRoute && !payload.permissions?.includes("admin_access")) {
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }
 
-    if (isSuperAdminRoute && !payload.permissions.includes("superadmin_access")) {
+    if (isSuperAdminRoute && !payload.permissions?.includes("superadmin_access")) {
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }

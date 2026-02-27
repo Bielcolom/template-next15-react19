@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./navbar.module.scss";
 import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
@@ -10,12 +10,13 @@ import { userIsAdminOrMore } from "@/utils/helpers";
 import Icon from "../base/Icon";
 import LanguageSelector from "./LanguageSelector";
 
-export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
+export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
   const pathname = usePathname();
-  const userId = cookies?.userId;
-  const handleLogout = () => {
-    logout();
-    redirect("/login");
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/login");
   };
 
   return (
@@ -64,7 +65,7 @@ export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
           <Button
             text="Login"
             styleType={BUTTON_STYLE_TYPES.transparent}
-            onClick={() => redirect("login")} />
+            onClick={() => router.push("/login")} />
         )}
       </div>
     </nav>
@@ -72,13 +73,13 @@ export const Navbar = ({ cookies, permissions, isSidebarVisible }) => {
 };
 
 Navbar.defaultProps = {
-  cookies: null,
+  userId: null,
   permissions: PropTypes.array,
 };
 
 Navbar.propTypes = {
   permissions: [],
-  cookies: PropTypes.object,
+  userId: PropTypes.string,
   isSidebarVisible: PropTypes.bool.isRequired,
 };
 

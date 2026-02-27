@@ -5,9 +5,9 @@ import PropTypes from "prop-types";
 
 const SessionContext = createContext();
 
-export function SessionProvider({ children, permissions, cookies }) {
+export function SessionProvider({ children, permissions, userId }) {
     return (
-        <SessionContext.Provider value={{ permissions, cookies }}>
+        <SessionContext.Provider value={{ permissions, userId }}>
             {children}
         </SessionContext.Provider>
     );
@@ -20,10 +20,10 @@ export function useSession() {
 SessionProvider.propTypes = {
     children: PropTypes.node.isRequired,
     permissions: PropTypes.arrayOf(PropTypes.string),
-    cookies: PropTypes.objectOf(PropTypes.string),
+    userId: PropTypes.string,
 };
 
 SessionProvider.defaultProps = {
     permissions: [],
-    cookies: {},
+    userId: null,
 };

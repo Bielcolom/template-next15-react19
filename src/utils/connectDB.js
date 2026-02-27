@@ -2,7 +2,7 @@
 
 import mongoose from "mongoose";
 
-const DATABASE_URL = process.env.NEXT_PUBLIC_MONGODB_URI || "";
+const DATABASE_URL = process.env.MONGODB_URI || "";
 
 if (!DATABASE_URL) {
   throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
