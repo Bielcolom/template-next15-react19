@@ -4,6 +4,7 @@ import styles from "./input.module.scss";
 
 const Input = ({
     disabled = false,
+    defaultValue,
     error = false,
     errorText = "",
     infoText = "",
@@ -19,8 +20,10 @@ const Input = ({
     showPassword = false,
     text = "",
     textarea = false,
+    type = "text",
     value,
     validation,
+    ...rest
 }) => {
     const [passwordVisible, setPasswordVisible] = useState(!showPassword);
     const [focused, setFocused] = useState(isFocused);
@@ -50,7 +53,9 @@ const Input = ({
     };
 
     const inputProps = {
+        ...rest,
         disabled,
+        defaultValue,
         maxLength,
         placeholder,
         value,
@@ -83,7 +88,7 @@ const Input = ({
                 ) : (
                     <input
                         {...inputProps}
-                        type={showPassword ? (passwordVisible ? "text" : "password") : "text"}
+                        type={showPassword ? (passwordVisible ? "text" : "password") : type}
                     />
                 )}
 
@@ -112,6 +117,7 @@ const Input = ({
 };
 
 Input.propTypes = {
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     disabled: PropTypes.bool,
     error: PropTypes.bool,
     errorText: PropTypes.string,
@@ -131,6 +137,7 @@ Input.propTypes = {
     showPassword: PropTypes.bool,
     text: PropTypes.string,
     textarea: PropTypes.bool,
+    type: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     validation: PropTypes.func,
 };
