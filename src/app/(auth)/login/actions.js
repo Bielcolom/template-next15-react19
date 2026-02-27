@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import User from "@/models/User";
 import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
+import { normalizePermissions } from "@/utils/helpers";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }).trim(),
@@ -44,7 +45,7 @@ export async function login(formData) {
     };
 
     const userRole = await UserRole.findById(user.userRoleId).lean();
-    const permissions = userRole?.permissions ? [userRole.permissions] : [];
+    const permissions = normalizePermissions(userRole?.permissions);
 
     const sessionCreation = await createSession(formattedUser, permissions);
     if (!sessionCreation) {

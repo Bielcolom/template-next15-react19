@@ -9,8 +9,9 @@ const userRoleSchema = new Schema(
             unique: true,
         },
         permissions: {
-            type: String,
+            type: [String],
             required: true,
+            default: [],
         },
     },
     { timestamps: true }
