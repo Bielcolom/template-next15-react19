@@ -1,29 +1,21 @@
 "use client";
 
 import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Icon from "../Icon";
 import styles from "./table.module.scss";
 
-const Table = ({ data, visibleColumns = [], loading }) => {
-    const [visibleRows, setVisibleRows] = useState(500);
-    const containerRef = useRef(null);
+const INITIAL_VISIBLE_ROWS = 500;
 
-    useEffect(() => {
-        if (containerRef.current) {
-            containerRef.current.scrollTop = 0;
-        }
-        setVisibleRows(500);
-    }, [data]);
+const TableViewport = ({ columns, data, loading, visibleColumns }) => {
+    const [visibleRows, setVisibleRows] = useState(500);
 
     const handleScroll = (e) => {
         const { scrollTop, clientHeight, scrollHeight } = e.target;
         if (scrollTop + clientHeight >= scrollHeight) {
-            setVisibleRows((prev) => prev + 500);
+            setVisibleRows((prev) => prev + INITIAL_VISIBLE_ROWS);
         }
     };
-
-    const columns = data.length > 0 ? Object.keys(data[0]).map((key) => ({ value: key, label: key })) : [];
 
     const isColumnVisible = (column) => {
         return visibleColumns.length === 0 || visibleColumns.includes(column);
@@ -31,7 +23,7 @@ const Table = ({ data, visibleColumns = [], loading }) => {
 
     return (
         <>
-            <div className={styles.tableContainer} onScroll={handleScroll} ref={containerRef}>
+            <div className={styles.tableContainer} onScroll={handleScroll}>
                 <table className={styles.genericTable}>
                     <thead>
                         <tr>
@@ -74,6 +66,28 @@ const Table = ({ data, visibleColumns = [], loading }) => {
                 <p>totalRows: {data.length}</p>
             </div>
         </>
+    );
+};
+
+TableViewport.propTypes = {
+    columns: PropTypes.array.isRequired,
+    data: PropTypes.array.isRequired,
+    visibleColumns: PropTypes.array.isRequired,
+    loading: PropTypes.bool.isRequired,
+};
+
+const Table = ({ data, visibleColumns = [], loading }) => {
+    const columns = data.length > 0 ? Object.keys(data[0]).map((key) => ({ value: key, label: key })) : [];
+    const tableStateKey = `${data.length}:${columns.map((column) => column.value).join("|")}`;
+
+    return (
+        <TableViewport
+            key={tableStateKey}
+            columns={columns}
+            data={data}
+            loading={loading}
+            visibleColumns={visibleColumns}
+        />
     );
 };
 

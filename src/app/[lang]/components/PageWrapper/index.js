@@ -2,7 +2,7 @@
 
 import PropTypes from "prop-types";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Sidebar from "../backoffice/SideBar";
 import Navbar from "../Navbar";
@@ -12,29 +12,23 @@ import { BACKOFFICE_URL } from "@/utils/urls";
 
 const SIDEBAR_VISIBILITY_STORAGE_KEY = "backoffice-sidebar-visible";
 
+const getStoredSidebarVisibility = () => {
+    if ("undefined" === typeof window) {
+        return false;
+    }
+
+    return window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) === "true";
+};
+
 const PageWrapper = ({ children }) => {
     const pathname = stripLocaleFromPath(usePathname());
     const { permissions, userId } = useSession();
-    const [isSidebarVisible, setSidebarVisible] = useState(false);
+    const [sidebarPreference, setSidebarPreference] = useState(getStoredSidebarVisibility);
     const isBackofficePath = pathname === BACKOFFICE_URL || pathname.startsWith(`${BACKOFFICE_URL}/`);
-
-    useEffect(() => {
-        if (!isBackofficePath) {
-            setSidebarVisible(false);
-            return;
-        }
-
-        const savedVisibility = window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY);
-
-        if (savedVisibility === null) {
-            return;
-        }
-
-        setSidebarVisible(savedVisibility === "true");
-    }, [isBackofficePath]);
+    const isSidebarVisible = isBackofficePath ? sidebarPreference : false;
 
     const handleSidebarVisibilityChange = (isVisible) => {
-        setSidebarVisible(isVisible);
+        setSidebarPreference(isVisible);
         window.localStorage.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, String(isVisible));
     };
 
