@@ -68,25 +68,26 @@ const Button = ({
 
     const content = (
         <>
-            {iconLeft && <Icon icon={`${iconLeft} left`} className={text ? styles.withMargin : ""} />}
+            {iconLeft && <Icon icon={iconLeft} className={text ? styles.withMargin : ""} />}
             {text && <span>{text}</span>}
             {children}
-            {iconRight && <Icon icon={`${iconRight} right`} className={text ? styles.withMargin : ""} />}
+            {iconRight && <Icon icon={iconRight} className={text ? styles.withMargin : ""} />}
         </>
     );
 
     return to ? (
-        <Link href={to} passHref>
-            <a
-                {...rest}
-                ref={buttonRef}
-                className={computedClassName}
-                target={target}
-                rel="noopener noreferrer"
-                onClick={handleClick}
-            >
-                {content}
-            </a>
+        <Link
+            {...rest}
+            aria-disabled={disabled}
+            className={computedClassName}
+            href={to}
+            onClick={handleClick}
+            ref={buttonRef}
+            rel={target ? "noopener noreferrer" : undefined}
+            tabIndex={disabled ? -1 : undefined}
+            target={target || undefined}
+        >
+            {content}
         </Link>
     ) : (
         <button
@@ -115,7 +116,7 @@ Button.propTypes = {
     onClick: PropTypes.func,
     styleOnPress: PropTypes.bool,
     styleType: PropTypes.oneOf(Object.values(BUTTON_STYLE_TYPES)),
-    text: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    text: PropTypes.node,
     to: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
     type: PropTypes.string,
 };
