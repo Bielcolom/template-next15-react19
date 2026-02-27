@@ -1,78 +1,57 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useActionState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
 import { login } from "@/app/(auth)/login/actions";
 import { INDEX_URL } from "@/utils/urls";
-import { ERROR_CODES } from "@/errors/codes";
-import { createGeneralErrorResponse } from "@/errors/responses";
 import { useAppRouter } from "../../hooks/useAppRouter";
 import { useToast } from "@/app/context/toastProvider";
+
+const INITIAL_LOGIN_STATE = {
+  errors: {},
+};
 
 export function LoginForm({ successMessage }) {
   const appRouter = useAppRouter();
   const { showError, showSuccess } = useToast();
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [state, formAction, isPending] = useActionState(login, INITIAL_LOGIN_STATE);
 
   useEffect(() => {
-    if (success) {
-      appRouter.replace(INDEX_URL);
+    if (!state?.success) {
+      return;
     }
-  }, [appRouter, success]);
+
+    if (successMessage) {
+      showSuccess(successMessage);
+    }
+
+    appRouter.replace(INDEX_URL);
+  }, [appRouter, showSuccess, state?.success, successMessage]);
 
   useEffect(() => {
-    if (error?.general?.[0]) {
-      showError(error.general[0]);
+    if (state?.errors?.general?.[0]) {
+      showError(state.errors.general[0]);
     }
-  }, [error, showError]);
+  }, [showError, state?.errors?.general]);
 
-  const handleChange = (value, field) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await login({ ...formData, locale: appRouter.locale });
-      if (response?.success) {
-        if (successMessage) {
-          showSuccess(successMessage);
-        }
-        setSuccess(true);
-      } else {
-        setError(response?.errors || createGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR).errors);
-      }
-    } catch {
-      setError(createGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR).errors);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const emailError = state?.errors?.email;
+  const passwordError = state?.errors?.password;
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form action={formAction} className={styles.form}>
+      <input type="hidden" name="locale" value={appRouter.locale} />
 
       <div className={styles.inputContainer}>
         <Input
           id="email"
           name="email"
           placeholder="Enter your email"
-          value={formData.email}
-          onChange={(value) => handleChange(value, "email")}
-          error={!!error?.email}
-          errorText={error?.email}
+          autoComplete="email"
+          error={!!emailError}
+          errorText={emailError?.[0] || ""}
           infoText="We'll never share your email."
         />
       </div>
@@ -83,18 +62,17 @@ export function LoginForm({ successMessage }) {
           name="password"
           type="password"
           placeholder="Enter your password"
-          value={formData.password}
-          onChange={(value) => handleChange(value, "password")}
-          error={!!error?.password}
-          errorText={error?.password}
+          autoComplete="current-password"
+          error={!!passwordError}
+          errorText={passwordError?.[0] || ""}
           showPassword={true}
         />
       </div>
 
       <Button
-        disabled={loading}
+        disabled={isPending}
         type="submit"
-        text={loading ? "Logging in..." : "Login"}
+        text={isPending ? "Logging in..." : "Login"}
         className={styles.submitButton}
       />
     </form>

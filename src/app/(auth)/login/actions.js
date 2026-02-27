@@ -23,12 +23,21 @@ const buildLoginSchema = (validationMessages) => z.object({
     .trim(),
 });
 
-export async function login(formData) {
+const normalizeLoginPayload = (payload) => {
+  if (payload instanceof FormData) {
+    return Object.fromEntries(payload);
+  }
+
+  return payload || {};
+};
+
+export async function login(prevState, formData) {
   try {
-    const locale = formData?.locale || DEFAULT_LOCALE;
+    const rawData = normalizeLoginPayload(formData ?? prevState);
+    const locale = rawData?.locale || DEFAULT_LOCALE;
     const validationMessages = await getValidationMessages(locale);
     const loginSchema = buildLoginSchema(validationMessages);
-    const result = loginSchema.safeParse(formData);
+    const result = loginSchema.safeParse(rawData);
     if (!result.success) {
       return {
         errors: result.error.flatten().fieldErrors,
@@ -60,7 +69,8 @@ export async function login(formData) {
     return { success: true, userId: formattedUser?._id };
   } catch (error) {
     console.error("Error in login function:", error);
-    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, formData?.locale || DEFAULT_LOCALE);
+    const rawData = normalizeLoginPayload(formData ?? prevState);
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, rawData?.locale || DEFAULT_LOCALE);
   }
 }
 

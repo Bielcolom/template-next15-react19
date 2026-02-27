@@ -1,12 +1,15 @@
 "use client";
 import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
 import { register } from "../../(auth)/register/actions";
 import { useAppRouter } from "../hooks/useAppRouter";
 
+const INITIAL_REGISTER_STATE = {
+  errors: {},
+};
+
 export default function Register() {
   const appRouter = useAppRouter();
-  const [state, action] = useActionState(register);
+  const [state, action, isPending] = useActionState(register, INITIAL_REGISTER_STATE);
 
   return (
     <form action={action}>
@@ -15,13 +18,13 @@ export default function Register() {
         <label htmlFor="name">Name</label>
         <input id="name" name="name" placeholder="John Doe" />
       </div>
-      {state?.errors?.name && <p>{state.errors.name}</p>}
+      {state?.errors?.name?.[0] && <p>{state.errors.name[0]}</p>}
 
       <div>
         <label htmlFor="email">Email</label>
         <input id="email" name="email" placeholder="john@example.com" />
       </div>
-      {state?.errors?.email && <p>{state.errors.email}</p>}
+      {state?.errors?.email?.[0] && <p>{state.errors.email[0]}</p>}
 
       <div>
         <label htmlFor="password">Password</label>
@@ -42,21 +45,13 @@ export default function Register() {
         <label htmlFor="confirmPassword">Confirm Password</label>
         <input id="confirmPassword" name="confirmPassword" type="password" />
       </div>
-      {state?.errors?.confirmPassword && (
-        <p>{state.errors.confirmPassword}</p>
+      {state?.errors?.confirmPassword?.[0] && (
+        <p>{state.errors.confirmPassword[0]}</p>
       )}
 
-      <SubmitButton />
+      <button disabled={isPending} type="submit">
+        {isPending ? "Signing Up..." : "Sign Up"}
+      </button>
     </form>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button disabled={pending} type="submit">
-      Sign Up
-    </button>
   );
 }

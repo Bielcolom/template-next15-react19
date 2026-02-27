@@ -38,13 +38,21 @@ vi.mock("@/models/UserRole", () => ({
 
 import { login, logout } from "./actions";
 
+const buildLoginFormData = (overrides = {}) => {
+  const formData = new FormData();
+  formData.set("email", overrides.email || "admin@example.com");
+  formData.set("password", overrides.password || "12345678");
+  formData.set("locale", overrides.locale || "en");
+  return formData;
+};
+
 describe("login action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("returns validation errors for invalid payload", async () => {
-    const result = await login({ email: "invalid", password: "123", locale: "en" });
+    const result = await login({}, buildLoginFormData({ email: "invalid", password: "123" }));
     expect(result.errors).toBeTruthy();
     expect(mocks.connectDBMock).not.toHaveBeenCalled();
   });
@@ -53,11 +61,7 @@ describe("login action", () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.userFindOneMock.mockResolvedValueOnce(null);
 
-    const result = await login({
-      email: "admin@example.com",
-      password: "12345678",
-      locale: "en",
-    });
+    const result = await login({}, buildLoginFormData());
 
     expect(result).toEqual({
       errors: {
@@ -84,11 +88,7 @@ describe("login action", () => {
     });
     mocks.createSessionMock.mockResolvedValueOnce({});
 
-    const result = await login({
-      email: "admin@example.com",
-      password: "12345678",
-      locale: "en",
-    });
+    const result = await login({}, buildLoginFormData());
 
     expect(mocks.createSessionMock).toHaveBeenCalledWith(
       { email: "admin@example.com", userRoleId: "role-1", _id: "user-1" },
