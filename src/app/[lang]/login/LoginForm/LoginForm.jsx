@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
@@ -9,9 +10,11 @@ import { INDEX_URL } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { createGeneralErrorResponse } from "@/errors/responses";
 import { useAppRouter } from "../../hooks/useAppRouter";
+import { useToast } from "@/app/context/toastProvider";
 
-export function LoginForm() {
+export function LoginForm({ successMessage }) {
   const appRouter = useAppRouter();
+  const { showError, showSuccess } = useToast();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,6 +25,12 @@ export function LoginForm() {
       appRouter.replace(INDEX_URL);
     }
   }, [appRouter, success]);
+
+  useEffect(() => {
+    if (error?.general?.[0]) {
+      showError(error.general[0]);
+    }
+  }, [error, showError]);
 
   const handleChange = (value, field) => {
     setFormData((prev) => ({
@@ -38,6 +47,9 @@ export function LoginForm() {
     try {
       const response = await login({ ...formData, locale: appRouter.locale });
       if (response?.success) {
+        if (successMessage) {
+          showSuccess(successMessage);
+        }
         setSuccess(true);
       } else {
         setError(response?.errors || createGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR).errors);
@@ -88,3 +100,11 @@ export function LoginForm() {
     </form>
   );
 }
+
+LoginForm.propTypes = {
+  successMessage: PropTypes.string,
+};
+
+LoginForm.defaultProps = {
+  successMessage: "",
+};

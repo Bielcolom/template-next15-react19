@@ -85,5 +85,15 @@
       "passwordConfirmMinLength": "Password confirmation must be at least 8 characters",
       "passwordsDoNotMatch": "Passwords don't match",
       "nameMinLength": "Name must be at least 3 characters"
+    },
+    "feedback": {
+      "loginSuccess": "Login successful.",
+      "registrationSuccess": "Account created successfully.",
+      "userCreated": "User created successfully.",
+      "userUpdated": "User updated successfully.",
+      "userDeleted": "User deleted successfully.",
+      "userRoleCreated": "User role created successfully.",
+      "userRoleUpdated": "User role updated successfully.",
+      "userRoleDeleted": "User role deleted successfully."
     }
   }

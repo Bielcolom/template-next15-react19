@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { INDEX_URL } from "@/utils/urls";
+import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
 
 const mocks = vi.hoisted(() => {
   const userCtorMock = vi.fn();
@@ -132,6 +132,8 @@ describe("register action", () => {
       { name: "John Doe", userRoleId: "role-user", email: "john@example.com", password: "hashed", _id: "user-1" },
       ["user_access"]
     );
-    expect(mocks.redirectMock).toHaveBeenCalledWith(INDEX_URL);
+    expect(mocks.redirectMock).toHaveBeenCalledWith(
+      `${getLocalizedPath(INDEX_URL, "en")}?toast=registrationSuccess`
+    );
   });
 });

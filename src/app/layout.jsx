@@ -5,6 +5,7 @@ import "./globals.scss";
 import { decrypt } from "./lib/session";
 import PageWrapper from "./[lang]/components/PageWrapper";
 import { SessionProvider } from "./context/sessionProvider";
+import { ToastProvider } from "./context/toastProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,11 +42,13 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <SessionProvider permissions={permissions} userId={userId}>
-          <PageWrapper>
-            {children}
-          </PageWrapper>
-        </SessionProvider>
+        <ToastProvider>
+          <SessionProvider permissions={permissions} userId={userId}>
+            <PageWrapper>
+              {children}
+            </PageWrapper>
+          </SessionProvider>
+        </ToastProvider>
       </body>
     </html>
   );

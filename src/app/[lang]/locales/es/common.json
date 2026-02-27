@@ -102,5 +102,15 @@
       "passwordConfirmMinLength": "La confirmacion de contrasena debe tener al menos 8 caracteres",
       "passwordsDoNotMatch": "Las contrasenas no coinciden",
       "nameMinLength": "El nombre debe tener al menos 3 caracteres"
+    },
+    "feedback": {
+      "loginSuccess": "Inicio de sesion correcto.",
+      "registrationSuccess": "Cuenta creada correctamente.",
+      "userCreated": "Usuario creado correctamente.",
+      "userUpdated": "Usuario actualizado correctamente.",
+      "userDeleted": "Usuario eliminado correctamente.",
+      "userRoleCreated": "Rol de usuario creado correctamente.",
+      "userRoleUpdated": "Rol de usuario actualizado correctamente.",
+      "userRoleDeleted": "Rol de usuario eliminado correctamente."
     }
   }

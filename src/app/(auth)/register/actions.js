@@ -8,8 +8,7 @@ import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
-import { INDEX_URL } from "@/utils/urls";
-import { DEFAULT_LOCALE } from "@/utils/urls";
+import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
 import { createLocalizedFieldErrorResponse } from "@/errors/serverResponses";
@@ -85,7 +84,7 @@ export async function register(prevState, formData) {
 
     await createSession(formattedUser, [ROLES.USER]);
 
-    redirect(INDEX_URL);
+    redirect(`${getLocalizedPath(INDEX_URL, locale)}?toast=registrationSuccess`);
   } catch (err) {
     if (err?.message === "NEXT_REDIRECT") {
       throw err;
