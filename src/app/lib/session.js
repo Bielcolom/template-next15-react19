@@ -5,6 +5,17 @@ import { cookies } from "next/headers";
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
+const normalizePermissions = (permissions) => {
+  if (Array.isArray(permissions)) {
+    return permissions;
+  }
+
+  if (!permissions) {
+    return [];
+  }
+
+  return [permissions];
+};
 
 async function createSession(user, permissions = []) {
   const userId = user?._id;
@@ -59,12 +70,33 @@ async function decrypt(session = "") {
 async function checkPermission(session, requiredPermission, userId) {
   // Decodificar el JWT
   const payload = await decrypt(session);
+  const permissions = normalizePermissions(payload?.permissions);
 
-  if (!payload || payload.userId !== userId || !payload.permissions || !payload.permissions.includes(requiredPermission)) {
+  if (!payload || payload.userId !== userId || !permissions.includes(requiredPermission)) {
     throw new Error("No tienes los permisos necesarios para realizar esta acción.");
   }
 
   return true;
 }
 
-export { createSession, deleteSession, encrypt, decrypt, checkPermission };
+async function requirePermission(requiredPermissions) {
+  const permissionsToCheck = normalizePermissions(requiredPermissions);
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+
+  if (!session) {
+    throw new Error("UNAUTHORIZED");
+  }
+
+  const payload = await decrypt(session);
+  const userPermissions = normalizePermissions(payload?.permissions);
+  const isAuthorized = permissionsToCheck.some((permission) => userPermissions.includes(permission));
+
+  if (!isAuthorized) {
+    throw new Error("FORBIDDEN");
+  }
+
+  return payload;
+}
+
+export { createSession, deleteSession, encrypt, decrypt, checkPermission, requirePermission };
