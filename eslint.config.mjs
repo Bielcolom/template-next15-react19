@@ -1,31 +1,32 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import pluginReact from "eslint-plugin-react";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
 
 /** @type {import('eslint').Linter.Config[]} */
-export default [
+const config = [
   {
-    files: ["**/*.{js,mjs,cjs,jsx}"],
-    languageOptions: {
-      globals: {
-        ...globals.browser,  // includes browser globals
-        ...globals.node,     // add Node.js globals (process, global, etc.)
-        es2021: true,        // enable ECMAScript 2021
-      },
-      parserOptions: {
-        ecmaVersion: 12,     // same as in your previous config
-        sourceType: "module",// same as in your previous config
-      },
-    },
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "dist/**",
+      "build/**",
+      "*.min.js",
+    ],
   },
-  pluginJs.configs.recommended, // recommended rules from @eslint/js
-  pluginReact.configs.flat.recommended, // recommended rules for React
+  ...compat.extends("next/core-web-vitals"),
   {
     rules: {
       semi: ["error", "always"],
       quotes: ["error", "double"],
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
     },
   },
 ];
+
+export default config;

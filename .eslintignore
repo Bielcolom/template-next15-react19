@@ -1,9 +1,0 @@
-node_modules/
-.next/
-/.next/
-\.next\
-.next\
-/out/
-dist/
-build/
-*.min.js
