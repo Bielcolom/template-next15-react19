@@ -20,6 +20,18 @@ describe("evaluateAuthPolicy", () => {
     });
   });
 
+  it("redirects to login for nested private routes without session", () => {
+    const result = evaluateAuthPolicy({
+      pathWithoutLocale: `${BACKOFFICE_URL}/users/123`,
+      payload: null,
+    });
+
+    expect(result).toEqual({
+      action: AUTH_ACTIONS.REDIRECT_LOGIN,
+      clearCookies: false,
+    });
+  });
+
   it("allows public routes without session", () => {
     const result = evaluateAuthPolicy({
       pathWithoutLocale: INDEX_URL,
@@ -97,6 +109,21 @@ describe("evaluateAuthPolicy", () => {
     });
   });
 
+  it("allows nested backoffice routes when user has admin permission", () => {
+    const result = evaluateAuthPolicy({
+      pathWithoutLocale: `${BACKOFFICE_URL}/users/123`,
+      payload: {
+        expiresAt: "2099-01-01T00:00:00.000Z",
+        permissions: ["admin_access"],
+      },
+    });
+
+    expect(result).toEqual({
+      action: AUTH_ACTIONS.ALLOW,
+      clearCookies: false,
+    });
+  });
+
   it("allows backoffice route when user has superadmin permission", () => {
     const result = evaluateAuthPolicy({
       pathWithoutLocale: BACKOFFICE_URL,
@@ -115,6 +142,36 @@ describe("evaluateAuthPolicy", () => {
   it("allows superadmin route when permission exists", () => {
     const result = evaluateAuthPolicy({
       pathWithoutLocale: BACKOFFICE_USERROLES_URL,
+      payload: {
+        expiresAt: "2099-01-01T00:00:00.000Z",
+        permissions: ["superadmin_access"],
+      },
+    });
+
+    expect(result).toEqual({
+      action: AUTH_ACTIONS.ALLOW,
+      clearCookies: false,
+    });
+  });
+
+  it("blocks nested superadmin routes for admin users", () => {
+    const result = evaluateAuthPolicy({
+      pathWithoutLocale: `${BACKOFFICE_USERROLES_URL}/create`,
+      payload: {
+        expiresAt: "2099-01-01T00:00:00.000Z",
+        permissions: ["admin_access"],
+      },
+    });
+
+    expect(result).toEqual({
+      action: AUTH_ACTIONS.REDIRECT_HOME,
+      clearCookies: false,
+    });
+  });
+
+  it("allows nested superadmin routes when permission exists", () => {
+    const result = evaluateAuthPolicy({
+      pathWithoutLocale: `${BACKOFFICE_USERROLES_URL}/create`,
       payload: {
         expiresAt: "2099-01-01T00:00:00.000Z",
         permissions: ["superadmin_access"],
