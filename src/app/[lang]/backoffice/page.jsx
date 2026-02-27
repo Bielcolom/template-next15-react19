@@ -4,7 +4,7 @@ import BackofficeCard from "@/app/[lang]/components/backoffice/BackofficeCard";
 import { getDictionary } from "../dictionaries";
 
 export default async function BackofficePage({ params }) {
-    const { lang } = await params;
+    const { lang } = params;
     const { data: userCount, errors: countErrors } = await getUserCount();
     const dict = await getDictionary(lang, "common");
     const safeUserCount = typeof userCount === "number" ? userCount : 0;

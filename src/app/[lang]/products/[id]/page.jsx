@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 export default async function Product({ params }) {
-    const { id } = await params;
+    const { id } = params;
     return (
         <>  
             <h1>Product: {id}</h1> 
