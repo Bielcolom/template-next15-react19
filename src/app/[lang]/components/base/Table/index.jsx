@@ -1,13 +1,18 @@
+"use client";
+
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "../Icon";
 import styles from "./table.module.scss";
 
 const Table = ({ data, visibleColumns = [], loading }) => {
     const [visibleRows, setVisibleRows] = useState(500);
+    const containerRef = useRef(null);
 
     useEffect(() => {
-        document.querySelector(`.${styles.tableContainer}`).scrollTop = 0;
+        if (containerRef.current) {
+            containerRef.current.scrollTop = 0;
+        }
         setVisibleRows(500);
     }, [data]);
 
@@ -18,17 +23,15 @@ const Table = ({ data, visibleColumns = [], loading }) => {
         }
     };
 
-    // Obtener las columnas automáticamente a partir de los datos
     const columns = data.length > 0 ? Object.keys(data[0]).map((key) => ({ value: key, label: key })) : [];
 
     const isColumnVisible = (column) => {
-        // Si no se pasa visibleColumns, todas las columnas son visibles por defecto
         return visibleColumns.length === 0 || visibleColumns.includes(column);
     };
 
     return (
         <>
-            <div className={styles.tableContainer} onScroll={handleScroll}>
+            <div className={styles.tableContainer} onScroll={handleScroll} ref={containerRef}>
                 <table className={styles.genericTable}>
                     <thead>
                         <tr>
@@ -48,7 +51,7 @@ const Table = ({ data, visibleColumns = [], loading }) => {
                             </tr>
                         ) : data.length === 0 ? (
                             <tr className={styles.noResults}>
-                                <td colSpan={columns.length}>
+                                <td colSpan={Math.max(columns.length, 1)}>
                                     <Icon icon="exclamation" />
                                     NoItems
                                 </td>
@@ -76,7 +79,7 @@ const Table = ({ data, visibleColumns = [], loading }) => {
 
 Table.defaultProps = {
     data: [],
-    visibleColumns: [],  // Si no se pasa, todas las columnas son visibles
+    visibleColumns: [],
     loading: false,
 };
 
