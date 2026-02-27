@@ -43,7 +43,7 @@ describe("backoffice userRoles actions", () => {
       ]),
     });
 
-    const result = await getUserRoles();
+    const result = await getUserRoles("en");
 
     expect(mocks.requirePermissionMock).toHaveBeenCalledWith(ROLES.SUPERADMIN);
     expect(result).toEqual({
@@ -61,7 +61,7 @@ describe("backoffice userRoles actions", () => {
   it("getUserRoles returns auth error when unauthorized", async () => {
     mocks.requirePermissionMock.mockRejectedValueOnce(new Error("UNAUTHORIZED"));
 
-    const result = await getUserRoles();
+    const result = await getUserRoles("en");
 
     expect(result).toEqual({
       data: [],
@@ -76,7 +76,7 @@ describe("backoffice userRoles actions", () => {
       lean: vi.fn().mockResolvedValueOnce(null),
     });
 
-    const result = await getUserRoleById("missing");
+    const result = await getUserRoleById("missing", "en");
 
     expect(result).toEqual({
       data: null,
@@ -87,7 +87,7 @@ describe("backoffice userRoles actions", () => {
   it("getUserRoleById returns permission error when forbidden", async () => {
     mocks.requirePermissionMock.mockRejectedValueOnce(new Error("FORBIDDEN"));
 
-    const result = await getUserRoleById("role-1");
+    const result = await getUserRoleById("role-1", "en");
 
     expect(result).toEqual({
       data: null,

@@ -61,5 +61,29 @@
     "update": "Update",
     "viewAll": "View all",
     "wrongFileType": "Wrong file type",
-    "yes": "Yes"
+    "yes": "Yes",
+    "errors": {
+      "authenticationRequired": "Authentication required.",
+      "insufficientPermissions": "Insufficient permissions.",
+      "invalidSession": "Invalid or expired session.",
+      "invalidCredentials": "Invalid email or password",
+      "sessionCreationFailed": "Failed to create session. Please try again.",
+      "emailAlreadyRegistered": "Email is already registered",
+      "defaultUserRoleNotConfigured": "Default user role is not configured.",
+      "userNotFound": "User not found.",
+      "userRoleNotFound": "User role not found.",
+      "fetchUserRolesFailed": "An error occurred while fetching user roles.",
+      "fetchUserRoleFailed": "An error occurred while fetching the user role.",
+      "fetchUserFailed": "An error occurred while fetching the user.",
+      "countUsersFailed": "An error occurred while counting users.",
+      "unexpected": "An unexpected error occurred. Please try again.",
+      "registrationFailed": "An error occurred. Please try again later."
+    },
+    "validation": {
+      "invalidEmail": "Invalid email address",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordConfirmMinLength": "Password confirmation must be at least 8 characters",
+      "passwordsDoNotMatch": "Passwords don't match",
+      "nameMinLength": "Name must be at least 3 characters"
+    }
   }

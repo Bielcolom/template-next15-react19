@@ -4,11 +4,13 @@ import { connectDB } from "@/utils/connectDB";
 import User from "@/models/User";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
+import { hasErrorCode } from "@/errors/AppError";
+import { ERROR_CODES } from "@/errors/codes";
+import { createDataResponse } from "@/errors/responses";
+import { createLocalizedDataErrorResponse } from "@/errors/serverResponses";
+import { DEFAULT_LOCALE } from "@/utils/urls";
 
-const buildSuccess = (data) => ({ data, errors: [] });
-const buildError = (fallbackData, message) => ({ data: fallbackData, errors: [message] });
-
-export async function findFiltered(userId) {
+export async function findFiltered(userId, locale = DEFAULT_LOCALE) {
 
     try {
         await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
@@ -17,7 +19,7 @@ export async function findFiltered(userId) {
         const user = await User.findOne({ _id: userId }).lean();
 
         if (!user) {
-            return buildError(null, "User not found.");
+            return createLocalizedDataErrorResponse(ERROR_CODES.USER_NOT_FOUND, null, locale);
         }
 
         // Convertir ObjectId a string si es necesario
@@ -26,34 +28,34 @@ export async function findFiltered(userId) {
             _id: user._id.toString(),
             userRoleId: user?.userRoleId.toString(),
         };
-        return buildSuccess(serializedUser);
+        return createDataResponse(serializedUser);
     } catch (error) {
-        if (error?.message === "UNAUTHORIZED") {
-            return buildError(null, "Authentication required.");
+        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
         }
-        if (error?.message === "FORBIDDEN") {
-            return buildError(null, "Insufficient permissions.");
+        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
         }
         console.error("Error in findFiltered function:", error);
-        return buildError(null, "An error occurred while fetching the user.");
+        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_FAILED, null, locale);
     }
 }
 
-export async function getUserCount() {
+export async function getUserCount(locale = DEFAULT_LOCALE) {
     try {
         await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
         await connectDB();
 
         const userCount = await User.countDocuments();
-        return buildSuccess(userCount);
+        return createDataResponse(userCount);
     } catch (error) {
-        if (error?.message === "UNAUTHORIZED") {
-            return buildError(null, "Authentication required.");
+        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
         }
-        if (error?.message === "FORBIDDEN") {
-            return buildError(null, "Insufficient permissions.");
+        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
         }
         console.error("Error in getUserCount function:", error);
-        return buildError(null, "An error occurred while counting users.");
+        return createLocalizedDataErrorResponse(ERROR_CODES.COUNT_USERS_FAILED, null, locale);
     }
 }

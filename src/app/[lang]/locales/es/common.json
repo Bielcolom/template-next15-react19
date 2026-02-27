@@ -78,5 +78,29 @@
     "uploadFiles": "Cargar archivos",
     "viewAll": "Ver todos",
     "wrongFileType": "Tipo de archivo incorrecto",
-    "yes": "Si"
+    "yes": "Si",
+    "errors": {
+      "authenticationRequired": "Autenticacion requerida.",
+      "insufficientPermissions": "Permisos insuficientes.",
+      "invalidSession": "Sesion invalida o expirada.",
+      "invalidCredentials": "Correo o contrasena invalidos",
+      "sessionCreationFailed": "No se pudo crear la sesion. Intentalo de nuevo.",
+      "emailAlreadyRegistered": "El correo ya esta registrado",
+      "defaultUserRoleNotConfigured": "El rol base de usuario no esta configurado.",
+      "userNotFound": "Usuario no encontrado.",
+      "userRoleNotFound": "Rol de usuario no encontrado.",
+      "fetchUserRolesFailed": "Ha ocurrido un error al obtener los roles de usuario.",
+      "fetchUserRoleFailed": "Ha ocurrido un error al obtener el rol de usuario.",
+      "fetchUserFailed": "Ha ocurrido un error al obtener el usuario.",
+      "countUsersFailed": "Ha ocurrido un error al contar los usuarios.",
+      "unexpected": "Ha ocurrido un error inesperado. Intentalo de nuevo.",
+      "registrationFailed": "Ha ocurrido un error. Intentalo de nuevo mas tarde."
+    },
+    "validation": {
+      "invalidEmail": "Correo electronico invalido",
+      "passwordMinLength": "La contrasena debe tener al menos 8 caracteres",
+      "passwordConfirmMinLength": "La confirmacion de contrasena debe tener al menos 8 caracteres",
+      "passwordsDoNotMatch": "Las contrasenas no coinciden",
+      "nameMinLength": "El nombre debe tener al menos 3 caracteres"
+    }
   }

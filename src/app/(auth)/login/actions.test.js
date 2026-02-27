@@ -44,7 +44,7 @@ describe("login action", () => {
   });
 
   it("returns validation errors for invalid payload", async () => {
-    const result = await login({ email: "invalid", password: "123" });
+    const result = await login({ email: "invalid", password: "123", locale: "en" });
     expect(result.errors).toBeTruthy();
     expect(mocks.connectDBMock).not.toHaveBeenCalled();
   });
@@ -56,6 +56,7 @@ describe("login action", () => {
     const result = await login({
       email: "admin@example.com",
       password: "12345678",
+      locale: "en",
     });
 
     expect(result).toEqual({
@@ -86,6 +87,7 @@ describe("login action", () => {
     const result = await login({
       email: "admin@example.com",
       password: "12345678",
+      locale: "en",
     });
 
     expect(mocks.createSessionMock).toHaveBeenCalledWith(

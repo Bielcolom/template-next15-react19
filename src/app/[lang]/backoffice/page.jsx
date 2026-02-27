@@ -5,7 +5,7 @@ import { getDictionary } from "../dictionaries";
 
 export default async function BackofficePage({ params }) {
     const { lang } = params;
-    const { data: userCount, errors: countErrors } = await getUserCount();
+    const { data: userCount, errors: countErrors } = await getUserCount(lang);
     const dict = await getDictionary(lang, "common");
     const safeUserCount = typeof userCount === "number" ? userCount : 0;
 

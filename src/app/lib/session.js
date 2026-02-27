@@ -4,10 +4,13 @@ import { cookies } from "next/headers";
 import { normalizePermissions } from "@/utils/helpers";
 import User from "@/models/User";
 import UserRole from "@/models/UserRole";
+import { AppError } from "@/errors/AppError";
+import { ERROR_CODES } from "@/errors/codes";
+import { ERROR_MESSAGES } from "@/errors/messages";
 
 const secretKey = process.env.SESSION_SECRET;
 if (!secretKey || secretKey.length < 32) {
-  throw new Error("SESSION_SECRET must be defined and at least 32 characters long.");
+  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
 }
 
 const encodedKey = new TextEncoder().encode(secretKey);
@@ -47,12 +50,12 @@ const getCurrentPermissionsFromDB = async (userId) => {
 
   const user = await User.findById(userId).select("userRoleId").lean();
   if (!user?.userRoleId) {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   const userRole = await UserRole.findById(user.userRoleId).select("permissions").lean();
   if (!userRole) {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   return normalizePermissions(userRole.permissions);
@@ -92,7 +95,7 @@ async function decrypt(session = "") {
     });
     return payload;
   } catch {
-    throw new Error("Invalid or expired session.");
+    throw new AppError(ERROR_CODES.INVALID_SESSION, ERROR_MESSAGES[ERROR_CODES.INVALID_SESSION]);
   }
 }
 
@@ -101,16 +104,16 @@ async function checkPermission(session, requiredPermission, userId) {
   try {
     payload = await decrypt(session);
   } catch {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   if (!payload?.userId) {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
   if (payload.userId !== userId || !currentPermissions.includes(requiredPermission)) {
-    throw new Error("FORBIDDEN");
+    throw new AppError(ERROR_CODES.FORBIDDEN);
   }
 
   return true;
@@ -122,25 +125,25 @@ async function requirePermission(requiredPermissions) {
   const session = cookieStore.get("session")?.value;
 
   if (!session) {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   let payload;
   try {
     payload = await decrypt(session);
   } catch {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   if (!payload?.userId) {
-    throw new Error("UNAUTHORIZED");
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
   const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
   const isAuthorized = permissionsToCheck.some((permission) => currentPermissions.includes(permission));
 
   if (!isAuthorized) {
-    throw new Error("FORBIDDEN");
+    throw new AppError(ERROR_CODES.FORBIDDEN);
   }
 
   return { ...payload, permissions: currentPermissions };

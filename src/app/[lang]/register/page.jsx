@@ -2,12 +2,15 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { register } from "../../(auth)/register/actions";
+import { useAppRouter } from "../hooks/useAppRouter";
 
 export default function Register() {
+  const appRouter = useAppRouter();
   const [state, action] = useActionState(register);
 
   return (
     <form action={action}>
+      <input type="hidden" name="locale" value={appRouter.locale} />
       <div>
         <label htmlFor="name">Name</label>
         <input id="name" name="name" placeholder="John Doe" />

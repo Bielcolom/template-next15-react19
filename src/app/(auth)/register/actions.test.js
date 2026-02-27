@@ -55,6 +55,7 @@ const buildValidFormData = () => {
   formData.set("email", "john@example.com");
   formData.set("password", "12345678");
   formData.set("confirmPassword", "12345678");
+  formData.set("locale", "en");
   return formData;
 };
 
@@ -76,6 +77,7 @@ describe("register action", () => {
     formData.set("email", "bad");
     formData.set("password", "123");
     formData.set("confirmPassword", "123");
+    formData.set("locale", "en");
 
     const result = await register({}, formData);
 

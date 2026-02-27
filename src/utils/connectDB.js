@@ -1,11 +1,13 @@
 "use server";
 
 import mongoose from "mongoose";
+import { ERROR_CODES } from "@/errors/codes";
+import { ERROR_MESSAGES } from "@/errors/messages";
 
 const DATABASE_URL = process.env.MONGODB_URI || "";
 
 if (!DATABASE_URL) {
-  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_MISSING_MONGODB_URI]);
 }
 
 let cached = global.mongoose;

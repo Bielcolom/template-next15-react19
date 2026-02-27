@@ -10,10 +10,12 @@ import {
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 import { jwtVerify } from "jose";
+import { ERROR_CODES } from "./errors/codes";
+import { ERROR_MESSAGES } from "./errors/messages";
 
 const secretKey = process.env.SESSION_SECRET;
 if (!secretKey || secretKey.length < 32) {
-  throw new Error("SESSION_SECRET must be defined and at least 32 characters long.");
+  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
 }
 const encodedKey = new TextEncoder().encode(secretKey);
 const isProduction = process.env.NODE_ENV === "production";

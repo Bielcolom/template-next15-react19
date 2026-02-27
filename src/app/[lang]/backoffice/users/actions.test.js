@@ -41,7 +41,7 @@ describe("backoffice users actions", () => {
       }),
     });
 
-    const result = await findFiltered("user-1");
+    const result = await findFiltered("user-1", "en");
 
     expect(mocks.requirePermissionMock).toHaveBeenCalledWith([
       ROLES.ADMIN,
@@ -60,7 +60,7 @@ describe("backoffice users actions", () => {
   it("findFiltered returns auth error when unauthorized", async () => {
     mocks.requirePermissionMock.mockRejectedValueOnce(new Error("UNAUTHORIZED"));
 
-    const result = await findFiltered("user-1");
+    const result = await findFiltered("user-1", "en");
 
     expect(result).toEqual({
       data: null,
@@ -73,7 +73,7 @@ describe("backoffice users actions", () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.countDocumentsMock.mockResolvedValueOnce(12);
 
-    const result = await getUserCount();
+    const result = await getUserCount("en");
     expect(result).toEqual({
       data: 12,
       errors: [],
@@ -83,7 +83,7 @@ describe("backoffice users actions", () => {
   it("getUserCount returns permission error when forbidden", async () => {
     mocks.requirePermissionMock.mockRejectedValueOnce(new Error("FORBIDDEN"));
 
-    const result = await getUserCount();
+    const result = await getUserCount("en");
 
     expect(result).toEqual({
       data: null,

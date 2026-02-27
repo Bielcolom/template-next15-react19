@@ -1,24 +1,33 @@
 "use server";
 
 import { z } from "zod";
-import { createSession, deleteSession } from "@/app/lib/session";
 import bcrypt from "bcryptjs";
+import { createSession, deleteSession } from "@/app/lib/session";
 import User from "@/models/User";
 import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { normalizePermissions } from "@/utils/helpers";
+import { DEFAULT_LOCALE } from "@/utils/urls";
+import { ERROR_CODES } from "@/errors/codes";
+import { getValidationMessages } from "@/errors/i18n";
+import {
+  createLocalizedFieldErrorResponse,
+  createLocalizedGeneralErrorResponse,
+} from "@/errors/serverResponses";
 
-const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }).trim(),
+const buildLoginSchema = (validationMessages) => z.object({
+  email: z.string().email({ message: validationMessages.INVALID_EMAIL }).trim(),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" })
+    .min(8, { message: validationMessages.PASSWORD_MIN_LENGTH })
     .trim(),
 });
 
 export async function login(formData) {
   try {
-    // Validate formData using the schema
+    const locale = formData?.locale || DEFAULT_LOCALE;
+    const validationMessages = await getValidationMessages(locale);
+    const loginSchema = buildLoginSchema(validationMessages);
     const result = loginSchema.safeParse(formData);
     if (!result.success) {
       return {
@@ -32,11 +41,7 @@ export async function login(formData) {
 
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return {
-        errors: {
-          email: ["Invalid email or password"],
-        },
-      };
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.INVALID_CREDENTIALS, locale);
     }
 
     const formattedUser = {
@@ -49,22 +54,13 @@ export async function login(formData) {
 
     const sessionCreation = await createSession(formattedUser, permissions);
     if (!sessionCreation) {
-      return {
-        errors: {
-          email: ["Failed to create session. Please try again."],
-        },
-      };
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.SESSION_CREATION_FAILED, locale);
     }
 
     return { success: true, userId: formattedUser?._id };
-
   } catch (error) {
     console.error("Error in login function:", error);
-    return {
-      errors: {
-        general: ["An unexpected error occurred. Please try again."],
-      },
-    };
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, formData?.locale || DEFAULT_LOCALE);
   }
 }
 
@@ -73,10 +69,6 @@ export async function logout() {
     await deleteSession();
   } catch (error) {
     console.error("Error in logout function:", error);
-    return {
-      errors: {
-        general: ["An unexpected error occurred. Please try again."],
-      },
-    };
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, DEFAULT_LOCALE);
   }
 }
