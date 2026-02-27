@@ -6,6 +6,17 @@ export const userIsAdmin = (permissons) => permissons.includes(ROLES.ADMIN);
 export const userIsAdminOrMore = (userRole) => userIsAdmin(userRole) || userIsSuperAdmin(userRole);
 export const userIsUser = (permissons) => permissons.includes(ROLES.USER);
 export const userIsUserOrMore = (userRole) => userIsUser(userRole) || userIsAdminOrMore(userRole);
+export const normalizePermissions = (permissions) => {
+    if (Array.isArray(permissions)) {
+        return permissions;
+    }
+
+    if (!permissions) {
+        return [];
+    }
+
+    return [permissions];
+};
 
 export const pathisAdminProtected = (url) => -1 !== PRIVATE_ADMIN_URLS.indexOf(url);
 export const pathisSuperAdminProtected = (url) => -1 !== PRIVATE_SUPERADMIN_URLS.indexOf(url);

@@ -1,21 +1,10 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { normalizePermissions } from "@/utils/helpers";
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
-
-const normalizePermissions = (permissions) => {
-  if (Array.isArray(permissions)) {
-    return permissions;
-  }
-
-  if (!permissions) {
-    return [];
-  }
-
-  return [permissions];
-};
 
 async function createSession(user, permissions = []) {
   const userId = user?._id;

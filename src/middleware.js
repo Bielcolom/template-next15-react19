@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ROUTES } from "./utils/urls";
+import { normalizePermissions } from "./utils/helpers";
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 import { jwtVerify } from "jose";
@@ -24,14 +25,15 @@ const decryptSession = async (session = "") => {
 
 export default async function middleware(req) {
   const { pathname } = req.nextUrl;
-  const locale = getLocale(req);
   const segments = pathname.split("/").filter(Boolean); // Filtra cualquier valor vacío
-  const pathWithoutLocale = "/" + segments.slice(1).join("/"); // Elimina el primer segmento y agrega un "/" al principio
+  const requestLocale = locales.includes(segments[0]) ? segments[0] : null;
+  const locale = requestLocale || getLocale(req);
+  const pathWithoutLocale = requestLocale
+    ? `/${segments.slice(1).join("/")}`.replace(/\/$/, "") || "/"
+    : pathname;
 
   // Verificar si el path ya contiene un locale soportado
-  const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  );
+  const pathnameHasLocale = Boolean(requestLocale);
 
   // Si no contiene un idioma válido en la URL, redirigir al idioma predeterminado
   if (!pathnameHasLocale) {
@@ -59,6 +61,7 @@ export default async function middleware(req) {
 
     // Decodificar la sesión
     const payload = await decryptSession(sessionCookie);
+    const permissions = normalizePermissions(payload?.permissions);
 
     // Validar la expiración de la sesión
     const now = new Date();
@@ -68,12 +71,12 @@ export default async function middleware(req) {
     }
 
     // Verificar permisos según la ruta
-    if (isPrivateRoute && !payload.permissions?.includes("admin_access")) {
+    if (isPrivateRoute && !permissions.includes("admin_access")) {
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }
 
-    if (isSuperAdminRoute && !payload.permissions?.includes("superadmin_access")) {
+    if (isSuperAdminRoute && !permissions.includes("superadmin_access")) {
 
       return NextResponse.redirect(new URL(`/${locale}`, req.nextUrl));
     }
@@ -96,6 +99,6 @@ export default async function middleware(req) {
 
 export const config = {
   matcher: [
-    "/((?!_next).*)", // Ignora rutas internas de Next.js
+    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|.*\\..*).*)",
   ],
 };
