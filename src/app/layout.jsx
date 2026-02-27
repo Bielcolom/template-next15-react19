@@ -40,12 +40,6 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="es">
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;700&display=swap"
-        />
-      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SessionProvider permissions={permissions} userId={userId}>
           <PageWrapper>
