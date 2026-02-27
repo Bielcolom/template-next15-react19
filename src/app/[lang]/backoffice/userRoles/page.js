@@ -6,7 +6,7 @@ import RouteToastHandler from "../../RouteToastHandler";
 import { getDictionary } from "../../dictionaries";
 
 export default async function UserRolesPage({ params }) {
-    const { lang } = params;
+    const { lang } = await params;
     const response = await getUserRoles(lang);
     const dict = await getDictionary(lang, "common");
     const userRoles = Array.isArray(response?.data) ? response.data : [];

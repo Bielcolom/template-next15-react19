@@ -6,7 +6,7 @@ import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../RouteToastHandler";
 
 export default async function BackofficePage({ params }) {
-    const { lang } = params;
+    const { lang } = await params;
     const { data: userCount, errors: countErrors } = await getUserCount(lang);
     const dict = await getDictionary(lang, "common");
     const safeUserCount = typeof userCount === "number" ? userCount : 0;

@@ -3,7 +3,7 @@ import { getDictionary } from "./dictionaries";
 import styles from "./page.module.css";
 
 export default async function Home({ params }) {
-  const { lang } = params;
+  const { lang } = await params;
   const dict = await getDictionary(lang, "common");
 
   const toastMessages = {

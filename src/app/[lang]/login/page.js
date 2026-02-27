@@ -6,7 +6,7 @@ import logo from "@/../../public/logo/rectangular.png";
 import { getDictionary } from "../dictionaries";
 
 export default async function Login({ params }) {
-  const { lang } = params;
+  const { lang } = await params;
   const dict = await getDictionary(lang, "common");
 
   return (
