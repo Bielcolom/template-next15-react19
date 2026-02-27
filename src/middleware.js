@@ -7,7 +7,12 @@ import { jwtVerify } from "jose";
 
 const locales = ["es", "en"];
 const defaultLocale = "es";
-const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
+const secretKey = process.env.SESSION_SECRET;
+if (!secretKey || secretKey.length < 32) {
+  throw new Error("SESSION_SECRET must be defined and at least 32 characters long.");
+}
+const encodedKey = new TextEncoder().encode(secretKey);
+const isProduction = process.env.NODE_ENV === "production";
 
 // Función para obtener el idioma preferido de la cabecera "Accept-Language"
 const getLocale = (request) => {
@@ -21,6 +26,26 @@ const decryptSession = async (session = "") => {
     algorithms: ["HS256"],
   });
   return payload;
+};
+
+const clearAuthCookies = (response) => {
+  const expiredCookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "strict",
+    path: "/",
+    expires: new Date(0),
+    maxAge: 0,
+  };
+
+  response.cookies.set("session", "", expiredCookieOptions);
+  response.cookies.set("userId", "", expiredCookieOptions);
+  return response;
+};
+
+const redirectToLogin = (req, locale, clearCookies = false) => {
+  const response = NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
+  return clearCookies ? clearAuthCookies(response) : response;
 };
 
 export default async function middleware(req) {
@@ -54,7 +79,7 @@ export default async function middleware(req) {
     if (!sessionCookie) {
       // Redirigir si es una ruta privada o de superadministrador sin sesión
       if (isPrivateRoute || isSuperAdminRoute) {
-        return NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
+        return redirectToLogin(req, locale);
       }
       return NextResponse.next();
     }
@@ -66,8 +91,7 @@ export default async function middleware(req) {
     // Validar la expiración de la sesión
     const now = new Date();
     if (new Date(payload.expiresAt) < now) {
-
-      return NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
+      return redirectToLogin(req, locale, true);
     }
 
     // Verificar permisos según la ruta
@@ -93,7 +117,7 @@ export default async function middleware(req) {
     console.error("Middleware Error:", error.message);
 
     // Redirigir si hay un error en la sesión
-    return NextResponse.redirect(new URL(`/${locale}/login`, req.nextUrl));
+    return redirectToLogin(req, locale, true);
   }
 }
 

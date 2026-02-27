@@ -4,37 +4,60 @@ import { cookies } from "next/headers";
 import { normalizePermissions } from "@/utils/helpers";
 
 const secretKey = process.env.SESSION_SECRET;
+if (!secretKey || secretKey.length < 32) {
+  throw new Error("SESSION_SECRET must be defined and at least 32 characters long.");
+}
+
 const encodedKey = new TextEncoder().encode(secretKey);
+const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
+const isProduction = process.env.NODE_ENV === "production";
+
+const buildSessionCookieOptions = (expiresAt) => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  expires: expiresAt,
+  maxAge: SESSION_TTL_SECONDS,
+  path: "/",
+});
+
+const buildUserIdCookieOptions = (expiresAt) => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  expires: expiresAt,
+  maxAge: SESSION_TTL_SECONDS,
+  path: "/",
+});
+
+const buildExpiredCookieOptions = () => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  expires: new Date(0),
+  maxAge: 0,
+  path: "/",
+});
 
 async function createSession(user, permissions = []) {
   const userId = user?._id;
 
   // 7 Days
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
   const session = await encrypt({ userId, expiresAt, permissions: permissions });
 
   //In future, it doesn't have to do the await
   const cookieStore = await cookies();
-  cookieStore.set("session", session, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "Strict",
-    expires: expiresAt,
-    maxAge: 7 * 24 * 60 * 60,
-  });
-  cookieStore.set("userId", userId, {
-    secure: true,     // Solo en HTTPS
-    sameSite: "Strict",
-    expires: expiresAt,
-  });
+  cookieStore.set("session", session, buildSessionCookieOptions(expiresAt));
+  cookieStore.set("userId", userId, buildUserIdCookieOptions(expiresAt));
 
   return cookieStore;
 }
 
 async function deleteSession() {
   const cookiesInstance = await cookies();
-  cookiesInstance.delete("userId");
-  cookiesInstance.delete("session");
+  cookiesInstance.set("userId", "", buildExpiredCookieOptions());
+  cookiesInstance.set("session", "", buildExpiredCookieOptions());
 }
 
 async function encrypt(payload) {
