@@ -1,0 +1,21 @@
+@use '../../../constants.scss';
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: constants.$size-md;
+  width: 40%;
+
+  .inputContainer {
+    width: 100%;
+  }
+
+  .submitButton {
+    background-color: constants.$white;
+    border-color: constants.$white;
+
+    &:hover {
+      background-color: constants.$gray-lighter;
+    }
+  }
+}

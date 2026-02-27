@@ -1,0 +1,24 @@
+@use '../../constants.scss';
+
+.formPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 80%;
+  gap: constants.$size-lg;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  font-size: constants.$font-xl;
+}
+
+.logo {
+  width: 500px;
+  border-radius: 10%;
+}
