@@ -103,6 +103,9 @@ export async function register(prevState, formData) {
     redirect("/");
 
   } catch (err) {
+    if (err?.message === "NEXT_REDIRECT") {
+      throw err;
+    }
     console.error("Error during registration:", err);
     return {
       errors: {
