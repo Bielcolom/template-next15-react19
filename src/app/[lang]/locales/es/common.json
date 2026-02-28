@@ -104,7 +104,6 @@
       "nameMinLength": "El nombre debe tener al menos 3 caracteres"
     },
     "feedback": {
-      "loginSuccess": "Inicio de sesion correcto.",
       "registrationSuccess": "Cuenta creada correctamente.",
       "userCreated": "Usuario creado correctamente.",
       "userUpdated": "Usuario actualizado correctamente.",

@@ -87,7 +87,6 @@
       "nameMinLength": "Name must be at least 3 characters"
     },
     "feedback": {
-      "loginSuccess": "Login successful.",
       "registrationSuccess": "Account created successfully.",
       "userCreated": "User created successfully.",
       "userUpdated": "User updated successfully.",

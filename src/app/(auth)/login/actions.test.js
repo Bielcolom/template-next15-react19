@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
 
 const mocks = vi.hoisted(() => ({
   compareMock: vi.fn(),
   createSessionMock: vi.fn(),
   deleteSessionMock: vi.fn(),
   connectDBMock: vi.fn(),
+  redirectMock: vi.fn(() => {
+    throw new Error("NEXT_REDIRECT");
+  }),
   userFindOneMock: vi.fn(),
   userRoleFindByIdMock: vi.fn(),
 }));
@@ -18,6 +22,10 @@ vi.mock("bcryptjs", () => ({
 vi.mock("@/app/lib/session", () => ({
   createSession: mocks.createSessionMock,
   deleteSession: mocks.deleteSessionMock,
+}));
+
+vi.mock("next/navigation", () => ({
+  redirect: mocks.redirectMock,
 }));
 
 vi.mock("@/utils/connectDB", () => ({
@@ -70,7 +78,7 @@ describe("login action", () => {
     });
   });
 
-  it("returns success and creates session on valid credentials", async () => {
+  it("creates session and redirects on valid credentials", async () => {
     const userDoc = {
       _id: { toString: () => "user-1" },
       password: "hashed",
@@ -88,13 +96,12 @@ describe("login action", () => {
     });
     mocks.createSessionMock.mockResolvedValueOnce({});
 
-    const result = await login({}, buildLoginFormData());
-
+    await expect(login({}, buildLoginFormData())).rejects.toThrow("NEXT_REDIRECT");
     expect(mocks.createSessionMock).toHaveBeenCalledWith(
       { email: "admin@example.com", userRoleId: "role-1", _id: "user-1" },
       ["admin_access"]
     );
-    expect(result).toEqual({ success: true, userId: "user-1" });
+    expect(mocks.redirectMock).toHaveBeenCalledWith(getLocalizedPath(INDEX_URL, "en"));
   });
 });
 

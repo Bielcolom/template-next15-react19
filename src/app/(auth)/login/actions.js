@@ -2,12 +2,13 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 import { createSession, deleteSession } from "@/app/lib/session";
 import User from "@/models/User";
 import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { normalizePermissions } from "@/utils/helpers";
-import { DEFAULT_LOCALE } from "@/utils/urls";
+import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
 import {
@@ -66,8 +67,12 @@ export async function login(prevState, formData) {
       return createLocalizedFieldErrorResponse("email", ERROR_CODES.SESSION_CREATION_FAILED, locale);
     }
 
-    return { success: true, userId: formattedUser?._id };
+    redirect(getLocalizedPath(INDEX_URL, locale));
   } catch (error) {
+    if (error?.message === "NEXT_REDIRECT") {
+      throw error;
+    }
+
     console.error("Error in login function:", error);
     const rawData = normalizeLoginPayload(formData ?? prevState);
     return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, rawData?.locale || DEFAULT_LOCALE);

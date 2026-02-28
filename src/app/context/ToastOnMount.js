@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import { useToast } from "./toastProvider";
+import { TOAST_TYPES, useToast } from "./toastProvider";
 
-const ToastOnMount = ({ messages, type = "error" }) => {
+const ToastOnMount = ({ messages, type = TOAST_TYPES.error }) => {
   const { showError, showSuccess } = useToast();
   const hasTriggeredRef = useRef(false);
 
@@ -14,7 +14,7 @@ const ToastOnMount = ({ messages, type = "error" }) => {
     }
 
     hasTriggeredRef.current = true;
-    const show = type === "success" ? showSuccess : showError;
+    const show = type === TOAST_TYPES.success ? showSuccess : showError;
     messages.forEach((message) => show(message));
   }, [messages, showError, showSuccess, type]);
 
@@ -23,12 +23,12 @@ const ToastOnMount = ({ messages, type = "error" }) => {
 
 ToastOnMount.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.string),
-  type: PropTypes.oneOf(["error", "success"]),
+  type: PropTypes.oneOf(Object.values(TOAST_TYPES)),
 };
 
 ToastOnMount.defaultProps = {
   messages: [],
-  type: "error",
+  type: TOAST_TYPES.error,
 };
 
 export default ToastOnMount;
