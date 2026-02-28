@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import { cookies } from "next/headers";
 import "./globals.scss";
 import { decrypt } from "./lib/session";
-import PageWrapper from "./[lang]/components/PageWrapper";
 import { SessionProvider } from "./context/sessionProvider";
 import { ToastProvider } from "./context/toastProvider";
 
@@ -44,9 +43,7 @@ export default async function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ToastProvider>
           <SessionProvider permissions={permissions} userId={userId}>
-            <PageWrapper>
-              {children}
-            </PageWrapper>
+            {children}
           </SessionProvider>
         </ToastProvider>
       </body>

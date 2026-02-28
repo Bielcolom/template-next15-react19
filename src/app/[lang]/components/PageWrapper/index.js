@@ -20,7 +20,7 @@ const getStoredSidebarVisibility = () => {
     return window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) === "true";
 };
 
-const PageWrapper = ({ children }) => {
+const PageWrapper = ({ children, navbarDictionary, backofficeDictionary }) => {
     const pathname = stripLocaleFromPath(usePathname());
     const { permissions, userId } = useSession();
     const [sidebarPreference, setSidebarPreference] = useState(getStoredSidebarVisibility);
@@ -37,6 +37,7 @@ const PageWrapper = ({ children }) => {
         >
             {isBackofficePath && (
                 <Sidebar
+                    dictionary={backofficeDictionary?.sidebar}
                     isVisible={isSidebarVisible}
                     permissions={permissions}
                     userId={userId}
@@ -44,7 +45,12 @@ const PageWrapper = ({ children }) => {
                 />
             )}
             <main>
-                <Navbar userId={userId} permissions={permissions} isSidebarVisible={isSidebarVisible} />
+                <Navbar
+                    dictionary={navbarDictionary}
+                    userId={userId}
+                    permissions={permissions}
+                    isSidebarVisible={isSidebarVisible}
+                />
                 <div className="content">
                     {children}
                 </div>
@@ -54,7 +60,14 @@ const PageWrapper = ({ children }) => {
 };
 
 PageWrapper.propTypes = {
+    backofficeDictionary: PropTypes.object,
     children: PropTypes.node.isRequired,
+    navbarDictionary: PropTypes.object,
+};
+
+PageWrapper.defaultProps = {
+    backofficeDictionary: {},
+    navbarDictionary: {},
 };
 
 export default PageWrapper;
