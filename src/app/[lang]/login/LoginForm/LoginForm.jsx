@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import PropTypes from "prop-types";
 import styles from "./loginForm.module.scss";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
@@ -12,7 +13,7 @@ const INITIAL_LOGIN_STATE = {
   errors: {},
 };
 
-export function LoginForm() {
+export function LoginForm({ dictionary }) {
   const appRouter = useAppRouter();
   const { showError } = useToast();
   const [state, formAction, isPending] = useActionState(login, INITIAL_LOGIN_STATE);
@@ -34,11 +35,11 @@ export function LoginForm() {
         <Input
           id="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder={dictionary?.emailPlaceholder}
           autoComplete="email"
           error={!!emailError}
           errorText={emailError?.[0] || ""}
-          infoText="We'll never share your email."
+          infoText={dictionary?.emailInfo}
         />
       </div>
 
@@ -47,7 +48,7 @@ export function LoginForm() {
           id="password"
           name="password"
           type="password"
-          placeholder="Enter your password"
+          placeholder={dictionary?.passwordPlaceholder}
           autoComplete="current-password"
           error={!!passwordError}
           errorText={passwordError?.[0] || ""}
@@ -58,9 +59,17 @@ export function LoginForm() {
       <Button
         disabled={isPending}
         type="submit"
-        text={isPending ? "Logging in..." : "Login"}
+        text={isPending ? dictionary?.submitting : dictionary?.submit}
         className={styles.submitButton}
       />
     </form>
   );
 }
+
+LoginForm.propTypes = {
+  dictionary: PropTypes.object,
+};
+
+LoginForm.defaultProps = {
+  dictionary: {},
+};

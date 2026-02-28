@@ -1,0 +1,13 @@
+{
+  "loading": "Loading...",
+  "empty": "No items found",
+  "totalRows": "Total rows",
+  "columns": {
+    "_id": "ID",
+    "name": "Name",
+    "permissions": "Permissions",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "__v": "Version"
+  }
+}

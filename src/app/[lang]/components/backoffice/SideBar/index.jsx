@@ -11,7 +11,7 @@ import Button from "../../base/Button";
 import Icon from "../../base/Icon";
 import AppLink from "../../base/AppLink";
 
-export default function Sidebar({ isVisible, userId, permissions, onVisibilityChange }) {
+export default function Sidebar({ isVisible, userId, permissions, onVisibilityChange, dictionary }) {
     const toggleSidebar = () => {
         onVisibilityChange(!isVisible);
     };
@@ -28,12 +28,12 @@ export default function Sidebar({ isVisible, userId, permissions, onVisibilityCh
                     <ul>
                         {userIsAdminOrMore(permissions) && (
                             <li>
-                                <AppLink href={BACKOFFICE_URL}>Home</AppLink>
+                                <AppLink href={BACKOFFICE_URL}>{dictionary?.home}</AppLink>
                             </li>
                         )}
                         {userIsSuperAdmin(permissions) && (
                             <li>
-                                <AppLink href={BACKOFFICE_USERROLES_URL}>User Roles</AppLink>
+                                <AppLink href={BACKOFFICE_USERROLES_URL}>{dictionary?.userRoles}</AppLink>
                             </li>
                         )}
                     </ul>
@@ -45,6 +45,7 @@ export default function Sidebar({ isVisible, userId, permissions, onVisibilityCh
 }
 
 Sidebar.propTypes = {
+    dictionary: PropTypes.object,
     isVisible: PropTypes.bool,
     permissions: PropTypes.array,
     userId: PropTypes.string,
@@ -53,6 +54,7 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
+    dictionary: {},
     isVisible: false,
     permissions: [],
     userId: null,

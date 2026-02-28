@@ -1,16 +1,15 @@
-"use client";
-import { useAppRouter } from "../hooks/useAppRouter";
+import AppLink from "../components/base/AppLink";
+import { getDictionary } from "../dictionaries";
 import { INDEX_URL } from "@/utils/urls";
 
-export default function About() {
-    const appRouter = useAppRouter();
+export default async function About({ params }) {
+    const { lang } = await params;
+    const dictionary = await getDictionary(lang, "about");
+
     return (
         <>
-            <h1>About Us</h1>
-            <button
-                onClick={() => appRouter.push(INDEX_URL)}> Home
-            </button>
+            <h1>{dictionary?.title}</h1>
+            <AppLink href={INDEX_URL}>{dictionary?.backHome}</AppLink>
         </>
-
     );
 }

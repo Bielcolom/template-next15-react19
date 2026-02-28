@@ -1,0 +1,13 @@
+{
+  "loading": "Cargando...",
+  "empty": "No hay elementos",
+  "totalRows": "Total de filas",
+  "columns": {
+    "_id": "ID",
+    "name": "Nombre",
+    "permissions": "Permisos",
+    "createdAt": "Creado",
+    "updatedAt": "Actualizado",
+    "__v": "Version"
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import PropTypes from "prop-types";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
 import { register } from "@/app/(auth)/register/actions";
@@ -12,7 +13,7 @@ const INITIAL_REGISTER_STATE = {
   errors: {},
 };
 
-export default function RegisterForm() {
+export default function RegisterForm({ dictionary }) {
   const appRouter = useAppRouter();
   const { showError } = useToast();
   const [state, formAction, isPending] = useActionState(register, INITIAL_REGISTER_STATE);
@@ -36,8 +37,8 @@ export default function RegisterForm() {
         <Input
           id="name"
           name="name"
-          text="Name"
-          placeholder="John Doe"
+          text={dictionary?.fields?.nameLabel}
+          placeholder={dictionary?.placeholders?.name}
           autoComplete="name"
           error={!!nameError}
           errorText={nameError}
@@ -48,8 +49,8 @@ export default function RegisterForm() {
         <Input
           id="email"
           name="email"
-          text="Email"
-          placeholder="john@example.com"
+          text={dictionary?.fields?.emailLabel}
+          placeholder={dictionary?.placeholders?.email}
           autoComplete="email"
           error={!!emailError}
           errorText={emailError}
@@ -60,7 +61,7 @@ export default function RegisterForm() {
         <Input
           id="password"
           name="password"
-          text="Password"
+          text={dictionary?.fields?.passwordLabel}
           type="password"
           autoComplete="new-password"
           showPassword={true}
@@ -73,7 +74,7 @@ export default function RegisterForm() {
         <Input
           id="confirmPassword"
           name="confirmPassword"
-          text="Confirm Password"
+          text={dictionary?.fields?.confirmPasswordLabel}
           type="password"
           autoComplete="new-password"
           showPassword={true}
@@ -85,9 +86,17 @@ export default function RegisterForm() {
       <Button
         disabled={isPending}
         type="submit"
-        text={isPending ? "Signing Up..." : "Sign Up"}
+        text={isPending ? dictionary?.submitting : dictionary?.submit}
         className={styles.submitButton}
       />
     </form>
   );
 }
+
+RegisterForm.propTypes = {
+  dictionary: PropTypes.object,
+};
+
+RegisterForm.defaultProps = {
+  dictionary: {},
+};

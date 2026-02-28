@@ -11,7 +11,7 @@ import LanguageSelector from "./LanguageSelector";
 import { useAppRouter } from "@/app/[lang]/hooks/useAppRouter";
 import AppLink from "../base/AppLink";
 
-export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
+export const Navbar = ({ userId, permissions, isSidebarVisible, dictionary }) => {
   const appRouter = useAppRouter();
   const pathWithoutLocale = appRouter.pathnameWithoutLocale;
 
@@ -30,33 +30,34 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
           href={INDEX_URL}
           className={`${styles.link} ${pathWithoutLocale === INDEX_URL ? styles.active : ""}`}
         >
-          Home
+          {dictionary?.home}
         </AppLink>
         <AppLink
           href={ABOUT_URL}
           className={`${styles.link} ${pathWithoutLocale === ABOUT_URL ? styles.active : ""}`}
         >
-          About
+          {dictionary?.about}
         </AppLink>
         <AppLink
           href={PRODUCT_1_URL}
           className={`${styles.link} ${pathWithoutLocale.startsWith(PRODUCTS_URL) ? styles.active : ""}`}
         >
-          Product 1
+          {dictionary?.productOne}
         </AppLink>
       </div>
       <div className={styles.rightElements}>
-        <LanguageSelector />
+        <LanguageSelector labels={dictionary?.languageSelector} />
         {userIsAdminOrMore(permissions) &&
           <AppLink
             href={BACKOFFICE_URL}
             className={styles.link}
           >
-            Backoffice
+            {dictionary?.backoffice}
           </AppLink>
         }
         {userId ? (
           <Button
+            aria-label={dictionary?.logout}
             text={<Icon icon="logout" />}
             styleType={BUTTON_STYLE_TYPES.transparent}
             onClick={handleLogout}
@@ -64,7 +65,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
 
         ) : (
           <Button
-            text="Login"
+            text={dictionary?.login}
             styleType={BUTTON_STYLE_TYPES.transparent}
             onClick={() => appRouter.push(LOGIN_URL)} />
         )}
@@ -74,12 +75,14 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
 };
 
 Navbar.defaultProps = {
+  dictionary: {},
   userId: null,
-  permissions: PropTypes.array,
+  permissions: [],
 };
 
 Navbar.propTypes = {
-  permissions: [],
+  dictionary: PropTypes.object,
+  permissions: PropTypes.array,
   userId: PropTypes.string,
   isSidebarVisible: PropTypes.bool.isRequired,
 };

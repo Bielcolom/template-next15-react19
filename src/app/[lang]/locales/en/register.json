@@ -1,0 +1,16 @@
+{
+  "title": "Register",
+  "logoAlt": "Rectangular logo",
+  "fields": {
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password"
+  },
+  "placeholders": {
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "submit": "Sign up",
+  "submitting": "Signing up..."
+}

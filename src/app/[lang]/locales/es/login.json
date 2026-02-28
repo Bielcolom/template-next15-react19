@@ -1,0 +1,9 @@
+{
+  "title": "Iniciar sesion",
+  "logoAlt": "Logo rectangular",
+  "emailPlaceholder": "Introduce tu correo",
+  "emailInfo": "Nunca compartiremos tu correo.",
+  "passwordPlaceholder": "Introduce tu contrasena",
+  "submit": "Iniciar sesion",
+  "submitting": "Iniciando sesion..."
+}

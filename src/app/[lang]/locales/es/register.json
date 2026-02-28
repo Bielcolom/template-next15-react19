@@ -1,0 +1,16 @@
+{
+  "title": "Crear cuenta",
+  "logoAlt": "Logo rectangular",
+  "fields": {
+    "nameLabel": "Nombre",
+    "emailLabel": "Correo electronico",
+    "passwordLabel": "Contrasena",
+    "confirmPasswordLabel": "Confirmar contrasena"
+  },
+  "placeholders": {
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "submit": "Registrarse",
+  "submitting": "Creando cuenta..."
+}

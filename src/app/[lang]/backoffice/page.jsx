@@ -1,19 +1,21 @@
 import { getUserCount } from "./users/actions";
 import PropTypes from "prop-types";
 import BackofficeCard from "@/app/[lang]/components/backoffice/BackofficeCard";
-import { getDictionary } from "../dictionaries";
+import { getDictionaries } from "../dictionaries";
 import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../RouteToastHandler";
 
 export default async function BackofficePage({ params }) {
     const { lang } = await params;
     const { data: userCount, errors: countErrors } = await getUserCount(lang);
-    const dict = await getDictionary(lang, "common");
+    const dictionaries = await getDictionaries(lang, ["common", "backoffice"]);
+    const commonDictionary = dictionaries.common;
+    const backofficeDictionary = dictionaries.backoffice;
     const safeUserCount = typeof userCount === "number" ? userCount : 0;
     const toastMessages = {
-        userCreated: dict?.feedback?.userCreated,
-        userUpdated: dict?.feedback?.userUpdated,
-        userDeleted: dict?.feedback?.userDeleted,
+        userCreated: commonDictionary?.feedback?.userCreated,
+        userUpdated: commonDictionary?.feedback?.userUpdated,
+        userDeleted: commonDictionary?.feedback?.userDeleted,
     };
 
     return (
@@ -22,13 +24,11 @@ export default async function BackofficePage({ params }) {
             <ToastOnMount messages={countErrors} />
             <div className="backoffice-client">
                 <BackofficeCard
-                    text="Users"
+                    text={backofficeDictionary?.cards?.users}
                     icon="icon"
                     number={safeUserCount}
                 />
             </div>
-            <p>lang: {lang}</p>
-            <p>translation: {dict.accept}</p>
         </div>
     );
 }

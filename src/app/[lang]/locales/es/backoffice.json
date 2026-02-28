@@ -1,0 +1,9 @@
+{
+  "cards": {
+    "users": "Usuarios"
+  },
+  "sidebar": {
+    "home": "Inicio",
+    "userRoles": "Roles de usuario"
+  }
+}

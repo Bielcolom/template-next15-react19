@@ -1,0 +1,12 @@
+{
+  "home": "Home",
+  "about": "About",
+  "productOne": "Product 1",
+  "backoffice": "Backoffice",
+  "login": "Login",
+  "logout": "Logout",
+  "languageSelector": {
+    "es": "Spanish",
+    "en": "English"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "home": "Inicio",
+  "about": "Sobre nosotros",
+  "productOne": "Producto 1",
+  "backoffice": "Backoffice",
+  "login": "Iniciar sesion",
+  "logout": "Cerrar sesion",
+  "languageSelector": {
+    "es": "Espa\\u00f1ol",
+    "en": "Ingl\\u00e9s"
+  }
+}

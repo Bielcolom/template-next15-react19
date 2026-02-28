@@ -1,0 +1,9 @@
+{
+  "title": "Login",
+  "logoAlt": "Rectangular logo",
+  "emailPlaceholder": "Enter your email",
+  "emailInfo": "We'll never share your email.",
+  "passwordPlaceholder": "Enter your password",
+  "submit": "Login",
+  "submitting": "Logging in..."
+}
