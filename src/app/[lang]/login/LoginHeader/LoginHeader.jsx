@@ -1,20 +1,14 @@
 "use client";
 
-import PropTypes from "prop-types";
+import { useTranslations } from "next-intl";
 import styles from "./loginHeader.module.scss";
 
-export const LoginHeader = ({ title }) => {
+export const LoginHeader = () => {
+    const t = useTranslations("login");
+
     return (
         <div className={styles.loginHeader}>
-            <h1 className={styles.loginText}>{title}</h1>
+            <h1 className={styles.loginText}>{t("title")}</h1>
         </div>
     );
-};
-
-LoginHeader.propTypes = {
-    title: PropTypes.string,
-};
-
-LoginHeader.defaultProps = {
-    title: "",
 };

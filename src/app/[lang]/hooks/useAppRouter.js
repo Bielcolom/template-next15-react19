@@ -1,19 +1,19 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { buildLocalizedNavigation } from "@/utils/navigation";
+import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "@/i18n/navigation";
 
 export const useAppRouter = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const navigation = buildLocalizedNavigation(pathname);
+  const locale = useLocale();
 
   return {
-    locale: navigation.locale,
+    locale,
     pathname,
-    pathnameWithoutLocale: navigation.pathnameWithoutLocale,
-    push: (path, options) => router.push(navigation.localizePath(path), options),
-    replace: (path, options) => router.replace(navigation.localizePath(path), options),
-    switchLocale: (nextLocale) => router.push(navigation.switchLocalePath(nextLocale)),
+    pathnameWithoutLocale: pathname,
+    push: (path, options) => router.push(path, options),
+    replace: (path, options) => router.replace(path, options),
+    switchLocale: (nextLocale) => router.replace(pathname, { locale: nextLocale }),
   };
 };

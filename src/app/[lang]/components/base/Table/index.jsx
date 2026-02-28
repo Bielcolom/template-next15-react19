@@ -2,12 +2,14 @@
 
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Icon from "../Icon";
 import styles from "./table.module.scss";
 
 const INITIAL_VISIBLE_ROWS = 500;
 
-const TableViewport = ({ columns, data, dictionary, loading, visibleColumns }) => {
+const TableViewport = ({ columns, data, loading, visibleColumns }) => {
+    const t = useTranslations("table");
     const [visibleRows, setVisibleRows] = useState(500);
 
     const handleScroll = (e) => {
@@ -22,7 +24,8 @@ const TableViewport = ({ columns, data, dictionary, loading, visibleColumns }) =
     };
 
     const getColumnLabel = (column) => {
-        return dictionary?.columns?.[column] || column;
+        const key = `columns.${column}`;
+        return t.has(key) ? t(key) : column;
     };
 
     return (
@@ -41,7 +44,7 @@ const TableViewport = ({ columns, data, dictionary, loading, visibleColumns }) =
                             <tr>
                                 <td colSpan={columns.length} className={styles.loadingTd}>
                                     <div className={styles.loadingContainer}>
-                                        {dictionary?.loading}
+                                        {t("loading")}
                                     </div>
                                 </td>
                             </tr>
@@ -49,7 +52,7 @@ const TableViewport = ({ columns, data, dictionary, loading, visibleColumns }) =
                             <tr className={styles.noResults}>
                                 <td colSpan={Math.max(columns.length, 1)}>
                                     <Icon icon="exclamation" />
-                                    {dictionary?.empty}
+                                    {t("empty")}
                                 </td>
                             </tr>
                         ) : (
@@ -67,7 +70,7 @@ const TableViewport = ({ columns, data, dictionary, loading, visibleColumns }) =
                 </table>
             </div>
             <div className={styles.footer}>
-                <p>{dictionary?.totalRows ? `${dictionary.totalRows}: ` : ""}{data.length}</p>
+                <p>{t("totalRows")}: {data.length}</p>
             </div>
         </>
     );
@@ -76,16 +79,11 @@ const TableViewport = ({ columns, data, dictionary, loading, visibleColumns }) =
 TableViewport.propTypes = {
     columns: PropTypes.array.isRequired,
     data: PropTypes.array.isRequired,
-    dictionary: PropTypes.object,
     visibleColumns: PropTypes.array.isRequired,
     loading: PropTypes.bool.isRequired,
 };
 
-TableViewport.defaultProps = {
-    dictionary: {},
-};
-
-const Table = ({ data, visibleColumns = [], dictionary, loading }) => {
+const Table = ({ data, visibleColumns = [], loading }) => {
     const columns = data.length > 0 ? Object.keys(data[0]).map((key) => ({ value: key, label: key })) : [];
     const tableStateKey = `${data.length}:${columns.map((column) => column.value).join("|")}`;
 
@@ -94,7 +92,6 @@ const Table = ({ data, visibleColumns = [], dictionary, loading }) => {
             key={tableStateKey}
             columns={columns}
             data={data}
-            dictionary={dictionary}
             loading={loading}
             visibleColumns={visibleColumns}
         />
@@ -103,14 +100,12 @@ const Table = ({ data, visibleColumns = [], dictionary, loading }) => {
 
 Table.defaultProps = {
     data: [],
-    dictionary: {},
     visibleColumns: [],
     loading: false,
 };
 
 Table.propTypes = {
     data: PropTypes.array,
-    dictionary: PropTypes.object,
     visibleColumns: PropTypes.array,
     loading: PropTypes.bool,
 };

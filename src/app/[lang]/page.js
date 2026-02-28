@@ -1,21 +1,20 @@
+import { getTranslations } from "next-intl/server";
 import RouteToastHandler from "./RouteToastHandler";
-import { getDictionaries } from "./dictionaries";
 import styles from "./page.module.css";
 
 export default async function Home({ params }) {
   const { lang } = await params;
-  const dictionaries = await getDictionaries(lang, ["common", "home"]);
-  const commonDictionary = dictionaries.common;
-  const homeDictionary = dictionaries.home;
+  const homeT = await getTranslations({ locale: lang, namespace: "home" });
+  const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
 
   const toastMessages = {
-    registrationSuccess: commonDictionary?.feedback?.registrationSuccess,
+    registrationSuccess: feedbackT("registrationSuccess"),
   };
 
   return (
     <div className={styles.page}>
       <RouteToastHandler toastMessages={toastMessages} />
-      <p className={styles.text}>{homeDictionary?.centeredText}</p>
+      <p className={styles.text}>{homeT("centeredText")}</p>
     </div>
   );
 }

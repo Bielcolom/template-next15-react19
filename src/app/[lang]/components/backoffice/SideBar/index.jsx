@@ -1,17 +1,20 @@
 "use client";
 
+import PropTypes from "prop-types";
+import { useTranslations } from "next-intl";
 import {
     BACKOFFICE_URL,
     BACKOFFICE_USERROLES_URL,
 } from "@/utils/urls";
 import styles from "./sidebar.module.scss";
 import { userIsAdminOrMore, userIsSuperAdmin } from "@/utils/helpers";
-import PropTypes from "prop-types";
 import Button from "../../base/Button";
 import Icon from "../../base/Icon";
 import AppLink from "../../base/AppLink";
 
-export default function Sidebar({ isVisible, userId, permissions, onVisibilityChange, dictionary }) {
+export default function Sidebar({ isVisible, userId, permissions, onVisibilityChange }) {
+    const t = useTranslations("backoffice.sidebar");
+
     const toggleSidebar = () => {
         onVisibilityChange(!isVisible);
     };
@@ -28,12 +31,12 @@ export default function Sidebar({ isVisible, userId, permissions, onVisibilityCh
                     <ul>
                         {userIsAdminOrMore(permissions) && (
                             <li>
-                                <AppLink href={BACKOFFICE_URL}>{dictionary?.home}</AppLink>
+                                <AppLink href={BACKOFFICE_URL}>{t("home")}</AppLink>
                             </li>
                         )}
                         {userIsSuperAdmin(permissions) && (
                             <li>
-                                <AppLink href={BACKOFFICE_USERROLES_URL}>{dictionary?.userRoles}</AppLink>
+                                <AppLink href={BACKOFFICE_USERROLES_URL}>{t("userRoles")}</AppLink>
                             </li>
                         )}
                     </ul>
@@ -45,7 +48,6 @@ export default function Sidebar({ isVisible, userId, permissions, onVisibilityCh
 }
 
 Sidebar.propTypes = {
-    dictionary: PropTypes.object,
     isVisible: PropTypes.bool,
     permissions: PropTypes.array,
     userId: PropTypes.string,
@@ -54,7 +56,6 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
-    dictionary: {},
     isVisible: false,
     permissions: [],
     userId: null,

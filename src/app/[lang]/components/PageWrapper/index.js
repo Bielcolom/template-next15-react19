@@ -1,14 +1,12 @@
 "use client";
 
 import PropTypes from "prop-types";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
-
 import Sidebar from "../backoffice/SideBar";
 import Navbar from "../Navbar";
 import { useSession } from "@/app/context/sessionProvider";
-import { stripLocaleFromPath } from "@/utils/helpers";
 import { BACKOFFICE_URL } from "@/utils/urls";
+import { usePathname } from "@/i18n/navigation";
 
 const SIDEBAR_VISIBILITY_STORAGE_KEY = "backoffice-sidebar-visible";
 
@@ -20,8 +18,8 @@ const getStoredSidebarVisibility = () => {
     return window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) === "true";
 };
 
-const PageWrapper = ({ children, navbarDictionary, backofficeDictionary }) => {
-    const pathname = stripLocaleFromPath(usePathname());
+const PageWrapper = ({ children }) => {
+    const pathname = usePathname();
     const { permissions, userId } = useSession();
     const [sidebarPreference, setSidebarPreference] = useState(getStoredSidebarVisibility);
     const isBackofficePath = pathname === BACKOFFICE_URL || pathname.startsWith(`${BACKOFFICE_URL}/`);
@@ -37,7 +35,6 @@ const PageWrapper = ({ children, navbarDictionary, backofficeDictionary }) => {
         >
             {isBackofficePath && (
                 <Sidebar
-                    dictionary={backofficeDictionary?.sidebar}
                     isVisible={isSidebarVisible}
                     permissions={permissions}
                     userId={userId}
@@ -45,12 +42,7 @@ const PageWrapper = ({ children, navbarDictionary, backofficeDictionary }) => {
                 />
             )}
             <main>
-                <Navbar
-                    dictionary={navbarDictionary}
-                    userId={userId}
-                    permissions={permissions}
-                    isSidebarVisible={isSidebarVisible}
-                />
+                <Navbar userId={userId} permissions={permissions} isSidebarVisible={isSidebarVisible} />
                 <div className="content">
                     {children}
                 </div>
@@ -60,14 +52,7 @@ const PageWrapper = ({ children, navbarDictionary, backofficeDictionary }) => {
 };
 
 PageWrapper.propTypes = {
-    backofficeDictionary: PropTypes.object,
     children: PropTypes.node.isRequired,
-    navbarDictionary: PropTypes.object,
-};
-
-PageWrapper.defaultProps = {
-    backofficeDictionary: {},
-    navbarDictionary: {},
 };
 
 export default PageWrapper;

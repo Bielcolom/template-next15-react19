@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
 import { AUTH_ACTIONS, evaluateAuthPolicy } from "./middleware/authPolicy";
 import {
-  DEFAULT_LOCALE,
   INDEX_URL,
   LOGIN_URL,
-  SUPPORTED_LOCALES,
   getLocalizedPath,
   hasLocale,
   looksLikeLocale,
+  stripLocaleFromPath,
 } from "./utils/urls";
-import Negotiator from "negotiator";
-import { match } from "@formatjs/intl-localematcher";
 import { jwtVerify } from "jose";
 import { ERROR_CODES } from "./errors/codes";
 import { ERROR_MESSAGES } from "./errors/messages";
+import { routing } from "./i18n/routing";
 
 const secretKey = process.env.SESSION_SECRET;
 if (!secretKey || secretKey.length < 32) {
@@ -22,12 +21,7 @@ if (!secretKey || secretKey.length < 32) {
 
 const encodedKey = new TextEncoder().encode(secretKey);
 const isProduction = process.env.NODE_ENV === "production";
-
-const getLocale = (request) => {
-  const headers = { "accept-language": request.headers.get("accept-language") || "es,en;q=0.5" };
-  const languages = new Negotiator({ headers }).languages();
-  return match(languages, SUPPORTED_LOCALES, DEFAULT_LOCALE);
-};
+const handleI18nRouting = createMiddleware(routing);
 
 const decryptSession = async (session = "") => {
   const { payload } = await jwtVerify(session, encodedKey, {
@@ -59,7 +53,7 @@ const redirectToLogin = (req, locale, clearCookies = false) => {
 
 const resolveAuthResponse = (req, locale, policyResult) => {
   if (policyResult.action === AUTH_ACTIONS.ALLOW) {
-    return NextResponse.next();
+    return null;
   }
 
   if (policyResult.action === AUTH_ACTIONS.REDIRECT_HOME) {
@@ -74,33 +68,30 @@ export default async function middleware(req) {
   const segments = pathname.split("/").filter(Boolean);
   const firstSegment = segments[0] || "";
   const requestLocale = hasLocale(firstSegment) ? firstSegment : null;
-  const locale = requestLocale || getLocale(req);
-  const pathWithoutLocale = requestLocale
-    ? `/${segments.slice(1).join("/")}`.replace(/\/$/, "") || "/"
-    : pathname;
-  const pathnameHasLocale = Boolean(requestLocale);
 
-  if (!pathnameHasLocale && looksLikeLocale(firstSegment)) {
+  if (!requestLocale && looksLikeLocale(firstSegment)) {
     return NextResponse.next();
   }
 
-  if (!pathnameHasLocale) {
-    req.nextUrl.pathname = getLocalizedPath(pathname, locale);
-    return NextResponse.redirect(req.nextUrl);
+  const intlResponse = handleI18nRouting(req);
+  if (!requestLocale) {
+    return intlResponse;
   }
 
+  const locale = requestLocale;
+  const pathWithoutLocale = stripLocaleFromPath(pathname);
   const cookies = req.cookies;
   const sessionCookie = cookies.get("session")?.value;
 
   try {
     if (!sessionCookie) {
       const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload: null });
-      return resolveAuthResponse(req, locale, policyResult);
+      return resolveAuthResponse(req, locale, policyResult) || intlResponse;
     }
 
     const payload = await decryptSession(sessionCookie);
     const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload });
-    return resolveAuthResponse(req, locale, policyResult);
+    return resolveAuthResponse(req, locale, policyResult) || intlResponse;
   } catch (error) {
     console.error("Middleware Error:", error.message);
     return redirectToLogin(req, locale, true);

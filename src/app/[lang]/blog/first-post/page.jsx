@@ -1,8 +1,8 @@
-import { getDictionary } from "../../dictionaries";
+import { getTranslations } from "next-intl/server";
 
 export default async function FirstPost({ params }) {
     const { lang } = await params;
-    const dictionary = await getDictionary(lang, "blog");
+    const t = await getTranslations({ locale: lang, namespace: "blog" });
 
-    return <><h1>{dictionary?.firstPostTitle}</h1></>;
+    return <><h1>{t("firstPostTitle")}</h1></>;
 }

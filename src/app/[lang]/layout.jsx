@@ -2,12 +2,13 @@ import PropTypes from "prop-types";
 import localFont from "next/font/local";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import "../globals.scss";
 import { decrypt } from "../lib/session";
 import { SessionProvider } from "../context/sessionProvider";
 import { ToastProvider } from "../context/toastProvider";
 import PageWrapper from "./components/PageWrapper";
-import { getDictionaries } from "./dictionaries";
 import { hasLocale } from "@/utils/urls";
 
 const geistSans = localFont({
@@ -34,6 +35,8 @@ export default async function LocaleLayout({ children, params }) {
     notFound();
   }
 
+  setRequestLocale(lang);
+
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("session")?.value;
   const userId = cookieStore.get("userId")?.value || null;
@@ -48,21 +51,16 @@ export default async function LocaleLayout({ children, params }) {
     }
   }
 
-  const dictionaries = await getDictionaries(lang, ["navbar", "backoffice"]);
-
   return (
     <html lang={lang}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ToastProvider>
-          <SessionProvider permissions={permissions} userId={userId}>
-            <PageWrapper
-              backofficeDictionary={dictionaries.backoffice}
-              navbarDictionary={dictionaries.navbar}
-            >
-              {children}
-            </PageWrapper>
-          </SessionProvider>
-        </ToastProvider>
+        <NextIntlClientProvider>
+          <ToastProvider>
+            <SessionProvider permissions={permissions} userId={userId}>
+              <PageWrapper>{children}</PageWrapper>
+            </SessionProvider>
+          </ToastProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

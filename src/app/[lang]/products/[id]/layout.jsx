@@ -1,14 +1,14 @@
 import PropTypes from "prop-types";
-import { getDictionary } from "../../dictionaries";
+import { getTranslations } from "next-intl/server";
 
 export default async function ProductLayout({ children, params }) {
     const { lang } = await params;
-    const dictionary = await getDictionary(lang, "products");
+    const t = await getTranslations({ locale: lang, namespace: "products" });
 
     return (
         <div>
             {children}
-            <h2>{dictionary?.featuredSectionTitle}</h2>
+            <h2>{t("featuredSectionTitle")}</h2>
         </div>
     );
 }

@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
-import { getDictionary } from "../../dictionaries";
+import { getTranslations } from "next-intl/server";
 
 export default async function Product({ params }) {
     const { id, lang } = await params;
-    const dictionary = await getDictionary(lang, "products");
+    const t = await getTranslations({ locale: lang, namespace: "products" });
 
     return (
         <>
-            <h1>{dictionary?.detailTitlePrefix}: {id}</h1>
+            <h1>{t("detailTitlePrefix")}: {id}</h1>
         </>
     );
 }

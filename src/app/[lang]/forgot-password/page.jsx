@@ -1,8 +1,8 @@
-import { getDictionary } from "../dictionaries";
+import { getTranslations } from "next-intl/server";
 
 export default async function ForgotPassword({ params }) {
     const { lang } = await params;
-    const dictionary = await getDictionary(lang, "forgotPassword");
+    const t = await getTranslations({ locale: lang, namespace: "forgotPassword" });
 
-    return <><h1>{dictionary?.title}</h1></>;
+    return <><h1>{t("title")}</h1></>;
 }
