@@ -6,6 +6,8 @@ import {
   LOGIN_URL,
   SUPPORTED_LOCALES,
   getLocalizedPath,
+  hasLocale,
+  looksLikeLocale,
 } from "./utils/urls";
 import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
@@ -17,10 +19,10 @@ const secretKey = process.env.SESSION_SECRET;
 if (!secretKey || secretKey.length < 32) {
   throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
 }
+
 const encodedKey = new TextEncoder().encode(secretKey);
 const isProduction = process.env.NODE_ENV === "production";
 
-// Función para obtener el idioma preferido de la cabecera "Accept-Language"
 const getLocale = (request) => {
   const headers = { "accept-language": request.headers.get("accept-language") || "es,en;q=0.5" };
   const languages = new Negotiator({ headers }).languages();
@@ -31,6 +33,7 @@ const decryptSession = async (session = "") => {
   const { payload } = await jwtVerify(session, encodedKey, {
     algorithms: ["HS256"],
   });
+
   return payload;
 };
 
@@ -68,23 +71,24 @@ const resolveAuthResponse = (req, locale, policyResult) => {
 
 export default async function middleware(req) {
   const { pathname } = req.nextUrl;
-  const segments = pathname.split("/").filter(Boolean); // Filtra cualquier valor vacío
-  const requestLocale = SUPPORTED_LOCALES.includes(segments[0]) ? segments[0] : null;
+  const segments = pathname.split("/").filter(Boolean);
+  const firstSegment = segments[0] || "";
+  const requestLocale = hasLocale(firstSegment) ? firstSegment : null;
   const locale = requestLocale || getLocale(req);
   const pathWithoutLocale = requestLocale
     ? `/${segments.slice(1).join("/")}`.replace(/\/$/, "") || "/"
     : pathname;
-
-  // Verificar si el path ya contiene un locale soportado
   const pathnameHasLocale = Boolean(requestLocale);
 
-  // Si no contiene un idioma válido en la URL, redirigir al idioma predeterminado
+  if (!pathnameHasLocale && looksLikeLocale(firstSegment)) {
+    return NextResponse.next();
+  }
+
   if (!pathnameHasLocale) {
     req.nextUrl.pathname = getLocalizedPath(pathname, locale);
     return NextResponse.redirect(req.nextUrl);
   }
 
-  // Manejo de autenticación y permisos
   const cookies = req.cookies;
   const sessionCookie = cookies.get("session")?.value;
 
@@ -99,7 +103,6 @@ export default async function middleware(req) {
     return resolveAuthResponse(req, locale, policyResult);
   } catch (error) {
     console.error("Middleware Error:", error.message);
-
     return redirectToLogin(req, locale, true);
   }
 }
