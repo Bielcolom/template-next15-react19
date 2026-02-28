@@ -1,0 +1,60 @@
+"use client";
+
+import PropTypes from "prop-types";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+import Sidebar from "../backoffice/SideBar";
+import Navbar from "../Navbar";
+import { useSession } from "@/app/context/sessionProvider";
+import { stripLocaleFromPath } from "@/utils/helpers";
+import { BACKOFFICE_URL } from "@/utils/urls";
+
+const SIDEBAR_VISIBILITY_STORAGE_KEY = "backoffice-sidebar-visible";
+
+const getStoredSidebarVisibility = () => {
+    if ("undefined" === typeof window) {
+        return false;
+    }
+
+    return window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) === "true";
+};
+
+const PageWrapper = ({ children }) => {
+    const pathname = stripLocaleFromPath(usePathname());
+    const { permissions, userId } = useSession();
+    const [sidebarPreference, setSidebarPreference] = useState(getStoredSidebarVisibility);
+    const isBackofficePath = pathname === BACKOFFICE_URL || pathname.startsWith(`${BACKOFFICE_URL}/`);
+    const isSidebarVisible = isBackofficePath ? sidebarPreference : false;
+
+    const handleSidebarVisibilityChange = (isVisible) => {
+        setSidebarPreference(isVisible);
+        window.localStorage.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, String(isVisible));
+    };
+
+    return (
+        <div className={`layout-general ${isSidebarVisible ? "with-sidebar" : "no-sidebar"}`}
+        >
+            {isBackofficePath && (
+                <Sidebar
+                    isVisible={isSidebarVisible}
+                    permissions={permissions}
+                    userId={userId}
+                    onVisibilityChange={handleSidebarVisibilityChange}
+                />
+            )}
+            <main>
+                <Navbar userId={userId} permissions={permissions} isSidebarVisible={isSidebarVisible} />
+                <div className="content">
+                    {children}
+                </div>
+            </main>
+        </div>
+    );
+};
+
+PageWrapper.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
+export default PageWrapper;

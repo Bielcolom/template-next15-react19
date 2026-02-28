@@ -1,0 +1,27 @@
+@use '../../../../constants.scss' as *;
+
+.languageSelector {
+    display: flex;
+    gap: 10px;
+
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        transition: background-color 0.3s;
+
+        span {
+            color: $black !important;
+        }
+
+        &.active {
+            background-color: #0070f3;
+            color: $white;
+        }
+
+        &:hover {
+            background-color: #f0f0f0;
+        }
+    }
+}

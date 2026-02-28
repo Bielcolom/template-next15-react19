@@ -1,0 +1,15 @@
+@use '../../../../constants.scss';
+
+.backofficeClient {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    color: black;
+    width: 25rem;
+    padding: constants.$size-lg;
+
+    .number {
+        font-weight: 600;
+    }
+}

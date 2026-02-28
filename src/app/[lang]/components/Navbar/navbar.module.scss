@@ -1,0 +1,70 @@
+@use '../../../constants.scss' as *;
+
+.nav {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  background-color: $secondary;
+  height: 8rem;
+  z-index: 10;
+
+
+  .leftElements {
+    display: flex;
+    flex-direction: row;
+    gap: $size-xl;
+  }
+
+  .rightElements {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $size-lg;
+
+    button {
+      span {
+        color: $white;
+      }
+    }
+  }
+}
+
+.navFullWidth {
+  width: 100%;
+  transition: width 0.3s ease-in-out;
+
+  .leftElements {
+    margin-left: $size-xxl + $size-md;
+    transition: margin-left 0.3s ease-in-out;
+  }
+}
+
+.navWithSidebar {
+  width: calc(100% - 250px);
+  transition: width 0.3s ease-in-out;
+
+  .leftElements {
+    margin-left: 0;
+    transition: margin-left 0.3s ease-in-out;
+
+  }
+
+}
+
+.active {
+  font-weight: bold;
+  color: #0070f3;
+}
+
+.link {
+  text-decoration: none;
+  color: $white;
+  transition: color 0.3s;
+}
+
+.link:hover {
+  color: $tertiary-dark;
+}

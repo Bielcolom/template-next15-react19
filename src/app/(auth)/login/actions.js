@@ -1,23 +1,44 @@
 "use server";
 
 import { z } from "zod";
-import { createSession, deleteSession } from "@/app/lib/session";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
+import { createSession, deleteSession } from "@/app/lib/session";
 import User from "@/models/User";
+import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
+import { normalizePermissions } from "@/utils/helpers";
+import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
+import { ERROR_CODES } from "@/errors/codes";
+import { getValidationMessages } from "@/errors/i18n";
+import {
+  createLocalizedFieldErrorResponse,
+  createLocalizedGeneralErrorResponse,
+} from "@/errors/serverResponses";
 
-const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }).trim(),
+const buildLoginSchema = (validationMessages) => z.object({
+  email: z.string().email({ message: validationMessages.INVALID_EMAIL }).trim(),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" })
+    .min(8, { message: validationMessages.PASSWORD_MIN_LENGTH })
     .trim(),
 });
 
-export async function login(formData) {
+const normalizeLoginPayload = (payload) => {
+  if (payload instanceof FormData) {
+    return Object.fromEntries(payload);
+  }
+
+  return payload || {};
+};
+
+export async function login(prevState, formData) {
   try {
-    // Validate formData using the schema
-    const result = loginSchema.safeParse(formData);
+    const rawData = normalizeLoginPayload(formData ?? prevState);
+    const locale = rawData?.locale || DEFAULT_LOCALE;
+    const validationMessages = await getValidationMessages(locale);
+    const loginSchema = buildLoginSchema(validationMessages);
+    const result = loginSchema.safeParse(rawData);
     if (!result.success) {
       return {
         errors: result.error.flatten().fieldErrors,
@@ -30,11 +51,7 @@ export async function login(formData) {
 
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return {
-        errors: {
-          email: ["Invalid email or password"],
-        },
-      };
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.INVALID_CREDENTIALS, locale);
     }
 
     const formattedUser = {
@@ -42,24 +59,23 @@ export async function login(formData) {
       _id: user._id.toString(),
     };
 
-    const sessionCreation = await createSession(formattedUser);
+    const userRole = await UserRole.findById(user.userRoleId).lean();
+    const permissions = normalizePermissions(userRole?.permissions);
+
+    const sessionCreation = await createSession(formattedUser, permissions);
     if (!sessionCreation) {
-      return {
-        errors: {
-          email: ["Failed to create session. Please try again."],
-        },
-      };
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.SESSION_CREATION_FAILED, locale);
     }
 
-    return { success: true, userId: formattedUser?._id };
-
+    redirect(getLocalizedPath(INDEX_URL, locale));
   } catch (error) {
+    if (error?.message === "NEXT_REDIRECT") {
+      throw error;
+    }
+
     console.error("Error in login function:", error);
-    return {
-      errors: {
-        general: ["An unexpected error occurred. Please try again."],
-      },
-    };
+    const rawData = normalizeLoginPayload(formData ?? prevState);
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, rawData?.locale || DEFAULT_LOCALE);
   }
 }
 
@@ -68,10 +84,6 @@ export async function logout() {
     await deleteSession();
   } catch (error) {
     console.error("Error in logout function:", error);
-    return {
-      errors: {
-        general: ["An unexpected error occurred. Please try again."],
-      },
-    };
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, DEFAULT_LOCALE);
   }
 }

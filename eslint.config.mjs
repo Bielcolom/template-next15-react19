@@ -1,31 +1,61 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
-import pluginReact from "eslint-plugin-react";
+import reactPlugin from "eslint-plugin-react";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
+import nextPlugin from "@next/eslint-plugin-next";
+
+const nextCoreWebVitalsRules = {
+  ...nextPlugin.configs.recommended.rules,
+  ...nextPlugin.configs["core-web-vitals"].rules,
+};
 
 /** @type {import('eslint').Linter.Config[]} */
-export default [
+const config = [
   {
-    files: ["**/*.{js,mjs,cjs,jsx}"],
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "dist/**",
+      "build/**",
+      "*.min.js",
+    ],
+  },
+  {
+    files: ["**/*.{js,jsx,mjs,cjs}"],
     languageOptions: {
-      globals: {
-        ...globals.browser,  // includes browser globals
-        ...globals.node,     // add Node.js globals (process, global, etc.)
-        es2021: true,        // enable ECMAScript 2021
-      },
+      ecmaVersion: "latest",
+      sourceType: "module",
       parserOptions: {
-        ecmaVersion: 12,     // same as in your previous config
-        sourceType: "module",// same as in your previous config
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
       },
     },
-  },
-  pluginJs.configs.recommended, // recommended rules from @eslint/js
-  pluginReact.configs.flat.recommended, // recommended rules for React
-  {
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooksPlugin,
+      "@next/next": nextPlugin,
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
+      ...reactPlugin.configs.flat.recommended.rules,
+      ...reactPlugin.configs.flat["jsx-runtime"].rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      ...nextCoreWebVitalsRules,
+      "react/no-unknown-property": "off",
+      "react/prop-types": "off",
       semi: ["error", "always"],
       quotes: ["error", "double"],
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
     },
   },
 ];
+
+export default config;

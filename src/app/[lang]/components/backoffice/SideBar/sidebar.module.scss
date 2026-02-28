@@ -1,0 +1,97 @@
+@use '../../../../constants.scss';
+
+.containerSidebar {
+    position: relative;
+    height: 100vh;
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        border-right: 0px solid #ddd;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        transition: transform 0.3s ease-in-out;
+        transform: translateX(0);
+        background-color: constants.$secondary;
+
+        nav {
+            margin-top: 20px;
+
+            ul {
+                list-style: none;
+                padding: 0;
+
+                li {
+                    margin: 10px 0;
+
+                    a {
+                        text-decoration: none;
+                        color: constants.$white;
+                        font-weight: bold;
+
+                        &:hover {
+                            color: constants.$tertiary;
+                        }
+                    }
+                }
+            }
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    }
+
+    .hidden {
+        transform: translateX(-100%);
+    }
+
+    .buttonShowSidebar {
+        position: fixed;
+        top: 2.5rem;
+        transition: left 0.3s ease-in-out;
+        z-index: 11;
+        background-color: constants.$secondary;
+        padding: 0px 0px;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+
+        span {
+            color: constants.$white;
+        }
+
+
+        &.withSidebar {
+            left: 180px;
+            transform: rotate(0deg);
+            /* Rotación de 180 grados */
+            transition: transform 0.3s ease, left 0.3s ease;
+            /* Para suavizar la transición */
+
+        }
+
+        &.noSidebar {
+            left: 15px;
+            transform: rotate(180deg);
+            /* Sin rotación cuando no hay sidebar */
+            transition: transform 0.3s ease, left 0.3s ease;
+            /* Para suavizar la transición */
+        }
+
+
+        &:focus {
+            box-shadow: 0 0 0 0px transparent;
+            border-color: transparent;
+        }
+
+        svg {
+            font-size: constants.$size-xl;
+        }
+    }
+}

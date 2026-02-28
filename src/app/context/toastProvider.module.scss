@@ -1,0 +1,82 @@
+@use "../constants" as *;
+
+.viewport {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: min(36rem, calc(100vw - 4rem));
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: 0.8rem 1fr auto;
+  align-items: start;
+  gap: 1.2rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: 1.4rem;
+  border: 0.1rem solid rgba($black, 0.08);
+  background: rgba($white, 0.96);
+  box-shadow: 0 1.2rem 3.6rem rgba($black, 0.12);
+  backdrop-filter: blur(1.2rem);
+  animation: toast-in 0.22s ease-out;
+}
+
+.accent {
+  width: 0.8rem;
+  min-height: 100%;
+  border-radius: 999px;
+  background: $black;
+}
+
+.toastError .accent {
+  background: $color-error;
+}
+
+.toastSuccess .accent {
+  background: $color-success;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: $font-xs;
+  font-weight: $weight-bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.message {
+  font-size: $font-sm;
+  line-height: 1.4;
+}
+
+.close {
+  border: 0;
+  background: transparent;
+  color: $gray-dark;
+  cursor: pointer;
+  font-size: $font-sm;
+  line-height: 1;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.8rem) translateX(1.2rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}

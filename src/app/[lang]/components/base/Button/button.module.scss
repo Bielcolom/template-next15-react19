@@ -1,0 +1,103 @@
+@use "../../../../constants.scss" as *;
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    padding: $size-md $size-lg;
+    border-radius: $size-sm;
+    cursor: pointer;
+    font-size: $font-sm;
+
+    >span {
+        font-size: unset;
+    }
+
+    &.btnPress {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transform: scale(0.98);
+    }
+
+    &.inverted {
+        background-color: $white;
+        color: $primary;
+        border-color: $primary;
+    }
+
+    &.disabled {
+        background-color: $gray;
+        cursor: not-allowed;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &.primary {
+        background-color: $primary;
+    }
+
+    &.primaryDark {
+        background-color: $primary-dark;
+    }
+
+    &.primaryDarker {
+        background-color: $primary-darker;
+    }
+
+    &.primaryLight {
+        background-color: $primary-light;
+    }
+
+    &.primaryLighter {
+        background-color: $primary-lighter;
+        border-color: $primary-lighter;
+    }
+
+    &.secondary {
+        background-color: $secondary;
+    }
+
+    &.secondaryDark {
+        background-color: $secondary-dark;
+    }
+
+    &.secondaryDarker {
+        background-color: $secondary-darker;
+    }
+
+    &.secondaryLight {
+        background-color: $secondary-light;
+    }
+
+    &.secondaryLighter {
+        background-color: $secondary-lighter;
+    }
+
+    &.accent {
+        background-color: $accent;
+    }
+
+    &.gray {
+        background-color: $gray;
+    }
+
+    &.black {
+        background-color: $black;
+    }
+
+    &.white {
+        background-color: $white;
+    }
+
+    &.transparent {
+        background-color: transparent;
+        border-color: transparent;
+        box-shadow: 0px 0px 0px 0px;
+
+        &:hover {
+            background-color: transparent;
+        }
+    }
+}

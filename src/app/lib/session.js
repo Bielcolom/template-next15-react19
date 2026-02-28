@@ -1,44 +1,83 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { getUserRoleById } from "../backoffice/userRoles/actions";
+import { normalizePermissions } from "@/utils/helpers";
+import User from "@/models/User";
+import UserRole from "@/models/UserRole";
+import { AppError } from "@/errors/AppError";
+import { ERROR_CODES } from "@/errors/codes";
+import { ERROR_MESSAGES } from "@/errors/messages";
 
 const secretKey = process.env.SESSION_SECRET;
+if (!secretKey || secretKey.length < 32) {
+  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
+}
+
 const encodedKey = new TextEncoder().encode(secretKey);
+const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
+const isProduction = process.env.NODE_ENV === "production";
 
+const buildSessionCookieOptions = (expiresAt) => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  expires: expiresAt,
+  maxAge: SESSION_TTL_SECONDS,
+  path: "/",
+});
 
-async function createSession(user) {
+const buildUserIdCookieOptions = (expiresAt) => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  expires: expiresAt,
+  maxAge: SESSION_TTL_SECONDS,
+  path: "/",
+});
+
+const buildExpiredCookieOptions = () => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "strict",
+  expires: new Date(0),
+  maxAge: 0,
+  path: "/",
+});
+
+const getCurrentPermissionsFromDB = async (userId) => {
+  const { connectDB } = await import("@/utils/connectDB");
+  await connectDB();
+
+  const user = await User.findById(userId).select("userRoleId").lean();
+  if (!user?.userRoleId) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  const userRole = await UserRole.findById(user.userRoleId).select("permissions").lean();
+  if (!userRole) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  return normalizePermissions(userRole.permissions);
+};
+
+async function createSession(user, permissions = []) {
   const userId = user?._id;
-  const userRole = await getUserRoleById(user?.userRoleId);
-  console.log({ user, userRole });
-  const permissions = userRole.permissions;
 
-  // 7 Days
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = await encrypt({ userId, expiresAt, permissions: permissions });
+  const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
+  const session = await encrypt({ userId, expiresAt, permissions });
 
-  //In future, it doesn't have to do the await
   const cookieStore = await cookies();
-  cookieStore.set("session", session, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "Strict",
-    expires: expiresAt,
-    maxAge: 7 * 24 * 60 * 60,
-  });
-  cookieStore.set("userId", userId, {
-    secure: true,     // Solo en HTTPS
-    sameSite: "Strict",
-    expires: expiresAt,
-  });
+  cookieStore.set("session", session, buildSessionCookieOptions(expiresAt));
+  cookieStore.set("userId", userId, buildUserIdCookieOptions(expiresAt));
 
   return cookieStore;
 }
 
 async function deleteSession() {
   const cookiesInstance = await cookies();
-  cookiesInstance.delete("userId");
-  cookiesInstance.delete("session");
+  cookiesInstance.set("userId", "", buildExpiredCookieOptions());
+  cookiesInstance.set("session", "", buildExpiredCookieOptions());
 }
 
 async function encrypt(payload) {
@@ -56,19 +95,58 @@ async function decrypt(session = "") {
     });
     return payload;
   } catch {
-    throw new Error("Invalid or expired session.");
+    throw new AppError(ERROR_CODES.INVALID_SESSION, ERROR_MESSAGES[ERROR_CODES.INVALID_SESSION]);
   }
 }
 
 async function checkPermission(session, requiredPermission, userId) {
-  // Decodificar el JWT
-  const payload = await decrypt(session);
+  let payload;
+  try {
+    payload = await decrypt(session);
+  } catch {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
 
-  if (!payload || payload.userId !== userId || !payload.permissions || !payload.permissions.includes(requiredPermission)) {
-    throw new Error("No tienes los permisos necesarios para realizar esta acción.");
+  if (!payload?.userId) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
+  if (payload.userId !== userId || !currentPermissions.includes(requiredPermission)) {
+    throw new AppError(ERROR_CODES.FORBIDDEN);
   }
 
   return true;
 }
 
-export { createSession, deleteSession, encrypt, decrypt, checkPermission };
+async function requirePermission(requiredPermissions) {
+  const permissionsToCheck = normalizePermissions(requiredPermissions);
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+
+  if (!session) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  let payload;
+  try {
+    payload = await decrypt(session);
+  } catch {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  if (!payload?.userId) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
+  const isAuthorized = permissionsToCheck.some((permission) => currentPermissions.includes(permission));
+
+  if (!isAuthorized) {
+    throw new AppError(ERROR_CODES.FORBIDDEN);
+  }
+
+  return { ...payload, permissions: currentPermissions };
+}
+
+export { createSession, deleteSession, encrypt, decrypt, checkPermission, requirePermission };

@@ -6,19 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@formatjs/intl-localematcher": "^0.6.0",
     "bcryptjs": "^2.4.3",
     "cookie": "^1.0.1",
     "dotenv": "^16.4.5",
     "jose": "^5.9.6",
     "mongoose": "^8.8.1",
-    "next": "15.0.3",
+    "negotiator": "^1.0.0",
+    "next": "15.5.12",
     "prop-types": "^15.8.1",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
-    "react-icons": "^5.4.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "sass-embedded": "^1.81.0",
     "webpack": "^5.96.1",
     "zod": "^3.23.8"
@@ -26,11 +29,12 @@
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "eslint": "^9.15.0",
-    "eslint-config-next": "15.0.3",
+    "eslint-config-next": "15.5.12",
     "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^15.12.0",
     "sass": "^1.81.0",
-    "sass-loader": "^16.0.3"
+    "sass-loader": "^16.0.3",
+    "vitest": "^4.0.18"
   }
 }

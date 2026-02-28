@@ -1,55 +1,111 @@
 import { NextResponse } from "next/server";
-import { decrypt } from "./app/lib/session";
-import { ROUTES } from "./utils/urls";
+import { AUTH_ACTIONS, evaluateAuthPolicy } from "./middleware/authPolicy";
+import {
+  DEFAULT_LOCALE,
+  INDEX_URL,
+  LOGIN_URL,
+  SUPPORTED_LOCALES,
+  getLocalizedPath,
+} from "./utils/urls";
+import Negotiator from "negotiator";
+import { match } from "@formatjs/intl-localematcher";
+import { jwtVerify } from "jose";
+import { ERROR_CODES } from "./errors/codes";
+import { ERROR_MESSAGES } from "./errors/messages";
+
+const secretKey = process.env.SESSION_SECRET;
+if (!secretKey || secretKey.length < 32) {
+  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
+}
+const encodedKey = new TextEncoder().encode(secretKey);
+const isProduction = process.env.NODE_ENV === "production";
+
+// Función para obtener el idioma preferido de la cabecera "Accept-Language"
+const getLocale = (request) => {
+  const headers = { "accept-language": request.headers.get("accept-language") || "es,en;q=0.5" };
+  const languages = new Negotiator({ headers }).languages();
+  return match(languages, SUPPORTED_LOCALES, DEFAULT_LOCALE);
+};
+
+const decryptSession = async (session = "") => {
+  const { payload } = await jwtVerify(session, encodedKey, {
+    algorithms: ["HS256"],
+  });
+  return payload;
+};
+
+const clearAuthCookies = (response) => {
+  const expiredCookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "strict",
+    path: "/",
+    expires: new Date(0),
+    maxAge: 0,
+  };
+
+  response.cookies.set("session", "", expiredCookieOptions);
+  response.cookies.set("userId", "", expiredCookieOptions);
+  return response;
+};
+
+const redirectToLogin = (req, locale, clearCookies = false) => {
+  const response = NextResponse.redirect(new URL(getLocalizedPath(LOGIN_URL, locale), req.nextUrl));
+  return clearCookies ? clearAuthCookies(response) : response;
+};
+
+const resolveAuthResponse = (req, locale, policyResult) => {
+  if (policyResult.action === AUTH_ACTIONS.ALLOW) {
+    return NextResponse.next();
+  }
+
+  if (policyResult.action === AUTH_ACTIONS.REDIRECT_HOME) {
+    return NextResponse.redirect(new URL(getLocalizedPath(INDEX_URL, locale), req.nextUrl));
+  }
+
+  return redirectToLogin(req, locale, policyResult.clearCookies);
+};
 
 export default async function middleware(req) {
-  const path = req.nextUrl.pathname;
+  const { pathname } = req.nextUrl;
+  const segments = pathname.split("/").filter(Boolean); // Filtra cualquier valor vacío
+  const requestLocale = SUPPORTED_LOCALES.includes(segments[0]) ? segments[0] : null;
+  const locale = requestLocale || getLocale(req);
+  const pathWithoutLocale = requestLocale
+    ? `/${segments.slice(1).join("/")}`.replace(/\/$/, "") || "/"
+    : pathname;
 
+  // Verificar si el path ya contiene un locale soportado
+  const pathnameHasLocale = Boolean(requestLocale);
+
+  // Si no contiene un idioma válido en la URL, redirigir al idioma predeterminado
+  if (!pathnameHasLocale) {
+    req.nextUrl.pathname = getLocalizedPath(pathname, locale);
+    return NextResponse.redirect(req.nextUrl);
+  }
+
+  // Manejo de autenticación y permisos
   const cookies = req.cookies;
   const sessionCookie = cookies.get("session")?.value;
 
-  const isPublicRoute = ROUTES.PUBLIC.includes(path);
-  const isPrivateRoute = ROUTES.PRIVATE.includes(path);
-  const isSuperAdminRoute = ROUTES.SUPERADMIN.includes(path);
-
   try {
-    // Si no hay cookie de sesión
     if (!sessionCookie) {
-      if (isPrivateRoute || isSuperAdminRoute) {
-        return NextResponse.redirect(new URL("/login", req.nextUrl));
-      }
-      return NextResponse.next();
+      const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload: null });
+      return resolveAuthResponse(req, locale, policyResult);
     }
 
-    // Decodificar la sesión
-    const payload = await decrypt(sessionCookie);
-
-    // Validar la expiración de la sesión
-    const now = new Date();
-    if (new Date(payload.expiresAt) < now) {
-      return NextResponse.redirect(new URL("/login", req.nextUrl));
-    }
-
-    // Verificar permisos según la ruta
-    if (isPrivateRoute && !payload.permissions.includes("admin_access")) {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
-    }
-
-    if (isSuperAdminRoute && !payload.permissions.includes("superadmin_access")) {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
-    }
-
-    // Redirigir si intenta acceder a rutas públicas con sesión activa
-    if (isPublicRoute) {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
-    }
-
-    // Continuar si todas las verificaciones pasan
-    return NextResponse.next();
+    const payload = await decryptSession(sessionCookie);
+    const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload });
+    return resolveAuthResponse(req, locale, policyResult);
   } catch (error) {
     console.error("Middleware Error:", error.message);
 
-    // Redirigir si hay un error en la sesión
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+    return redirectToLogin(req, locale, true);
   }
 }
+
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|.*\\..*).*)",
+  ],
+};

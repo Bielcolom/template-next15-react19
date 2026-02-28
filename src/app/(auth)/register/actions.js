@@ -2,36 +2,45 @@
 
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 import User from "@/models/User";
+import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
-import { redirect } from "next/navigation";
+import { ROLES } from "@/utils/constants";
+import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
+import { ERROR_CODES } from "@/errors/codes";
+import { getValidationMessages } from "@/errors/i18n";
+import { createLocalizedFieldErrorResponse } from "@/errors/serverResponses";
 
-const registerSchema = z.object({
+const buildRegisterSchema = (validationMessages) => z.object({
   name: z
     .string()
-    .min(3, { message: "Name must be at least 3 characters" })
+    .min(3, { message: validationMessages.NAME_MIN_LENGTH })
     .trim(),
   email: z
     .string()
-    .email({ message: "Invalid email address" })
+    .email({ message: validationMessages.INVALID_EMAIL })
     .trim(),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" })
+    .min(8, { message: validationMessages.PASSWORD_MIN_LENGTH })
     .trim(),
   confirmPassword: z
     .string()
-    .min(8, { message: "Password confirmation must be at least 8 characters" })
+    .min(8, { message: validationMessages.PASSWORD_CONFIRM_MIN_LENGTH })
     .trim(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: validationMessages.PASSWORDS_DO_NOT_MATCH,
   path: ["confirmPassword"],
 });
 
 export async function register(prevState, formData) {
-  // Validar los datos del formulario usando el esquema
-  const result = registerSchema.safeParse(Object.fromEntries(formData));
+  const rawData = Object.fromEntries(formData);
+  const locale = rawData.locale || DEFAULT_LOCALE;
+  const validationMessages = await getValidationMessages(locale);
+  const registerSchema = buildRegisterSchema(validationMessages);
+  const result = registerSchema.safeParse(rawData);
 
   if (!result.success) {
     return {
@@ -39,36 +48,29 @@ export async function register(prevState, formData) {
     };
   }
 
-  const { email, password, confirmPassword } = result.data;
+  const { name, email, password } = result.data;
 
-  // Verificar si las contraseñas coinciden
-  if (password !== confirmPassword) {
-    return {
-      errors: {
-        confirmPassword: ["Passwords do not match"],
-      },
-    };
-  }
-
-  // Conectar a la base de datos
   await connectDB();
 
   try {
-    // Verificar si ya existe un usuario con ese correo electrónico
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return {
-        errors: {
-          email: ["Email is already registered"],
-        },
-      };
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
     }
 
-    // Hashear la contraseña con bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crear el nuevo usuario en la base de datos
+    const baseUserRole = await UserRole.findOne({
+      permissions: ROLES.USER,
+    }).lean();
+
+    if (!baseUserRole) {
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED, locale);
+    }
+
     const user = new User({
+      name,
+      userRoleId: baseUserRole._id,
       email,
       password: hashedPassword,
     });
@@ -80,18 +82,14 @@ export async function register(prevState, formData) {
       _id: user._id.toString(),
     };
 
-    // Crear una sesión para el usuario recién registrado
-    await createSession(formattedUser);
+    await createSession(formattedUser, [ROLES.USER]);
 
-    // Redirigir al dashboard después del registro
-    redirect("/");
-
+    redirect(`${getLocalizedPath(INDEX_URL, locale)}?toast=registrationSuccess`);
   } catch (err) {
+    if (err?.message === "NEXT_REDIRECT") {
+      throw err;
+    }
     console.error("Error during registration:", err);
-    return {
-      errors: {
-        email: ["An error occurred. Please try again later."],
-      },
-    };
+    return createLocalizedFieldErrorResponse("email", ERROR_CODES.REGISTRATION_FAILED, locale);
   }
 }
