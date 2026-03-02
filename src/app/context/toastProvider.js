@@ -32,7 +32,7 @@ export function ToastProvider({ children }) {
     setToasts((currentToasts) => currentToasts.filter((toast) => toast.id !== toastId));
   }, []);
 
-  const showToast = useCallback((message, type = TOAST_TYPES.error, duration = 4000) => {
+  const showToast = useCallback((message, type = TOAST_TYPES.error, duration = 3000) => {
     if (!message) {
       return;
     }
