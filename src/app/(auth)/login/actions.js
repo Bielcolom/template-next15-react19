@@ -83,11 +83,12 @@ export async function login(prevState, formData) {
   }
 }
 
-export async function logout() {
+export async function logout(locale = DEFAULT_LOCALE) {
   try {
     await deleteSession();
+    return { success: true };
   } catch (error) {
     console.error("Error in logout function:", error);
-    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, DEFAULT_LOCALE);
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, locale);
   }
 }

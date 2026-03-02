@@ -114,7 +114,20 @@ describe("logout action", () => {
 
   it("calls deleteSession", async () => {
     mocks.deleteSessionMock.mockResolvedValueOnce(undefined);
-    await logout();
+    const result = await logout("en");
     expect(mocks.deleteSessionMock).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ success: true });
+  });
+
+  it("returns a localized general error when logout fails", async () => {
+    mocks.deleteSessionMock.mockRejectedValueOnce(new Error("boom"));
+
+    const result = await logout("en");
+
+    expect(result).toEqual({
+      errors: {
+        general: ["An unexpected error occurred. Please try again."],
+      },
+    });
   });
 });

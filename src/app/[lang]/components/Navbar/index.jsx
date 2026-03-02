@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import PropTypes from "prop-types";
 import { useTranslations } from "next-intl";
 import styles from "./navbar.module.scss";
@@ -11,15 +12,26 @@ import Icon from "../base/Icon";
 import LanguageSelector from "./LanguageSelector";
 import { useAppRouter } from "@/app/[lang]/hooks/useAppRouter";
 import AppLink from "../base/AppLink";
+import { useToast } from "@/app/context/toastProvider";
 
 export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
   const t = useTranslations("navbar");
   const appRouter = useAppRouter();
+  const { showError } = useToast();
+  const [isLoggingOut, startLogoutTransition] = useTransition();
   const pathWithoutLocale = appRouter.pathnameWithoutLocale;
 
-  const handleLogout = async () => {
-    await logout();
-    appRouter.replace(LOGIN_URL);
+  const handleLogout = () => {
+    startLogoutTransition(async () => {
+      const result = await logout(appRouter.locale);
+
+      if (result?.errors?.general?.[0]) {
+        showError(result.errors.general[0]);
+        return;
+      }
+
+      appRouter.replace(LOGIN_URL);
+    });
   };
 
   return (
@@ -62,6 +74,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
             aria-label={t("logout")}
             text={<Icon icon="logout" />}
             styleType={BUTTON_STYLE_TYPES.transparent}
+            disabled={isLoggingOut}
             onClick={handleLogout}
           />
 
