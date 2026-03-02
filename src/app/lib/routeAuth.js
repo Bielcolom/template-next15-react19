@@ -10,11 +10,11 @@ export async function requireRoutePermission(requiredPermissions, locale = DEFAU
     return await requirePermission(requiredPermissions);
   } catch (error) {
     if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
-      redirect(getLocalizedPath(INDEX_URL, locale));
+      return redirect(getLocalizedPath(INDEX_URL, locale));
     }
 
     if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED) || hasErrorCode(error, ERROR_CODES.INVALID_SESSION)) {
-      redirect(getLocalizedPath(LOGIN_URL, locale));
+      return redirect(getLocalizedPath(LOGIN_URL, locale));
     }
 
     throw error;
