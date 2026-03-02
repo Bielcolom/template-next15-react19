@@ -44,6 +44,11 @@ const buildExpiredCookieOptions = () => ({
   path: "/",
 });
 
+const getSessionCookieValue = async () => {
+  const cookieStore = await cookies();
+  return cookieStore.get("session")?.value;
+};
+
 const getCurrentPermissionsFromDB = async (userId) => {
   const { connectDB } = await import("@/utils/connectDB");
   await connectDB();
@@ -59,6 +64,32 @@ const getCurrentPermissionsFromDB = async (userId) => {
   }
 
   return normalizePermissions(userRole.permissions);
+};
+
+const getValidatedSessionState = async () => {
+  const session = await getSessionCookieValue();
+
+  if (!session) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  let payload;
+  try {
+    payload = await decrypt(session);
+  } catch {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  if (!payload?.userId) {
+    throw new AppError(ERROR_CODES.UNAUTHORIZED);
+  }
+
+  const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
+
+  return {
+    payload,
+    currentPermissions,
+  };
 };
 
 async function createSession(user, permissions = []) {
@@ -78,6 +109,22 @@ async function deleteSession() {
   const cookiesInstance = await cookies();
   cookiesInstance.set("userId", "", buildExpiredCookieOptions());
   cookiesInstance.set("session", "", buildExpiredCookieOptions());
+}
+
+async function getCurrentSession() {
+  try {
+    const { payload, currentPermissions } = await getValidatedSessionState();
+    return {
+      ...payload,
+      permissions: currentPermissions,
+    };
+  } catch (error) {
+    if (error?.code === ERROR_CODES.UNAUTHORIZED) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 async function encrypt(payload) {
@@ -121,25 +168,7 @@ async function checkPermission(session, requiredPermission, userId) {
 
 async function requirePermission(requiredPermissions) {
   const permissionsToCheck = normalizePermissions(requiredPermissions);
-  const cookieStore = await cookies();
-  const session = cookieStore.get("session")?.value;
-
-  if (!session) {
-    throw new AppError(ERROR_CODES.UNAUTHORIZED);
-  }
-
-  let payload;
-  try {
-    payload = await decrypt(session);
-  } catch {
-    throw new AppError(ERROR_CODES.UNAUTHORIZED);
-  }
-
-  if (!payload?.userId) {
-    throw new AppError(ERROR_CODES.UNAUTHORIZED);
-  }
-
-  const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
+  const { payload, currentPermissions } = await getValidatedSessionState();
   const isAuthorized = permissionsToCheck.some((permission) => currentPermissions.includes(permission));
 
   if (!isAuthorized) {
@@ -149,4 +178,4 @@ async function requirePermission(requiredPermissions) {
   return { ...payload, permissions: currentPermissions };
 }
 
-export { createSession, deleteSession, encrypt, decrypt, checkPermission, requirePermission };
+export { createSession, deleteSession, getCurrentSession, encrypt, decrypt, checkPermission, requirePermission };

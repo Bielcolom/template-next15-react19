@@ -180,6 +180,26 @@ describe("session helpers", () => {
     expect(payload.permissions).toEqual(["superadmin_access"]);
   });
 
+  it("getCurrentSession returns current permissions from the database", async () => {
+    const cookieStore = buildCookieStore();
+    const sessionModule = await loadSessionModule(cookieStore);
+    const token = await sessionModule.encrypt({
+      userId: "user-1",
+      permissions: ["admin_access"],
+      expiresAt: new Date("2099-01-01T00:00:00.000Z"),
+    });
+
+    cookieStore.get.mockImplementation((name) =>
+      name === "session" ? { value: token } : undefined
+    );
+    mockCurrentPermissions(["user_access"]);
+
+    const session = await sessionModule.getCurrentSession();
+
+    expect(session.userId).toBe("user-1");
+    expect(session.permissions).toEqual(["user_access"]);
+  });
+
   it("requirePermission blocks stale tokens after role downgrade", async () => {
     const cookieStore = buildCookieStore();
     const sessionModule = await loadSessionModule(cookieStore);
@@ -216,5 +236,14 @@ describe("session helpers", () => {
     await expect(
       sessionModule.requirePermission("admin_access")
     ).rejects.toThrow("UNAUTHORIZED");
+  });
+
+  it("getCurrentSession returns null without a valid session", async () => {
+    const cookieStore = buildCookieStore();
+    const sessionModule = await loadSessionModule(cookieStore);
+
+    const session = await sessionModule.getCurrentSession();
+
+    expect(session).toBeNull();
   });
 });

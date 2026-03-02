@@ -1,6 +1,4 @@
-import { normalizePermissions } from "../utils/helpers";
 import { INDEX_URL, ROUTES } from "../utils/urls";
-import { ROLES } from "../utils/constants";
 
 export const AUTH_ACTIONS = {
   ALLOW: "allow",
@@ -31,9 +29,10 @@ export const evaluateAuthPolicy = ({ pathWithoutLocale, payload }) => {
   const isPublicRoute = ROUTES.PUBLIC.some((route) => matchesExactRoute(pathWithoutLocale, route));
   const isPrivateRoute = ROUTES.PRIVATE.some((route) => matchesProtectedRoute(pathWithoutLocale, route));
   const isSuperAdminRoute = ROUTES.SUPERADMIN.some((route) => matchesProtectedRoute(pathWithoutLocale, route));
+  const isProtectedRoute = isPrivateRoute || isSuperAdminRoute;
 
   if (!payload) {
-    if (isPrivateRoute || isSuperAdminRoute) {
+    if (isProtectedRoute) {
       return { action: AUTH_ACTIONS.REDIRECT_LOGIN, clearCookies: false };
     }
     return { action: AUTH_ACTIONS.ALLOW, clearCookies: false };
@@ -42,18 +41,6 @@ export const evaluateAuthPolicy = ({ pathWithoutLocale, payload }) => {
   const expiresAtMs = new Date(payload.expiresAt).getTime();
   if (!Number.isFinite(expiresAtMs) || expiresAtMs < Date.now()) {
     return { action: AUTH_ACTIONS.REDIRECT_LOGIN, clearCookies: true };
-  }
-
-  const permissions = normalizePermissions(payload?.permissions);
-
-  const isAdminOrSuperAdmin = permissions.includes(ROLES.ADMIN) || permissions.includes(ROLES.SUPERADMIN);
-
-  if (isPrivateRoute && !isAdminOrSuperAdmin) {
-    return { action: AUTH_ACTIONS.REDIRECT_HOME, clearCookies: false };
-  }
-
-  if (isSuperAdminRoute && !permissions.includes(ROLES.SUPERADMIN)) {
-    return { action: AUTH_ACTIONS.REDIRECT_HOME, clearCookies: false };
   }
 
   if (isPublicRoute) {

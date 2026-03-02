@@ -1,11 +1,10 @@
 import PropTypes from "prop-types";
 import localFont from "next/font/local";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import "../globals.scss";
-import { decrypt } from "../lib/session";
+import { getCurrentSession } from "../lib/session";
 import { SessionProvider } from "../context/sessionProvider";
 import { ToastProvider } from "../context/toastProvider";
 import PageWrapper from "./components/PageWrapper";
@@ -37,19 +36,9 @@ export default async function LocaleLayout({ children, params }) {
 
   setRequestLocale(lang);
 
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get("session")?.value;
-  const userId = cookieStore.get("userId")?.value || null;
-  let permissions = [];
-
-  if (sessionCookie) {
-    try {
-      const payload = await decrypt(sessionCookie);
-      permissions = payload.permissions || [];
-    } catch (error) {
-      console.error("Error decoding session:", error.message);
-    }
-  }
+  const session = await getCurrentSession();
+  const userId = session?.userId || null;
+  const permissions = session?.permissions || [];
 
   return (
     <html lang={lang}>
