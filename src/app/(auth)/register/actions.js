@@ -20,8 +20,9 @@ const buildRegisterSchema = (validationMessages) => z.object({
     .trim(),
   email: z
     .string()
-    .email({ message: validationMessages.INVALID_EMAIL })
-    .trim(),
+    .trim()
+    .toLowerCase()
+    .email({ message: validationMessages.INVALID_EMAIL }),
   password: z
     .string()
     .min(8, { message: validationMessages.PASSWORD_MIN_LENGTH })

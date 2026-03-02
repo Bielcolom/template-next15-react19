@@ -69,13 +69,14 @@ describe("login action", () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.userFindOneMock.mockResolvedValueOnce(null);
 
-    const result = await login({}, buildLoginFormData());
+    const result = await login({}, buildLoginFormData({ email: "  ADMIN@EXAMPLE.COM  " }));
 
     expect(result).toEqual({
       errors: {
         email: ["Invalid email or password"],
       },
     });
+    expect(mocks.userFindOneMock).toHaveBeenCalledWith({ email: "admin@example.com" });
   });
 
   it("creates session and redirects on valid credentials", async () => {
@@ -96,11 +97,12 @@ describe("login action", () => {
     });
     mocks.createSessionMock.mockResolvedValueOnce({});
 
-    await expect(login({}, buildLoginFormData())).rejects.toThrow("NEXT_REDIRECT");
+    await expect(login({}, buildLoginFormData({ email: "  ADMIN@EXAMPLE.COM  " }))).rejects.toThrow("NEXT_REDIRECT");
     expect(mocks.createSessionMock).toHaveBeenCalledWith(
       { email: "admin@example.com", userRoleId: "role-1", _id: "user-1" },
       ["admin_access"]
     );
+    expect(mocks.userFindOneMock).toHaveBeenCalledWith({ email: "admin@example.com" });
     expect(mocks.redirectMock).toHaveBeenCalledWith(getLocalizedPath(INDEX_URL, "en"));
   });
 });

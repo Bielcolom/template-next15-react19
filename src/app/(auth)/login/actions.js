@@ -17,7 +17,11 @@ import {
 } from "@/errors/serverResponses";
 
 const buildLoginSchema = (validationMessages) => z.object({
-  email: z.string().email({ message: validationMessages.INVALID_EMAIL }).trim(),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email({ message: validationMessages.INVALID_EMAIL }),
   password: z
     .string()
     .min(8, { message: validationMessages.PASSWORD_MIN_LENGTH })

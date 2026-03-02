@@ -49,13 +49,13 @@ vi.mock("@/models/UserRole", () => ({
 
 import { register } from "./actions";
 
-const buildValidFormData = () => {
+const buildValidFormData = (overrides = {}) => {
   const formData = new FormData();
-  formData.set("name", "John Doe");
-  formData.set("email", "john@example.com");
-  formData.set("password", "12345678");
-  formData.set("confirmPassword", "12345678");
-  formData.set("locale", "en");
+  formData.set("name", overrides.name || "John Doe");
+  formData.set("email", overrides.email || "john@example.com");
+  formData.set("password", overrides.password || "12345678");
+  formData.set("confirmPassword", overrides.confirmPassword || "12345678");
+  formData.set("locale", overrides.locale || "en");
   return formData;
 };
 
@@ -89,13 +89,14 @@ describe("register action", () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.findOneUserMock.mockResolvedValueOnce({ _id: "existing" });
 
-    const result = await register({}, buildValidFormData());
+    const result = await register({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }));
 
     expect(result).toEqual({
       errors: {
         email: ["Email is already registered"],
       },
     });
+    expect(mocks.findOneUserMock).toHaveBeenCalledWith({ email: "john@example.com" });
   });
 
   it("returns error when default user role is missing", async () => {
@@ -127,7 +128,13 @@ describe("register action", () => {
     mocks.saveMock.mockResolvedValueOnce(undefined);
     mocks.createSessionMock.mockResolvedValueOnce({});
 
-    await expect(register({}, buildValidFormData())).rejects.toThrow("NEXT_REDIRECT");
+    await expect(register({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }))).rejects.toThrow("NEXT_REDIRECT");
+    expect(mocks.userCtorMock).toHaveBeenCalledWith({
+      name: "John Doe",
+      userRoleId: "role-user",
+      email: "john@example.com",
+      password: "hashed",
+    });
     expect(mocks.createSessionMock).toHaveBeenCalledWith(
       { name: "John Doe", userRoleId: "role-user", email: "john@example.com", password: "hashed", _id: "user-1" },
       ["user_access"]
