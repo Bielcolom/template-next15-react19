@@ -2,8 +2,11 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { normalizePermissions } from "@/utils/helpers";
-import User from "@/models/User";
-import UserRole from "@/models/UserRole";
+import {
+  cacheUserPermissions,
+  deleteCachedUserPermissions,
+  getCurrentPermissions,
+} from "./permissionCache";
 import { AppError } from "@/errors/AppError";
 import { ERROR_CODES } from "@/errors/codes";
 import { ERROR_MESSAGES } from "@/errors/messages";
@@ -49,23 +52,6 @@ const getSessionCookieValue = async () => {
   return cookieStore.get("session")?.value;
 };
 
-const getCurrentPermissionsFromDB = async (userId) => {
-  const { connectDB } = await import("@/utils/connectDB");
-  await connectDB();
-
-  const user = await User.findById(userId).select("userRoleId").lean();
-  if (!user?.userRoleId) {
-    throw new AppError(ERROR_CODES.UNAUTHORIZED);
-  }
-
-  const userRole = await UserRole.findById(user.userRoleId).select("permissions").lean();
-  if (!userRole) {
-    throw new AppError(ERROR_CODES.UNAUTHORIZED);
-  }
-
-  return normalizePermissions(userRole.permissions);
-};
-
 const getValidatedSessionState = async () => {
   const session = await getSessionCookieValue();
 
@@ -84,7 +70,7 @@ const getValidatedSessionState = async () => {
     throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
-  const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
+  const currentPermissions = await getCurrentPermissions(payload.userId);
 
   return {
     payload,
@@ -94,21 +80,25 @@ const getValidatedSessionState = async () => {
 
 async function createSession(user, permissions = []) {
   const userId = user?._id;
+  const normalizedPermissions = normalizePermissions(permissions);
 
   const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
-  const session = await encrypt({ userId, expiresAt, permissions });
+  const session = await encrypt({ userId, expiresAt, permissions: normalizedPermissions });
 
   const cookieStore = await cookies();
   cookieStore.set("session", session, buildSessionCookieOptions(expiresAt));
   cookieStore.set("userId", userId, buildUserIdCookieOptions(expiresAt));
+  await cacheUserPermissions(userId, normalizedPermissions);
 
   return cookieStore;
 }
 
 async function deleteSession() {
   const cookiesInstance = await cookies();
+  const userId = cookiesInstance.get("userId")?.value;
   cookiesInstance.set("userId", "", buildExpiredCookieOptions());
   cookiesInstance.set("session", "", buildExpiredCookieOptions());
+  await deleteCachedUserPermissions(userId);
 }
 
 async function getCurrentSession() {
@@ -158,7 +148,7 @@ async function checkPermission(session, requiredPermission, userId) {
     throw new AppError(ERROR_CODES.UNAUTHORIZED);
   }
 
-  const currentPermissions = await getCurrentPermissionsFromDB(payload.userId);
+  const currentPermissions = await getCurrentPermissions(payload.userId);
   if (payload.userId !== userId || !currentPermissions.includes(requiredPermission)) {
     throw new AppError(ERROR_CODES.FORBIDDEN);
   }
@@ -178,4 +168,12 @@ async function requirePermission(requiredPermissions) {
   return { ...payload, permissions: currentPermissions };
 }
 
-export { createSession, deleteSession, getCurrentSession, encrypt, decrypt, checkPermission, requirePermission };
+export {
+  createSession,
+  deleteSession,
+  getCurrentSession,
+  encrypt,
+  decrypt,
+  checkPermission,
+  requirePermission,
+};

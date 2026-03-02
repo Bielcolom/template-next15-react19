@@ -5,6 +5,9 @@ const mocks = vi.hoisted(() => ({
   connectDBMock: vi.fn(),
   userFindByIdMock: vi.fn(),
   userRoleFindByIdMock: vi.fn(),
+  getRedisJsonMock: vi.fn(),
+  setRedisJsonMock: vi.fn(),
+  deleteRedisKeyMock: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({
@@ -25,6 +28,12 @@ vi.mock("@/models/UserRole", () => ({
   default: {
     findById: mocks.userRoleFindByIdMock,
   },
+}));
+
+vi.mock("@/utils/redis", () => ({
+  getRedisJson: mocks.getRedisJsonMock,
+  setRedisJson: mocks.setRedisJsonMock,
+  deleteRedisKey: mocks.deleteRedisKeyMock,
 }));
 
 const buildCookieStore = (sessionValue) => {
@@ -71,6 +80,9 @@ const loadSessionModule = async (cookieStore) => {
   process.env.NODE_ENV = "test";
   mocks.cookiesMock.mockResolvedValue(cookieStore);
   mocks.connectDBMock.mockResolvedValue(undefined);
+  mocks.getRedisJsonMock.mockResolvedValue(null);
+  mocks.setRedisJsonMock.mockResolvedValue(true);
+  mocks.deleteRedisKeyMock.mockResolvedValue(true);
   return import("./session");
 };
 
@@ -117,6 +129,7 @@ describe("session helpers", () => {
 
     expect(userIdCall[0]).toBe("userId");
     expect(userIdCall[1]).toBe("user-1");
+    expect(mocks.setRedisJsonMock).toHaveBeenCalledTimes(1);
   });
 
   it("deleteSession expires both cookies", async () => {
@@ -131,6 +144,27 @@ describe("session helpers", () => {
     expect(secondCall[0]).toBe("session");
     expect(firstCall[2].maxAge).toBe(0);
     expect(secondCall[2].maxAge).toBe(0);
+  });
+
+  it("getCurrentSession reads permissions from Redis without hitting Mongo", async () => {
+    const cookieStore = buildCookieStore();
+    const sessionModule = await loadSessionModule(cookieStore);
+    const token = await sessionModule.encrypt({
+      userId: "user-1",
+      permissions: ["admin_access"],
+      expiresAt: new Date("2099-01-01T00:00:00.000Z"),
+    });
+
+    cookieStore.get.mockImplementation((name) =>
+      name === "session" ? { value: token } : undefined
+    );
+    mocks.getRedisJsonMock.mockResolvedValueOnce(["superadmin_access"]);
+
+    const session = await sessionModule.getCurrentSession();
+
+    expect(session.userId).toBe("user-1");
+    expect(session.permissions).toEqual(["superadmin_access"]);
+    expect(mocks.connectDBMock).not.toHaveBeenCalled();
   });
 
   it("requirePermission throws UNAUTHORIZED without session cookie", async () => {
@@ -198,6 +232,7 @@ describe("session helpers", () => {
 
     expect(session.userId).toBe("user-1");
     expect(session.permissions).toEqual(["user_access"]);
+    expect(mocks.setRedisJsonMock).toHaveBeenCalledTimes(1);
   });
 
   it("requirePermission blocks stale tokens after role downgrade", async () => {
