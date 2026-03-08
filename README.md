@@ -2,6 +2,26 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Create your local environment file:
+
+```bash
+cp .env.example .env
+```
+
+Required variables:
+
+- `MONGODB_URI`: MongoDB connection string.
+- `SESSION_SECRET`: secret used to sign sessions (`>= 32` chars).
+- `REDIS_URL`: Redis connection string used for permission cache.
+- `REDIS_PERMISSIONS_TTL_SECONDS` (optional): permissions cache TTL (defaults to `300` seconds).
+
+Start infrastructure (example with Docker):
+
+```bash
+docker run -d --name boilerplate-mongo -p 27017:27017 mongo:7
+docker run -d --name boilerplate-redis -p 6379:6379 redis:7-alpine
+```
+
 First, run the development server:
 
 ```bash
@@ -15,6 +35,14 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Redis Permission Cache
+
+Permission checks use Redis cache keys with prefix `auth:permissions:*`.
+
+- On login/session creation, current permissions are cached.
+- During protected route checks, permissions are read from Redis first.
+- If Redis is unavailable or `REDIS_URL` is not configured, the app falls back to MongoDB (still works, but without cache benefits).
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
