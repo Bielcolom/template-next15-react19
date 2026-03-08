@@ -36,6 +36,26 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Seed Data
+
+Seed default `userRoles` and `users`:
+
+```bash
+npm run seed
+```
+
+It will upsert:
+
+- Roles: `user`, `admin`, `superadmin`
+- Users: `user@boilerplate.local`, `admin@boilerplate.local`, `superadmin@boilerplate.local`
+
+Optional env vars for seed passwords:
+
+- `SEED_USER_PASSWORD`
+- `SEED_ADMIN_PASSWORD`
+- `SEED_SUPERADMIN_PASSWORD`
+- `SEED_UPDATE_PASSWORDS=true` (updates password hash for existing seeded users)
+
 ## Redis Permission Cache
 
 Permission checks use Redis cache keys with prefix `auth:permissions:*`.

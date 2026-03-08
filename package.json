@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "seed": "node scripts/seedUsersAndRoles.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

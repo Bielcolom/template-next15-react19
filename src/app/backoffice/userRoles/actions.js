@@ -4,11 +4,43 @@ import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
+import { normalizePermissions } from "@/utils/helpers";
 import { hasErrorCode } from "@/errors/AppError";
 import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
 import { createLocalizedDataErrorResponse } from "@/errors/serverResponses";
+import { invalidatePermissionsCacheForRole } from "@/app/lib/permissionCache";
 import { DEFAULT_LOCALE } from "@/utils/urls";
+
+const normalizeUserRolePayload = (payload) => {
+    if (payload instanceof FormData) {
+        return Object.fromEntries(payload);
+    }
+
+    return payload || {};
+};
+
+const sanitizeRoleInput = (payload) => {
+    const rawData = normalizeUserRolePayload(payload);
+    const name = typeof rawData?.name === "string" ? rawData.name.trim() : "";
+    const permissions = [
+        ...new Set(
+            normalizePermissions(rawData?.permissions)
+                .map((permission) => String(permission).trim())
+                .filter(Boolean)
+        ),
+    ];
+
+    return {
+        name,
+        permissions,
+    };
+};
+
+const serializeUserRole = (userRole) => ({
+    ...userRole,
+    _id: userRole._id.toString(),
+});
 
 export async function getUserRoles(locale = DEFAULT_LOCALE) {
     "use server";
@@ -22,10 +54,7 @@ export async function getUserRoles(locale = DEFAULT_LOCALE) {
             return createDataResponse([]);
         }
 
-        const serializedUserRoles = userRoles.map(role => ({
-            ...role,
-            _id: role._id.toString(),
-        }));
+        const serializedUserRoles = userRoles.map((role) => serializeUserRole(role));
 
         return createDataResponse(serializedUserRoles);
     } catch (error) {
@@ -54,13 +83,7 @@ export async function getUserRoleById(userRoleId, locale = DEFAULT_LOCALE) {
             return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);
         }
 
-        // Serializar el _id a string
-        const serializedUserRole = {
-            ...userRole,
-            _id: userRole._id.toString(),
-        };
-
-        return createDataResponse(serializedUserRole);
+        return createDataResponse(serializeUserRole(userRole));
     } catch (error) {
         if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
             return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
@@ -69,6 +92,117 @@ export async function getUserRoleById(userRoleId, locale = DEFAULT_LOCALE) {
             return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
         }
         console.error("Error in getUserRoleById function:", error);
+        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+    }
+}
+
+export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
+    "use server";
+
+    try {
+        await requirePermission(ROLES.SUPERADMIN);
+        await connectDB();
+
+        const { name, permissions } = sanitizeRoleInput(payload);
+        if (!name || permissions.length === 0) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        }
+
+        const userRole = await UserRole.create({
+            name,
+            permissions,
+        });
+
+        return createDataResponse(serializeUserRole(userRole.toObject()));
+    } catch (error) {
+        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
+        }
+        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
+        }
+        console.error("Error in createUserRole function:", error);
+        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+    }
+}
+
+export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCALE) {
+    "use server";
+
+    try {
+        await requirePermission(ROLES.SUPERADMIN);
+        await connectDB();
+
+        if (!userRoleId) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);
+        }
+
+        const { name, permissions } = sanitizeRoleInput(payload);
+        if (!name || permissions.length === 0) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        }
+
+        const updatedUserRole = await UserRole.findByIdAndUpdate(
+            userRoleId,
+            {
+                name,
+                permissions,
+            },
+            {
+                new: true,
+                runValidators: true,
+            }
+        ).lean();
+
+        if (!updatedUserRole) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);
+        }
+
+        await invalidatePermissionsCacheForRole(userRoleId);
+
+        return createDataResponse(serializeUserRole(updatedUserRole));
+    } catch (error) {
+        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
+        }
+        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
+        }
+        console.error("Error in updateUserRole function:", error);
+        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+    }
+}
+
+export async function deleteUserRole(userRoleId, locale = DEFAULT_LOCALE) {
+    "use server";
+
+    try {
+        await requirePermission(ROLES.SUPERADMIN);
+        await connectDB();
+
+        if (!userRoleId) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);
+        }
+
+        const deletedUserRole = await UserRole.findByIdAndDelete(userRoleId).lean();
+        if (!deletedUserRole) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);
+        }
+
+        await invalidatePermissionsCacheForRole(userRoleId);
+
+        return createDataResponse({
+            _id: deletedUserRole._id.toString(),
+            deleted: true,
+        });
+    } catch (error) {
+        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
+        }
+        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
+        }
+        console.error("Error in deleteUserRole function:", error);
         return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
     }
 }
