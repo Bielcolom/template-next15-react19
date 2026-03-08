@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
+import { ROLES } from "@/utils/constants";
 
 const mocks = vi.hoisted(() => {
   const userCtorMock = vi.fn();
@@ -123,6 +124,7 @@ describe("register action", () => {
     mocks.userRoleFindOneMock.mockReturnValueOnce({
       lean: vi.fn().mockResolvedValueOnce({
         _id: "role-user",
+        permissions: [ROLES.USER],
       }),
     });
     mocks.saveMock.mockResolvedValueOnce(undefined);
@@ -142,5 +144,17 @@ describe("register action", () => {
     expect(mocks.redirectMock).toHaveBeenCalledWith(
       `${getLocalizedPath(INDEX_URL, "en")}?toast=registrationSuccess`
     );
+  });
+
+  it("returns a localized error when database connection fails", async () => {
+    mocks.connectDBMock.mockRejectedValueOnce(new Error("db down"));
+
+    const result = await register({}, buildValidFormData({ locale: "es" }));
+
+    expect(result).toEqual({
+      errors: {
+        email: ["Ha ocurrido un error. Intentalo de nuevo mas tarde."],
+      },
+    });
   });
 });

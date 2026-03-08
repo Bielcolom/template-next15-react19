@@ -8,6 +8,7 @@ import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
+import { normalizePermissions } from "@/utils/helpers";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
@@ -36,24 +37,32 @@ const buildRegisterSchema = (validationMessages) => z.object({
   path: ["confirmPassword"],
 });
 
-export async function register(prevState, formData) {
-  const rawData = Object.fromEntries(formData);
-  const locale = rawData.locale || DEFAULT_LOCALE;
-  const validationMessages = await getValidationMessages(locale);
-  const registerSchema = buildRegisterSchema(validationMessages);
-  const result = registerSchema.safeParse(rawData);
-
-  if (!result.success) {
-    return {
-      errors: result.error.flatten().fieldErrors,
-    };
+const normalizeRegisterPayload = (payload) => {
+  if (payload instanceof FormData) {
+    return Object.fromEntries(payload);
   }
 
-  const { name, email, password } = result.data;
+  return payload || {};
+};
 
-  await connectDB();
-
+export async function register(prevState, formData) {
   try {
+    const rawData = normalizeRegisterPayload(formData ?? prevState);
+    const locale = rawData?.locale || DEFAULT_LOCALE;
+    const validationMessages = await getValidationMessages(locale);
+    const registerSchema = buildRegisterSchema(validationMessages);
+    const result = registerSchema.safeParse(rawData);
+
+    if (!result.success) {
+      return {
+        errors: result.error.flatten().fieldErrors,
+      };
+    }
+
+    const { name, email, password } = result.data;
+
+    await connectDB();
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
@@ -83,14 +92,20 @@ export async function register(prevState, formData) {
       _id: user._id.toString(),
     };
 
-    await createSession(formattedUser, [ROLES.USER]);
+    await createSession(formattedUser, normalizePermissions(baseUserRole.permissions));
 
     redirect(`${getLocalizedPath(INDEX_URL, locale)}?toast=registrationSuccess`);
   } catch (err) {
     if (err?.message === "NEXT_REDIRECT") {
       throw err;
     }
+
     console.error("Error during registration:", err);
-    return createLocalizedFieldErrorResponse("email", ERROR_CODES.REGISTRATION_FAILED, locale);
+    const rawData = normalizeRegisterPayload(formData ?? prevState);
+    return createLocalizedFieldErrorResponse(
+      "email",
+      ERROR_CODES.REGISTRATION_FAILED,
+      rawData?.locale || DEFAULT_LOCALE
+    );
   }
 }
