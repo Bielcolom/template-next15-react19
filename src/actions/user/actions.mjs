@@ -2,6 +2,10 @@ import bcrypt from "bcryptjs";
 import User from "../../models/User.js";
 import UserRole from "../../models/UserRole.js";
 import { ERROR_CODES } from "../../errors/codes.js";
+import { connectDB } from "../../utils/connectDB.js";
+import { DEFAULT_LOCALE } from "../../utils/urls.js";
+import { createDataResponse } from "../../errors/responses.js";
+import { handleUsersDataError } from "../../errors/handlers/userErrorHandler.js";
 
 export const isValid = (user, requiredFields = []) => {
   if (!user) {
@@ -42,6 +46,8 @@ const createActionError = (code, message) => {
 export async function createUser({
   user,
 }) {
+  await connectDB();
+
   if (!isValid(user, ["name", "email", "userRoleId", "passwordHash"])) {
     throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required user creation fields.");
   }
@@ -65,6 +71,8 @@ export async function updateUser({
   userId,
   user,
 }) {
+  await connectDB();
+
   if (!userId || !user) {
     throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required user update fields.");
   }
@@ -103,6 +111,8 @@ export async function registerUser({
   rolePermission,
   user,
 }) {
+  await connectDB();
+
   if (!rolePermission || !isValid(user, ["name", "email", "passwordHash"])) {
     throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required user registration fields.");
   }
@@ -129,6 +139,8 @@ export async function registerUser({
 export async function authenticateUser({
   user,
 }) {
+  await connectDB();
+
   if (!isValid(user, ["email", "password"])) {
     throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required login fields.");
   }
@@ -150,4 +162,44 @@ export async function authenticateUser({
     user: storedUser,
     permissions: normalizePermissions(userRole?.permissions),
   };
+}
+
+export async function findFiltered({
+  userId,
+  email,
+  name,
+} = {}) {
+  await connectDB();
+
+  const params = {};
+
+  if (userId) {
+    params._id = userId;
+  }
+
+  if (email) {
+    params.email = email;
+  }
+
+  if (name) {
+    params.name = name;
+  }
+
+  const users = await User.find(params).lean();
+  return users.map((user) => ({
+    ...user,
+    _id: user._id.toString(),
+    userRoleId: user.userRoleId?.toString?.() || user.userRoleId,
+  }));
+}
+
+export async function getUserCount(locale = DEFAULT_LOCALE) {
+  try {
+    await connectDB();
+    const userCount = await User.countDocuments();
+    return createDataResponse(userCount);
+  } catch (error) {
+    console.error("Error in getUserCount function:", error);
+    return handleUsersDataError({ error, locale,  fallbackCode: ERROR_CODES.COUNT_USERS_FAILED});
+  }
 }

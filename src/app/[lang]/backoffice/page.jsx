@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { getTranslations } from "next-intl/server";
-import { getUserCount } from "./users/actions";
+import { getUserCount } from "@/actions/user/actions.mjs";
 import BackofficeCard from "@/app/[lang]/components/backoffice/BackofficeCard";
 import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../RouteToastHandler";
@@ -8,6 +8,7 @@ import RouteToastHandler from "../RouteToastHandler";
 export default async function BackofficePage({ params }) {
     const { lang } = await params;
     const { data: userCount, errors: countErrors } = await getUserCount(lang);
+
     const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
     const backofficeT = await getTranslations({ locale: lang, namespace: "backoffice" });
     const safeUserCount = typeof userCount === "number" ? userCount : 0;

@@ -3,9 +3,12 @@ import { ERROR_CODES } from "../../errors/codes.js";
 
 const mocks = vi.hoisted(() => ({
   compareMock: vi.fn(),
+  connectDBMock: vi.fn(),
+  userFindMock: vi.fn(),
   userFindOneMock: vi.fn(),
   userCreateMock: vi.fn(),
   userFindByIdAndUpdateMock: vi.fn(),
+  countDocumentsMock: vi.fn(),
   userRoleFindOneMock: vi.fn(),
   userRoleFindByIdMock: vi.fn(),
 }));
@@ -16,11 +19,17 @@ vi.mock("bcryptjs", () => ({
   },
 }));
 
+vi.mock("../../utils/connectDB.js", () => ({
+  connectDB: mocks.connectDBMock,
+}));
+
 vi.mock("../../models/User.js", () => ({
   default: {
+    find: mocks.userFindMock,
     findOne: mocks.userFindOneMock,
     create: mocks.userCreateMock,
     findByIdAndUpdate: mocks.userFindByIdAndUpdateMock,
+    countDocuments: mocks.countDocumentsMock,
   },
 }));
 
@@ -31,10 +40,11 @@ vi.mock("../../models/UserRole.js", () => ({
   },
 }));
 
-import { authenticateUser, createUser, registerUser, updateUser } from "./actions.mjs";
+import { authenticateUser, createUser, findFiltered, getUserCount, registerUser, updateUser } from "./actions.mjs";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.connectDBMock.mockResolvedValue(undefined);
 });
 
 describe("shared createUser helper", () => {
@@ -119,6 +129,89 @@ describe("shared createUser helper", () => {
       }
     );
     expect(result.name).toBe("New Name");
+  });
+});
+
+describe("shared users read helpers", () => {
+  it("findFiltered returns serialized users with filters", async () => {
+    mocks.userFindMock.mockReturnValueOnce({
+      lean: vi.fn().mockResolvedValueOnce([
+        {
+          _id: { toString: () => "user-1" },
+          userRoleId: { toString: () => "role-1" },
+          email: "john@example.com",
+          name: "John",
+        },
+      ]),
+    });
+
+    const result = await findFiltered({
+      userId: "user-1",
+      email: "john@example.com",
+      name: "John",
+    });
+
+    expect(mocks.userFindMock).toHaveBeenCalledWith({
+      _id: "user-1",
+      email: "john@example.com",
+      name: "John",
+    });
+    expect(result).toEqual([
+      {
+        _id: "user-1",
+        userRoleId: "role-1",
+        email: "john@example.com",
+        name: "John",
+      },
+    ]);
+  });
+
+  it("findFiltered returns empty array when there are no matches", async () => {
+    mocks.userFindMock.mockReturnValueOnce({
+      lean: vi.fn().mockResolvedValueOnce([]),
+    });
+
+    const result = await findFiltered({ email: "missing@example.com" });
+
+    expect(mocks.userFindMock).toHaveBeenCalledWith({ email: "missing@example.com" });
+    expect(result).toEqual([]);
+  });
+
+  it("findFiltered returns all users when filters are empty", async () => {
+    mocks.userFindMock.mockReturnValueOnce({
+      lean: vi.fn().mockResolvedValueOnce([
+        {
+          _id: { toString: () => "user-1" },
+          userRoleId: { toString: () => "role-1" },
+          email: "john@example.com",
+          name: "John",
+        },
+      ]),
+    });
+
+    const result = await findFiltered();
+
+    expect(mocks.userFindMock).toHaveBeenCalledWith({});
+    expect(result).toEqual([
+      {
+        _id: "user-1",
+        userRoleId: "role-1",
+        email: "john@example.com",
+        name: "John",
+      },
+    ]);
+  });
+
+  it("getUserCount returns countDocuments result", async () => {
+    mocks.countDocumentsMock.mockResolvedValueOnce(12);
+
+    const result = await getUserCount("en");
+
+    expect(mocks.countDocumentsMock).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({
+      data: 12,
+      errors: [],
+    });
   });
 });
 

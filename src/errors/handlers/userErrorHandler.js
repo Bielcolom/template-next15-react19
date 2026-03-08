@@ -28,6 +28,10 @@ export async function handleLoginUserError({ error, locale }) {
 }
 
 export async function handleUsersDataError({ error, locale, fallbackCode, fallbackData = null,}) {
+  if (hasErrorCode(error, ERROR_CODES.USER_NOT_FOUND)) {
+    return createLocalizedDataErrorResponse(ERROR_CODES.USER_NOT_FOUND, fallbackData, locale);
+  }
+
   if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
     return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, fallbackData, locale);
   }
