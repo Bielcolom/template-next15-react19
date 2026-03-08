@@ -8,6 +8,7 @@ import { connectDB } from "@/utils/connectDB";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
+import { handleLoginUserError } from "@/errors/handlers/userErrorHandler";
 import {
   createLocalizedFieldErrorResponse,
   createLocalizedGeneralErrorResponse,
@@ -72,12 +73,8 @@ export async function login(prevState, formData) {
     const rawData = normalizeLoginPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    if (error?.code === ERROR_CODES.INVALID_CREDENTIALS) {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.INVALID_CREDENTIALS, locale);
-    }
-
     console.error("Error in login function:", error);
-    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, locale);
+    return handleLoginUserError({ error, locale });
   }
 }
 

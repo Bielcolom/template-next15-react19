@@ -9,10 +9,10 @@ import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
 import { normalizePermissions } from "@/utils/helpers";
-import { hasErrorCode } from "@/errors/AppError";
 import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
 import { createLocalizedDataErrorResponse } from "@/errors/serverResponses";
+import { handleUserRolesDataError } from "@/errors/handlers/userRoleErrorHandler";
 import { invalidatePermissionsCacheForRole } from "@/app/lib/permissionCache";
 import { DEFAULT_LOCALE } from "@/utils/urls";
 
@@ -62,14 +62,13 @@ export async function getUserRoles(locale = DEFAULT_LOCALE) {
 
         return createDataResponse(serializedUserRoles);
     } catch (error) {
-        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, [], locale);
-        }
-        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, [], locale);
-        }
         console.error("Error in getUserRoles function:", error);
-        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLES_FAILED, [], locale);
+        return handleUserRolesDataError({
+            error,
+            locale,
+            fallbackCode: ERROR_CODES.FETCH_USER_ROLES_FAILED,
+            fallbackData: [],
+        });
     }
 }
 
@@ -89,14 +88,8 @@ export async function getUserRoleById(userRoleId, locale = DEFAULT_LOCALE) {
 
         return createDataResponse(serializeUserRole(userRole));
     } catch (error) {
-        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
-        }
-        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
-        }
         console.error("Error in getUserRoleById function:", error);
-        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        return handleUserRolesDataError({ error, locale });
     }
 }
 
@@ -127,14 +120,8 @@ export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
 
         return createDataResponse(serializeUserRole(userRole));
     } catch (error) {
-        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
-        }
-        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
-        }
         console.error("Error in createUserRole function:", error);
-        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        return handleUserRolesDataError({ error, locale });
     }
 }
 
@@ -172,14 +159,8 @@ export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCAL
 
         return createDataResponse(serializeUserRole(updatedUserRole));
     } catch (error) {
-        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
-        }
-        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
-        }
         console.error("Error in updateUserRole function:", error);
-        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        return handleUserRolesDataError({ error, locale });
     }
 }
 
@@ -206,13 +187,7 @@ export async function deleteUserRole(userRoleId, locale = DEFAULT_LOCALE) {
             deleted: true,
         });
     } catch (error) {
-        if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
-        }
-        if (hasErrorCode(error, ERROR_CODES.FORBIDDEN)) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FORBIDDEN, null, locale);
-        }
         console.error("Error in deleteUserRole function:", error);
-        return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        return handleUserRolesDataError({ error, locale });
     }
 }

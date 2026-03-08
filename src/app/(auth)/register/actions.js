@@ -8,9 +8,8 @@ import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
-import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
-import { createLocalizedFieldErrorResponse } from "@/errors/serverResponses";
+import { handleRegisterUserError } from "@/errors/handlers/userErrorHandler";
 
 const buildRegisterSchema = (validationMessages) => z.object({
   name: z
@@ -84,19 +83,7 @@ export async function createUser(prevState, formData) {
     const rawData = normalizeRegisterPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    if (err?.code === ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED) {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED, locale);
-    }
-
-    if (err?.code === ERROR_CODES.EMAIL_ALREADY_REGISTERED) {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
-    }
-
     console.error("Error during registration:", err);
-    return createLocalizedFieldErrorResponse(
-      "email",
-      ERROR_CODES.REGISTRATION_FAILED,
-      locale
-    );
+    return handleRegisterUserError({ error: err, locale });
   }
 }
