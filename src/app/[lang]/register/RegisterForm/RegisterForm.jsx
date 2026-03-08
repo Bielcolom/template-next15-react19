@@ -4,7 +4,7 @@ import { useActionState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Button from "@/app/[lang]/components/base/Button";
 import Input from "@/app/[lang]/components/base/Input";
-import { register } from "@/app/(auth)/register/actions";
+import { createUser } from "@/app/(auth)/register/actions";
 import { useAppRouter } from "../../hooks/useAppRouter";
 import { useToast } from "@/app/context/toastProvider";
 import styles from "./registerForm.module.scss";
@@ -17,7 +17,7 @@ export default function RegisterForm() {
   const t = useTranslations("register");
   const appRouter = useAppRouter();
   const { showError } = useToast();
-  const [state, formAction, isPending] = useActionState(register, INITIAL_REGISTER_STATE);
+  const [state, formAction, isPending] = useActionState(createUser, INITIAL_REGISTER_STATE);
 
   useEffect(() => {
     if (state?.errors?.general?.[0]) {

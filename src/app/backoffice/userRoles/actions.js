@@ -1,6 +1,10 @@
 "use server";
 
 import UserRole from "@/models/UserRole";
+import {
+    createUserRole as createUserRoleRecord,
+    updateUserRole as updateUserRoleRecord,
+} from "@/actions/userRole/actions.mjs";
 import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
@@ -108,12 +112,20 @@ export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
             return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
         }
 
-        const userRole = await UserRole.create({
+        const userRoleCreation = await createUserRoleRecord({
+            userRoleStore: UserRole,
             name,
             permissions,
         });
+        if (userRoleCreation.status === "exists") {
+            return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+        }
 
-        return createDataResponse(serializeUserRole(userRole.toObject()));
+        const userRole = typeof userRoleCreation.userRole?.toObject === "function"
+            ? userRoleCreation.userRole.toObject()
+            : userRoleCreation.userRole;
+
+        return createDataResponse(serializeUserRole(userRole));
     } catch (error) {
         if (hasErrorCode(error, ERROR_CODES.UNAUTHORIZED)) {
             return createLocalizedDataErrorResponse(ERROR_CODES.UNAUTHORIZED, null, locale);
@@ -142,17 +154,15 @@ export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCAL
             return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
         }
 
-        const updatedUserRole = await UserRole.findByIdAndUpdate(
+        const userRoleUpdate = await updateUserRoleRecord({
+            userRoleStore: UserRole,
             userRoleId,
-            {
-                name,
-                permissions,
-            },
-            {
-                new: true,
-                runValidators: true,
-            }
-        ).lean();
+            name,
+            permissions,
+        });
+        const updatedUserRole = typeof userRoleUpdate.userRole?.toObject === "function"
+            ? userRoleUpdate.userRole.toObject()
+            : userRoleUpdate.userRole;
 
         if (!updatedUserRole) {
             return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);

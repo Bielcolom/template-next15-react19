@@ -1,13 +1,10 @@
 "use server";
 
 import { z } from "zod";
-import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { createSession, deleteSession } from "@/app/lib/session";
-import User from "@/models/User";
-import UserRole from "@/models/UserRole";
+import { authenticateUser } from "@/actions/user/actions.mjs";
 import { connectDB } from "@/utils/connectDB";
-import { normalizePermissions } from "@/utils/helpers";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
@@ -53,20 +50,18 @@ export async function login(prevState, formData) {
 
     await connectDB();
 
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const authentication = await authenticateUser({
+      user: {
+        email,
+        password,
+      },
+    });
+
+    if (authentication.status !== "authenticated") {
       return createLocalizedFieldErrorResponse("email", ERROR_CODES.INVALID_CREDENTIALS, locale);
     }
 
-    const formattedUser = {
-      ...user.toObject(),
-      _id: user._id.toString(),
-    };
-
-    const userRole = await UserRole.findById(user.userRoleId).lean();
-    const permissions = normalizePermissions(userRole?.permissions);
-
-    const sessionCreation = await createSession(formattedUser, permissions);
+    const sessionCreation = await createSession(authentication.user, authentication.permissions);
     if (!sessionCreation) {
       return createLocalizedFieldErrorResponse("email", ERROR_CODES.SESSION_CREATION_FAILED, locale);
     }

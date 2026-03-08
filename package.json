@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "node scripts/seedUsersAndRoles.mjs"
+    "seed": "node --env-file=.env scripts/seedUsersAndRoles.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

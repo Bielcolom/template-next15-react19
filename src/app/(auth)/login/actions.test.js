@@ -2,21 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
 
 const mocks = vi.hoisted(() => ({
-  compareMock: vi.fn(),
+  authenticateUserMock: vi.fn(),
   createSessionMock: vi.fn(),
   deleteSessionMock: vi.fn(),
   connectDBMock: vi.fn(),
   redirectMock: vi.fn(() => {
     throw new Error("NEXT_REDIRECT");
   }),
-  userFindOneMock: vi.fn(),
-  userRoleFindByIdMock: vi.fn(),
 }));
 
-vi.mock("bcryptjs", () => ({
-  default: {
-    compare: mocks.compareMock,
-  },
+vi.mock("@/actions/user/actions.mjs", () => ({
+  authenticateUser: mocks.authenticateUserMock,
 }));
 
 vi.mock("@/app/lib/session", () => ({
@@ -30,18 +26,6 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/utils/connectDB", () => ({
   connectDB: mocks.connectDBMock,
-}));
-
-vi.mock("@/models/User", () => ({
-  default: {
-    findOne: mocks.userFindOneMock,
-  },
-}));
-
-vi.mock("@/models/UserRole", () => ({
-  default: {
-    findById: mocks.userRoleFindByIdMock,
-  },
 }));
 
 import { login, logout } from "./actions";
@@ -67,7 +51,9 @@ describe("login action", () => {
 
   it("returns credentials error when user is not found", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.userFindOneMock.mockResolvedValueOnce(null);
+    mocks.authenticateUserMock.mockResolvedValueOnce({
+      status: "invalid_credentials",
+    });
 
     const result = await login({}, buildLoginFormData({ email: "  ADMIN@EXAMPLE.COM  " }));
 
@@ -76,24 +62,20 @@ describe("login action", () => {
         email: ["Invalid email or password"],
       },
     });
-    expect(mocks.userFindOneMock).toHaveBeenCalledWith({ email: "admin@example.com" });
+    expect(mocks.authenticateUserMock).toHaveBeenCalledWith({
+      user: {
+        email: "admin@example.com",
+        password: "12345678",
+      },
+    });
   });
 
   it("creates session and redirects on valid credentials", async () => {
-    const userDoc = {
-      _id: { toString: () => "user-1" },
-      password: "hashed",
-      userRoleId: "role-1",
-      toObject: () => ({ email: "admin@example.com", userRoleId: "role-1" }),
-    };
-
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.userFindOneMock.mockResolvedValueOnce(userDoc);
-    mocks.compareMock.mockResolvedValueOnce(true);
-    mocks.userRoleFindByIdMock.mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce({
-        permissions: ["admin_access"],
-      }),
+    mocks.authenticateUserMock.mockResolvedValueOnce({
+      status: "authenticated",
+      user: { email: "admin@example.com", userRoleId: "role-1", _id: "user-1" },
+      permissions: ["admin_access"],
     });
     mocks.createSessionMock.mockResolvedValueOnce({});
 
@@ -102,7 +84,6 @@ describe("login action", () => {
       { email: "admin@example.com", userRoleId: "role-1", _id: "user-1" },
       ["admin_access"]
     );
-    expect(mocks.userFindOneMock).toHaveBeenCalledWith({ email: "admin@example.com" });
     expect(mocks.redirectMock).toHaveBeenCalledWith(getLocalizedPath(INDEX_URL, "en"));
   });
 });

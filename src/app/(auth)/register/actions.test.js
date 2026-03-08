@@ -3,9 +3,6 @@ import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ROLES } from "@/utils/constants";
 
 const mocks = vi.hoisted(() => {
-  const userCtorMock = vi.fn();
-  userCtorMock.findOne = vi.fn();
-
   return {
     hashMock: vi.fn(),
     connectDBMock: vi.fn(),
@@ -13,10 +10,7 @@ const mocks = vi.hoisted(() => {
     redirectMock: vi.fn(() => {
       throw new Error("NEXT_REDIRECT");
     }),
-    findOneUserMock: userCtorMock.findOne,
-    saveMock: vi.fn(),
-    userCtorMock,
-    userRoleFindOneMock: vi.fn(),
+    registerUserMock: vi.fn(),
   };
 });
 
@@ -34,21 +28,15 @@ vi.mock("@/app/lib/session", () => ({
   createSession: mocks.createSessionMock,
 }));
 
+vi.mock("@/actions/user/actions.mjs", () => ({
+  registerUser: mocks.registerUserMock,
+}));
+
 vi.mock("next/navigation", () => ({
   redirect: mocks.redirectMock,
 }));
 
-vi.mock("@/models/User", () => ({
-  default: mocks.userCtorMock,
-}));
-
-vi.mock("@/models/UserRole", () => ({
-  default: {
-    findOne: mocks.userRoleFindOneMock,
-  },
-}));
-
-import { register } from "./actions";
+import { createUser } from "./actions";
 
 const buildValidFormData = (overrides = {}) => {
   const formData = new FormData();
@@ -63,14 +51,6 @@ const buildValidFormData = (overrides = {}) => {
 describe("register action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.userCtorMock.mockImplementation(function userModelMock(data) {
-      return {
-      ...data,
-      _id: { toString: () => "user-1" },
-      save: mocks.saveMock,
-      toObject: () => data,
-      };
-    });
   });
 
   it("returns validation errors for invalid form data", async () => {
@@ -80,7 +60,7 @@ describe("register action", () => {
     formData.set("confirmPassword", "123");
     formData.set("locale", "en");
 
-    const result = await register({}, formData);
+    const result = await createUser({}, formData);
 
     expect(result.errors).toBeTruthy();
     expect(mocks.connectDBMock).not.toHaveBeenCalled();
@@ -88,27 +68,37 @@ describe("register action", () => {
 
   it("returns error when email is already registered", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.findOneUserMock.mockResolvedValueOnce({ _id: "existing" });
+    mocks.hashMock.mockResolvedValueOnce("hashed");
+    mocks.registerUserMock.mockResolvedValueOnce({
+      status: "exists",
+      user: { _id: "existing" },
+    });
 
-    const result = await register({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }));
+    const result = await createUser({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }));
 
     expect(result).toEqual({
       errors: {
         email: ["Email is already registered"],
       },
     });
-    expect(mocks.findOneUserMock).toHaveBeenCalledWith({ email: "john@example.com" });
+    expect(mocks.registerUserMock).toHaveBeenCalledWith({
+      rolePermission: ROLES.USER,
+      user: {
+        name: "John Doe",
+        email: "john@example.com",
+        passwordHash: "hashed",
+      },
+    });
   });
 
   it("returns error when default user role is missing", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.findOneUserMock.mockResolvedValueOnce(null);
     mocks.hashMock.mockResolvedValueOnce("hashed");
-    mocks.userRoleFindOneMock.mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce(null),
+    mocks.registerUserMock.mockResolvedValueOnce({
+      status: "missing_default_role",
     });
 
-    const result = await register({}, buildValidFormData());
+    const result = await createUser({}, buildValidFormData());
 
     expect(result).toEqual({
       errors: {
@@ -119,24 +109,21 @@ describe("register action", () => {
 
   it("creates user, creates session and redirects on success", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.findOneUserMock.mockResolvedValueOnce(null);
     mocks.hashMock.mockResolvedValueOnce("hashed");
-    mocks.userRoleFindOneMock.mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce({
-        _id: "role-user",
-        permissions: [ROLES.USER],
-      }),
-    });
-    mocks.saveMock.mockResolvedValueOnce(undefined);
-    mocks.createSessionMock.mockResolvedValueOnce({});
-
-    await expect(register({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }))).rejects.toThrow("NEXT_REDIRECT");
-    expect(mocks.userCtorMock).toHaveBeenCalledWith({
+    mocks.registerUserMock.mockResolvedValueOnce({
+      status: "created",
+      user: {
       name: "John Doe",
       userRoleId: "role-user",
       email: "john@example.com",
       password: "hashed",
+        _id: "user-1",
+      },
+      permissions: ["user_access"],
     });
+    mocks.createSessionMock.mockResolvedValueOnce({});
+
+    await expect(createUser({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }))).rejects.toThrow("NEXT_REDIRECT");
     expect(mocks.createSessionMock).toHaveBeenCalledWith(
       { name: "John Doe", userRoleId: "role-user", email: "john@example.com", password: "hashed", _id: "user-1" },
       ["user_access"]
@@ -149,7 +136,7 @@ describe("register action", () => {
   it("returns a localized error when database connection fails", async () => {
     mocks.connectDBMock.mockRejectedValueOnce(new Error("db down"));
 
-    const result = await register({}, buildValidFormData({ locale: "es" }));
+    const result = await createUser({}, buildValidFormData({ locale: "es" }));
 
     expect(result).toEqual({
       errors: {

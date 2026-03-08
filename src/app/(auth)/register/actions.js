@@ -3,12 +3,10 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
-import User from "@/models/User";
-import UserRole from "@/models/UserRole";
+import { registerUser as registerUserRecord } from "@/actions/user/actions.mjs";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
-import { normalizePermissions } from "@/utils/helpers";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
@@ -45,7 +43,7 @@ const normalizeRegisterPayload = (payload) => {
   return payload || {};
 };
 
-export async function register(prevState, formData) {
+export async function createUser(prevState, formData) {
   try {
     const rawData = normalizeRegisterPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
@@ -63,36 +61,23 @@ export async function register(prevState, formData) {
 
     await connectDB();
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
+    const userToCreate = {...user, passwordHash: hashedPassword };
 
-    const baseUserRole = await UserRole.findOne({
-      permissions: ROLES.USER,
-    }).lean();
+    const userRegistration = await registerUserRecord({
+      rolePermission: ROLES.USER,
+      user: userToCreate,
+    });
 
-    if (!baseUserRole) {
+    if (userRegistration.status === "missing_default_role") {
       return createLocalizedFieldErrorResponse("email", ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED, locale);
     }
 
-    const user = new User({
-      name,
-      userRoleId: baseUserRole._id,
-      email,
-      password: hashedPassword,
-    });
+    if (userRegistration.status === "exists") {
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
+    }
 
-    await user.save();
-
-    const formattedUser = {
-      ...user.toObject(),
-      _id: user._id.toString(),
-    };
-
-    await createSession(formattedUser, normalizePermissions(baseUserRole.permissions));
+    await createSession(userRegistration.user, userRegistration.permissions);
 
     redirect(`${getLocalizedPath(INDEX_URL, locale)}?toast=registrationSuccess`);
   } catch (err) {

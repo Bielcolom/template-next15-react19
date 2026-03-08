@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   requirePermissionMock: vi.fn(),
   connectDBMock: vi.fn(),
   userRoleFindMock: vi.fn(),
+  userRoleFindOneMock: vi.fn(),
   userRoleFindByIdMock: vi.fn(),
   userRoleCreateMock: vi.fn(),
   userRoleFindByIdAndUpdateMock: vi.fn(),
@@ -27,6 +28,7 @@ vi.mock("@/app/lib/permissionCache", () => ({
 vi.mock("@/models/UserRole", () => ({
   default: {
     find: mocks.userRoleFindMock,
+    findOne: mocks.userRoleFindOneMock,
     findById: mocks.userRoleFindByIdMock,
     create: mocks.userRoleCreateMock,
     findByIdAndUpdate: mocks.userRoleFindByIdAndUpdateMock,
@@ -115,6 +117,7 @@ describe("backoffice userRoles actions", () => {
   it("createUserRole creates and serializes a role", async () => {
     mocks.requirePermissionMock.mockResolvedValueOnce(undefined);
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
+    mocks.userRoleFindOneMock.mockResolvedValueOnce(null);
     mocks.userRoleCreateMock.mockResolvedValueOnce({
       toObject: () => ({
         _id: { toString: () => "role-2" },
@@ -145,12 +148,10 @@ describe("backoffice userRoles actions", () => {
   it("updateUserRole updates role and invalidates permissions cache", async () => {
     mocks.requirePermissionMock.mockResolvedValueOnce(undefined);
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.userRoleFindByIdAndUpdateMock.mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce({
-        _id: { toString: () => "role-1" },
-        name: "Admin",
-        permissions: ["admin_access", "user_access"],
-      }),
+    mocks.userRoleFindByIdAndUpdateMock.mockResolvedValueOnce({
+      _id: { toString: () => "role-1" },
+      name: "Admin",
+      permissions: ["admin_access", "user_access"],
     });
     mocks.invalidatePermissionsCacheForRoleMock.mockResolvedValueOnce(2);
 
