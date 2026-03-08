@@ -2,7 +2,13 @@ import bcrypt from "bcryptjs";
 import User from "../../models/User.js";
 import UserRole from "../../models/UserRole.js";
 
-export const isValid = (...values) => values.every((value) => Boolean(value));
+export const isValid = (user, requiredFields = []) => {
+  if (!user) {
+    return false;
+  }
+
+  return requiredFields.every((field) => Boolean(user[field]));
+};
 
 const normalizePermissions = (permissions) => {
   if (Array.isArray(permissions)) {
@@ -41,7 +47,7 @@ const findUserRoleById = async (userRoleId) => {
 export async function createUser({
   user,
 }) {
-  if (!isValid(user, user?.name, user?.email, user?.userRoleId, user?.passwordHash)) {
+  if (!isValid(user, ["name", "email", "userRoleId", "passwordHash"])) {
     throw new Error("Missing required user creation fields.");
   }
 
@@ -71,7 +77,7 @@ export async function updateUser({
   userId,
   user,
 }) {
-  if (!isValid(userId, user)) {
+  if (!userId || !user) {
     throw new Error("Missing required user update fields.");
   }
 
@@ -108,7 +114,7 @@ export async function registerUser({
   rolePermission,
   user,
 }) {
-  if (!isValid(rolePermission, user, user?.name, user?.email, user?.passwordHash)) {
+  if (!rolePermission || !isValid(user, ["name", "email", "passwordHash"])) {
     throw new Error("Missing required user registration fields.");
   }
 
@@ -122,12 +128,12 @@ export async function registerUser({
     };
   }
 
-  const userCreation = await createUser({
-    user: {
-      ...user,
-      userRoleId: baseUserRole._id,
-    },
-  });
+  const userToCreate = {
+    ...user,
+    userRoleId: baseUserRole._id,
+  };
+
+  const userCreation = await createUser({ user: userToCreate });
 
   if (userCreation.status === "exists") {
     return userCreation;
@@ -143,7 +149,7 @@ export async function registerUser({
 export async function authenticateUser({
   user,
 }) {
-  if (!isValid(user, user?.email, user?.password)) {
+  if (!isValid(user, ["email", "password"])) {
     throw new Error("Missing required login fields.");
   }
 

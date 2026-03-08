@@ -49,12 +49,13 @@ export async function login(prevState, formData) {
     const { email, password } = result.data;
 
     await connectDB();
+    const userToAuthenticate = {
+      email,
+      password,
+    };
 
     const authentication = await authenticateUser({
-      user: {
-        email,
-        password,
-      },
+      user: userToAuthenticate,
     });
 
     if (authentication.status !== "authenticated") {

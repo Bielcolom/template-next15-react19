@@ -80,13 +80,15 @@ const upsertUsers = async (rolesByName) => {
     }
     const password = process.env[seedUser.passwordEnv] || DEFAULT_SEED_PASSWORD;
     const passwordHash = await bcrypt.hash(password, 10);
+    const userToCreate = {
+      name: seedUser.name,
+      email: seedUser.email,
+      userRoleId: role._id,
+      passwordHash,
+    };
+
     const result = await createUserRecord({
-      user: {
-        name: seedUser.name,
-        email: seedUser.email,
-        userRoleId: role._id,
-        passwordHash,
-      },
+      user: userToCreate,
     });
 
     if (result.status === "created") {

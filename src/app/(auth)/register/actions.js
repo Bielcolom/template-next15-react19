@@ -62,11 +62,15 @@ export async function createUser(prevState, formData) {
     await connectDB();
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userToCreate = {...user, passwordHash: hashedPassword };
+    const userToRegister = {
+      name,
+      email,
+      passwordHash: hashedPassword,
+    };
 
     const userRegistration = await registerUserRecord({
       rolePermission: ROLES.USER,
-      user: userToCreate,
+      user: userToRegister,
     });
 
     if (userRegistration.status === "missing_default_role") {
