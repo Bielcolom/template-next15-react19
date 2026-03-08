@@ -1,12 +1,11 @@
 {
   "home": "Inicio",
   "about": "Sobre nosotros",
-  "productOne": "Producto 1",
   "backoffice": "Backoffice",
-  "login": "Iniciar sesion",
-  "logout": "Cerrar sesion",
+  "login": "Iniciar sesión",
+  "logout": "Cerrar sesión",
   "languageSelector": {
-    "es": "Espa\\u00f1ol",
-    "en": "Ingl\\u00e9s"
+    "es": "Español",
+    "en": "Inglés"
   }
 }

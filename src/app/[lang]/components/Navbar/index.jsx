@@ -7,7 +7,7 @@ import styles from "./navbar.module.scss";
 import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
 import { userIsAdminOrMore } from "@/utils/helpers";
-import { ABOUT_URL, BACKOFFICE_URL, INDEX_URL, LOGIN_URL, PRODUCT_1_URL, PRODUCTS_URL } from "@/utils/urls";
+import { ABOUT_URL, BACKOFFICE_URL, INDEX_URL, LOGIN_URL } from "@/utils/urls";
 import Icon from "../base/Icon";
 import LanguageSelector from "./LanguageSelector";
 import { useAppRouter } from "@/app/[lang]/hooks/useAppRouter";
@@ -51,12 +51,6 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
           className={`${styles.link} ${pathWithoutLocale === ABOUT_URL ? styles.active : ""}`}
         >
           {t("about")}
-        </AppLink>
-        <AppLink
-          href={PRODUCT_1_URL}
-          className={`${styles.link} ${pathWithoutLocale.startsWith(PRODUCTS_URL) ? styles.active : ""}`}
-        >
-          {t("productOne")}
         </AppLink>
       </div>
       <div className={styles.rightElements}>

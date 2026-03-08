@@ -13,10 +13,6 @@ export const FORGOT_PASSWORD_URL = "/forgot-password";
 export const LOGIN_URL = "/login";
 export const REGISTER_URL = "/register";
 
-export const PRODUCTS_URL = "/products";
-export const getProductDetailUrl = (productId) => `${PRODUCTS_URL}/${productId}`;
-export const PRODUCT_1_URL = getProductDetailUrl("1");
-
 export const BACKOFFICE_URL = "/backoffice";
 export const BACKOFFICE_USERROLES_URL = `${BACKOFFICE_URL}/userRoles`;
 
