@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { createUser as createUserRecord } from "../src/actions/user/actions.mjs";
 import { createUserRole as createUserRoleRecord } from "../src/actions/userRole/actions.mjs";
+import { ERROR_CODES } from "../src/errors/codes.js";
 import UserRole from "../src/models/UserRole.js";
 
 const ROLES = {
@@ -87,16 +88,18 @@ const upsertUsers = async (rolesByName) => {
       passwordHash,
     };
 
-    const result = await createUserRecord({
-      user: userToCreate,
-    });
-
-    if (result.status === "created") {
+    try {
+      await createUserRecord({
+        user: userToCreate,
+      });
       console.log(`user created: ${seedUser.email}`);
-      continue;
+    } catch (error) {
+      if (error?.code === ERROR_CODES.EMAIL_ALREADY_REGISTERED) {
+        console.log(`user already exists (skipped): ${seedUser.email}`);
+        continue;
+      }
+      throw error;
     }
-
-    console.log(`user already exists (skipped): ${seedUser.email}`);
   }
 };
 

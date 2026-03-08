@@ -58,10 +58,6 @@ export async function login(prevState, formData) {
       user: userToAuthenticate,
     });
 
-    if (authentication.status !== "authenticated") {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.INVALID_CREDENTIALS, locale);
-    }
-
     const sessionCreation = await createSession(authentication.user, authentication.permissions);
     if (!sessionCreation) {
       return createLocalizedFieldErrorResponse("email", ERROR_CODES.SESSION_CREATION_FAILED, locale);
@@ -73,9 +69,15 @@ export async function login(prevState, formData) {
       throw error;
     }
 
-    console.error("Error in login function:", error);
     const rawData = normalizeLoginPayload(formData ?? prevState);
-    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, rawData?.locale || DEFAULT_LOCALE);
+    const locale = rawData?.locale || DEFAULT_LOCALE;
+
+    if (error?.code === ERROR_CODES.INVALID_CREDENTIALS) {
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.INVALID_CREDENTIALS, locale);
+    }
+
+    console.error("Error in login function:", error);
+    return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, locale);
   }
 }
 

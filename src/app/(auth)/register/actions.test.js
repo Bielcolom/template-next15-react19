@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ROLES } from "@/utils/constants";
+import { ERROR_CODES } from "@/errors/codes";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -69,10 +70,9 @@ describe("register action", () => {
   it("returns error when email is already registered", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.hashMock.mockResolvedValueOnce("hashed");
-    mocks.registerUserMock.mockResolvedValueOnce({
-      status: "exists",
-      user: { _id: "existing" },
-    });
+    const duplicateError = new Error("duplicate");
+    duplicateError.code = ERROR_CODES.EMAIL_ALREADY_REGISTERED;
+    mocks.registerUserMock.mockRejectedValueOnce(duplicateError);
 
     const result = await createUser({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }));
 
@@ -94,9 +94,9 @@ describe("register action", () => {
   it("returns error when default user role is missing", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.hashMock.mockResolvedValueOnce("hashed");
-    mocks.registerUserMock.mockResolvedValueOnce({
-      status: "missing_default_role",
-    });
+    const roleError = new Error("missing role");
+    roleError.code = ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED;
+    mocks.registerUserMock.mockRejectedValueOnce(roleError);
 
     const result = await createUser({}, buildValidFormData());
 
@@ -111,7 +111,6 @@ describe("register action", () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.hashMock.mockResolvedValueOnce("hashed");
     mocks.registerUserMock.mockResolvedValueOnce({
-      status: "created",
       user: {
       name: "John Doe",
       userRoleId: "role-user",

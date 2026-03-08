@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ERROR_CODES } from "../../errors/codes.js";
 
 const mocks = vi.hoisted(() => ({
   compareMock: vi.fn(),
@@ -39,7 +40,6 @@ beforeEach(() => {
 describe("shared createUser helper", () => {
   it("creates a user when email does not exist", async () => {
     const createdPayloads = [];
-    mocks.userFindOneMock.mockResolvedValueOnce(null);
     mocks.userCreateMock.mockImplementation(async (payload) => {
       createdPayloads.push(payload);
       return {
@@ -64,34 +64,35 @@ describe("shared createUser helper", () => {
       password: "hashed",
     });
     expect(result).toEqual({
-      status: "created",
-      user: {
-        name: "John",
-        email: "  JOHN@EXAMPLE.COM  ",
-        userRoleId: "role-1",
-        password: "hashed",
-        _id: "user-1",
-      },
+      name: "John",
+      email: "  JOHN@EXAMPLE.COM  ",
+      userRoleId: "role-1",
+      password: "hashed",
+      _id: "user-1",
     });
   });
 
-  it("returns exists when user already exists and mode is error", async () => {
-    mocks.userFindOneMock.mockResolvedValueOnce({ _id: "existing", email: "john@example.com" });
+  it("throws EMAIL_ALREADY_REGISTERED when user already exists", async () => {
+    const duplicateError = new Error("E11000 duplicate key error");
+    duplicateError.code = 11000;
+    mocks.userCreateMock.mockRejectedValueOnce(duplicateError);
 
-    const result = await createUser({
-      user: {
-        name: "John",
-        email: "john@example.com",
-        userRoleId: "role-1",
-        passwordHash: "hashed",
-      },
+    await expect(
+      createUser({
+        user: {
+          name: "John",
+          email: "john@example.com",
+          userRoleId: "role-1",
+          passwordHash: "hashed",
+        },
+      })
+    ).rejects.toMatchObject({
+      code: ERROR_CODES.EMAIL_ALREADY_REGISTERED,
     });
-
-    expect(result.status).toBe("exists");
-    expect(mocks.userCreateMock).not.toHaveBeenCalled();
+    expect(mocks.userCreateMock).toHaveBeenCalledTimes(1);
   });
 
-  it("updates existing user with updateUser", async () => {
+  it("returns updated user with updateUser", async () => {
     mocks.userFindByIdAndUpdateMock.mockResolvedValueOnce({
       _id: "user-1",
       email: "john@example.com",
@@ -117,32 +118,31 @@ describe("shared createUser helper", () => {
         runValidators: true,
       }
     );
-    expect(result.status).toBe("updated");
-    expect(result.user.name).toBe("New Name");
+    expect(result.name).toBe("New Name");
   });
 });
 
 describe("shared registerUser helper", () => {
-  it("returns missing_default_role when configured role is not found", async () => {
+  it("throws DEFAULT_USER_ROLE_NOT_CONFIGURED when role is not found", async () => {
     mocks.userRoleFindOneMock.mockResolvedValueOnce(null);
 
-    const result = await registerUser({
-      rolePermission: "user_access",
-      user: {
-        name: "John",
-        email: "john@example.com",
-        passwordHash: "hashed",
-      },
-    });
-
-    expect(result).toEqual({
-      status: "missing_default_role",
+    await expect(
+      registerUser({
+        rolePermission: "user_access",
+        user: {
+          name: "John",
+          email: "john@example.com",
+          passwordHash: "hashed",
+        },
+      })
+    ).rejects.toMatchObject({
+      code: ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED,
     });
   });
 });
 
 describe("shared authenticateUser helper", () => {
-  it("returns invalid_credentials when password does not match", async () => {
+  it("throws INVALID_CREDENTIALS when password does not match", async () => {
     mocks.compareMock.mockResolvedValueOnce(false);
     mocks.userFindOneMock.mockResolvedValueOnce({
       _id: "user-1",
@@ -151,15 +151,15 @@ describe("shared authenticateUser helper", () => {
       userRoleId: "role-1",
     });
 
-    const result = await authenticateUser({
-      user: {
-        email: "john@example.com",
-        password: "bad-pass",
-      },
-    });
-
-    expect(result).toEqual({
-      status: "invalid_credentials",
+    await expect(
+      authenticateUser({
+        user: {
+          email: "john@example.com",
+          password: "bad-pass",
+        },
+      })
+    ).rejects.toMatchObject({
+      code: ERROR_CODES.INVALID_CREDENTIALS,
     });
   });
 
@@ -187,12 +187,10 @@ describe("shared authenticateUser helper", () => {
     });
 
     expect(result).toEqual({
-      status: "authenticated",
-      user: {
+      user: expect.objectContaining({
         email: "john@example.com",
         userRoleId: "role-1",
-        _id: "user-1",
-      },
+      }),
       permissions: ["admin_access"],
     });
   });

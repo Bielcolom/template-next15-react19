@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../../models/User.js";
 import UserRole from "../../models/UserRole.js";
+import { ERROR_CODES } from "../../errors/codes.js";
 
 export const isValid = (user, requiredFields = []) => {
   if (!user) {
@@ -22,20 +23,6 @@ const normalizePermissions = (permissions) => {
   return [permissions].filter(Boolean);
 };
 
-const serializeUser = (user) => {
-  if (!user) {
-    return null;
-  }
-
-  const userData = typeof user.toObject === "function" ? user.toObject() : user;
-  const userId = user?._id ?? userData?._id;
-
-  return {
-    ...userData,
-    _id: typeof userId?.toString === "function" ? userId.toString() : userId,
-  };
-};
-
 const findUserRoleById = async (userRoleId) => {
   if (!userRoleId) {
     return null;
@@ -44,33 +31,34 @@ const findUserRoleById = async (userRoleId) => {
   return await UserRole.findById(userRoleId);
 };
 
+const isDuplicateKeyError = (error) => error?.code === 11000;
+
+const createActionError = (code, message) => {
+  const error = new Error(message || code);
+  error.code = code;
+  return error;
+};
+
 export async function createUser({
   user,
 }) {
   if (!isValid(user, ["name", "email", "userRoleId", "passwordHash"])) {
-    throw new Error("Missing required user creation fields.");
+    throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required user creation fields.");
   }
 
-  const existingUser = await User.findOne({ email: user.email });
-
-  if (existingUser) {
-    return {
-      status: "exists",
-      user: existingUser,
-    };
+  try {
+    return await User.create({
+      name: user.name,
+      email: user.email,
+      userRoleId: user.userRoleId,
+      password: user.passwordHash,
+    });
+  } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      throw createActionError(ERROR_CODES.EMAIL_ALREADY_REGISTERED);
+    }
+    throw error;
   }
-
-  const createdUser = await User.create({
-    name: user.name,
-    email: user.email,
-    userRoleId: user.userRoleId,
-    password: user.passwordHash,
-  });
-
-  return {
-    status: "created",
-    user: createdUser,
-  };
 }
 
 export async function updateUser({
@@ -78,7 +66,7 @@ export async function updateUser({
   user,
 }) {
   if (!userId || !user) {
-    throw new Error("Missing required user update fields.");
+    throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required user update fields.");
   }
 
   const updatePayload = {};
@@ -92,7 +80,7 @@ export async function updateUser({
   }
 
   if (Object.keys(updatePayload).length === 0) {
-    throw new Error("No user fields to update.");
+    throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "No user fields to update.");
   }
 
   const updatedUser = await User.findByIdAndUpdate(
@@ -104,10 +92,11 @@ export async function updateUser({
     }
   );
 
-  return {
-    status: "updated",
-    user: updatedUser,
-  };
+  if (!updatedUser) {
+    throw createActionError(ERROR_CODES.USER_NOT_FOUND);
+  }
+
+  return updatedUser;
 }
 
 export async function registerUser({
@@ -115,17 +104,13 @@ export async function registerUser({
   user,
 }) {
   if (!rolePermission || !isValid(user, ["name", "email", "passwordHash"])) {
-    throw new Error("Missing required user registration fields.");
+    throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required user registration fields.");
   }
 
-  const baseUserRole = await UserRole.findOne({
-    permissions: rolePermission,
-  });
+  const baseUserRole = await UserRole.findOne({ permissions: rolePermission });
 
   if (!baseUserRole) {
-    return {
-      status: "missing_default_role",
-    };
+    throw createActionError(ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED);
   }
 
   const userToCreate = {
@@ -135,13 +120,8 @@ export async function registerUser({
 
   const userCreation = await createUser({ user: userToCreate });
 
-  if (userCreation.status === "exists") {
-    return userCreation;
-  }
-
   return {
-    status: "created",
-    user: serializeUser(userCreation.user),
+    user: userCreation,
     permissions: normalizePermissions(baseUserRole.permissions),
   };
 }
@@ -150,29 +130,24 @@ export async function authenticateUser({
   user,
 }) {
   if (!isValid(user, ["email", "password"])) {
-    throw new Error("Missing required login fields.");
+    throw createActionError(ERROR_CODES.UNEXPECTED_ERROR, "Missing required login fields.");
   }
 
   const storedUser = await User.findOne({ email: user.email });
 
   if (!storedUser || !storedUser.password) {
-    return {
-      status: "invalid_credentials",
-    };
+    throw createActionError(ERROR_CODES.INVALID_CREDENTIALS);
   }
 
   const isValidPassword = await bcrypt.compare(user.password, storedUser.password);
   if (!isValidPassword) {
-    return {
-      status: "invalid_credentials",
-    };
+    throw createActionError(ERROR_CODES.INVALID_CREDENTIALS);
   }
 
   const userRole = await findUserRoleById(storedUser.userRoleId);
 
   return {
-    status: "authenticated",
-    user: serializeUser(storedUser),
+    user: storedUser,
     permissions: normalizePermissions(userRole?.permissions),
   };
 }

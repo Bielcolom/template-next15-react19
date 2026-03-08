@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { INDEX_URL, getLocalizedPath } from "@/utils/urls";
+import { ERROR_CODES } from "@/errors/codes";
 
 const mocks = vi.hoisted(() => ({
   authenticateUserMock: vi.fn(),
@@ -51,9 +52,9 @@ describe("login action", () => {
 
   it("returns credentials error when user is not found", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
-    mocks.authenticateUserMock.mockResolvedValueOnce({
-      status: "invalid_credentials",
-    });
+    const credentialsError = new Error("invalid credentials");
+    credentialsError.code = ERROR_CODES.INVALID_CREDENTIALS;
+    mocks.authenticateUserMock.mockRejectedValueOnce(credentialsError);
 
     const result = await login({}, buildLoginFormData({ email: "  ADMIN@EXAMPLE.COM  " }));
 
@@ -73,7 +74,6 @@ describe("login action", () => {
   it("creates session and redirects on valid credentials", async () => {
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.authenticateUserMock.mockResolvedValueOnce({
-      status: "authenticated",
       user: { email: "admin@example.com", userRoleId: "role-1", _id: "user-1" },
       permissions: ["admin_access"],
     });

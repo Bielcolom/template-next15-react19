@@ -73,14 +73,6 @@ export async function createUser(prevState, formData) {
       user: userToRegister,
     });
 
-    if (userRegistration.status === "missing_default_role") {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED, locale);
-    }
-
-    if (userRegistration.status === "exists") {
-      return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
-    }
-
     await createSession(userRegistration.user, userRegistration.permissions);
 
     redirect(`${getLocalizedPath(INDEX_URL, locale)}?toast=registrationSuccess`);
@@ -89,12 +81,22 @@ export async function createUser(prevState, formData) {
       throw err;
     }
 
-    console.error("Error during registration:", err);
     const rawData = normalizeRegisterPayload(formData ?? prevState);
+    const locale = rawData?.locale || DEFAULT_LOCALE;
+
+    if (err?.code === ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED) {
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.DEFAULT_USER_ROLE_NOT_CONFIGURED, locale);
+    }
+
+    if (err?.code === ERROR_CODES.EMAIL_ALREADY_REGISTERED) {
+      return createLocalizedFieldErrorResponse("email", ERROR_CODES.EMAIL_ALREADY_REGISTERED, locale);
+    }
+
+    console.error("Error during registration:", err);
     return createLocalizedFieldErrorResponse(
       "email",
       ERROR_CODES.REGISTRATION_FAILED,
-      rawData?.locale || DEFAULT_LOCALE
+      locale
     );
   }
 }
