@@ -15,7 +15,7 @@
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",
     "mongoose": "^8.8.1",
-    "next": "15.5.12",
+    "next": "15.5.14",
     "next-intl": "^4.8.3",
     "prop-types": "^15.8.1",
     "react": "19.2.4",
@@ -24,7 +24,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "15.5.12",
+    "@next/eslint-plugin-next": "15.5.14",
     "eslint": "^9.15.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^7.0.1",
