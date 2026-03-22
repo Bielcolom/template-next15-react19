@@ -46,7 +46,6 @@ const serializeUserRole = (userRole) => ({
     _id: userRole._id.toString(),
 });
 
-console.log("test commit");
 export async function getUserRoles(locale = DEFAULT_LOCALE) {
     "use server";
 
