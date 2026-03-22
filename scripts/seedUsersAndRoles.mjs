@@ -29,19 +29,19 @@ const roleSeeds = [
 const userSeeds = [
   {
     name: "Super Admin",
-    email: "superadmin@boilerplate.local",
+    email: "superadmin@template.local",
     roleName: "superadmin",
     passwordEnv: "SEED_SUPERADMIN_PASSWORD",
   },
   {
     name: "Admin",
-    email: "admin@boilerplate.local",
+    email: "admin@template.local",
     roleName: "admin",
     passwordEnv: "SEED_ADMIN_PASSWORD",
   },
   {
     name: "User",
-    email: "user@boilerplate.local",
+    email: "user@template.local",
     roleName: "user",
     passwordEnv: "SEED_USER_PASSWORD",
   },

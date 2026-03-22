@@ -1,4 +1,4 @@
-# Next.js 15 + React 19 Boilerplate
+# Next.js 15 + React 19 Template
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
@@ -6,7 +6,7 @@
 ![Redis](https://img.shields.io/badge/Redis-7-FF4438?logo=redis)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
-A production-ready Next.js 15 boilerplate with authentication, role-based access control, internationalization, and an admin backoffice — ready to clone and build on top of.
+A production-ready Next.js 15 template with authentication, role-based access control, internationalization, and an admin backoffice — ready to clone and build on top of.
 
 ---
 
@@ -76,7 +76,7 @@ npm run seed
 Creates the following in your database:
 
 - **Roles:** `user`, `admin`, `superadmin`
-- **Users:** `user@boilerplate.local`, `admin@boilerplate.local`, `superadmin@boilerplate.local`
+- **Users:** `user@template.local`, `admin@template.local`, `superadmin@template.local`
 
 ### Run the Development Server
 
