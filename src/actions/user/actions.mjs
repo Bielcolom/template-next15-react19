@@ -6,6 +6,7 @@ import { connectDB } from "../../utils/connectDB.js";
 import { DEFAULT_LOCALE } from "../../utils/urls.js";
 import { createDataResponse } from "../../errors/responses.js";
 import { handleUsersDataError } from "../../errors/handlers/userErrorHandler.js";
+import { normalizePermissions } from "../../utils/helpers/index.js";
 
 export const isValid = (user, requiredFields = []) => {
   if (!user) {
@@ -13,18 +14,6 @@ export const isValid = (user, requiredFields = []) => {
   }
 
   return requiredFields.every((field) => Boolean(user[field]));
-};
-
-const normalizePermissions = (permissions) => {
-  if (Array.isArray(permissions)) {
-    return permissions.filter(Boolean);
-  }
-
-  if (!permissions) {
-    return [];
-  }
-
-  return [permissions].filter(Boolean);
 };
 
 const findUserRoleById = async (userRoleId) => {

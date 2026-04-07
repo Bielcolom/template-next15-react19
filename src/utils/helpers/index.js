@@ -23,7 +23,7 @@ export const userIsUser = (permissons) => permissons.includes(ROLES.USER);
 export const userIsUserOrMore = (userRole) => userIsUser(userRole) || userIsAdminOrMore(userRole);
 export const normalizePermissions = (permissions) => {
     if (Array.isArray(permissions)) {
-        return permissions;
+        return permissions.filter(Boolean);
     }
 
     if (!permissions) {
