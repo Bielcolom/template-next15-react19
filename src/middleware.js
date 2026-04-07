@@ -21,6 +21,33 @@ if (!secretKey || secretKey.length < 32) {
 
 const encodedKey = new TextEncoder().encode(secretKey);
 const isProduction = process.env.NODE_ENV === "production";
+
+const buildCsp = () => {
+  const scriptSrc = isProduction
+    ? "'self' 'unsafe-inline'"
+    : "'self' 'unsafe-inline' 'unsafe-eval'";
+
+  return [
+    "default-src 'self'",
+    `script-src ${scriptSrc}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join("; ");
+};
+
+const addSecurityHeaders = (response) => {
+  response.headers.set("Content-Security-Policy", buildCsp());
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  return response;
+};
 const handleI18nRouting = createMiddleware(routing);
 
 const decryptSession = async (session = "") => {
@@ -48,7 +75,8 @@ const clearAuthCookies = (response) => {
 
 const redirectToLogin = (req, locale, clearCookies = false) => {
   const response = NextResponse.redirect(new URL(getLocalizedPath(LOGIN_URL, locale), req.nextUrl));
-  return clearCookies ? clearAuthCookies(response) : response;
+  const withCookies = clearCookies ? clearAuthCookies(response) : response;
+  return addSecurityHeaders(withCookies);
 };
 
 const resolveAuthResponse = (req, locale, policyResult) => {
@@ -57,7 +85,9 @@ const resolveAuthResponse = (req, locale, policyResult) => {
   }
 
   if (policyResult.action === AUTH_ACTIONS.REDIRECT_HOME) {
-    return NextResponse.redirect(new URL(getLocalizedPath(INDEX_URL, locale), req.nextUrl));
+    return addSecurityHeaders(
+      NextResponse.redirect(new URL(getLocalizedPath(INDEX_URL, locale), req.nextUrl))
+    );
   }
 
   return redirectToLogin(req, locale, policyResult.clearCookies);
@@ -86,12 +116,12 @@ export default async function middleware(req) {
   try {
     if (!sessionCookie) {
       const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload: null });
-      return resolveAuthResponse(req, locale, policyResult) || intlResponse;
+      return resolveAuthResponse(req, locale, policyResult) || addSecurityHeaders(intlResponse);
     }
 
     const payload = await decryptSession(sessionCookie);
     const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload });
-    return resolveAuthResponse(req, locale, policyResult) || intlResponse;
+    return resolveAuthResponse(req, locale, policyResult) || addSecurityHeaders(intlResponse);
   } catch (error) {
     console.error("Middleware Error:", error.message);
     return redirectToLogin(req, locale, true);
