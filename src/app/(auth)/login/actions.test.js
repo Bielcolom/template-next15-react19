@@ -10,6 +10,8 @@ const mocks = vi.hoisted(() => ({
   redirectMock: vi.fn(() => {
     throw new Error("NEXT_REDIRECT");
   }),
+  headersMock: vi.fn(),
+  checkRateLimitMock: vi.fn(),
 }));
 
 vi.mock("@/actions/user/actions.mjs", () => ({
@@ -29,6 +31,14 @@ vi.mock("@/utils/connectDB", () => ({
   connectDB: mocks.connectDBMock,
 }));
 
+vi.mock("next/headers", () => ({
+  headers: mocks.headersMock,
+}));
+
+vi.mock("@/app/lib/rateLimiter", () => ({
+  checkRateLimit: mocks.checkRateLimitMock,
+}));
+
 import { login, logout } from "./actions";
 
 const buildLoginFormData = (overrides = {}) => {
@@ -42,6 +52,8 @@ const buildLoginFormData = (overrides = {}) => {
 describe("login action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.headersMock.mockResolvedValue({ get: () => null });
+    mocks.checkRateLimitMock.mockResolvedValue({ allowed: true });
   });
 
   it("returns validation errors for invalid payload", async () => {

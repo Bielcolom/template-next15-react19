@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => {
       throw new Error("NEXT_REDIRECT");
     }),
     registerUserMock: vi.fn(),
+    headersMock: vi.fn(),
+    checkRateLimitMock: vi.fn(),
   };
 });
 
@@ -37,6 +39,14 @@ vi.mock("next/navigation", () => ({
   redirect: mocks.redirectMock,
 }));
 
+vi.mock("next/headers", () => ({
+  headers: mocks.headersMock,
+}));
+
+vi.mock("@/app/lib/rateLimiter", () => ({
+  checkRateLimit: mocks.checkRateLimitMock,
+}));
+
 import { createUser } from "./actions";
 
 const buildValidFormData = (overrides = {}) => {
@@ -52,6 +62,8 @@ const buildValidFormData = (overrides = {}) => {
 describe("register action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.headersMock.mockResolvedValue({ get: () => null });
+    mocks.checkRateLimitMock.mockResolvedValue({ allowed: true });
   });
 
   it("returns validation errors for invalid form data", async () => {
