@@ -112,10 +112,10 @@ describe("register action", () => {
     mocks.hashMock.mockResolvedValueOnce("hashed");
     mocks.registerUserMock.mockResolvedValueOnce({
       user: {
-      name: "John Doe",
-      userRoleId: "role-user",
-      email: "john@example.com",
-      password: "hashed",
+        name: "John Doe",
+        userRoleId: "role-user",
+        email: "john@example.com",
+        passwordHash: "hashed",
         _id: "user-1",
       },
       permissions: ["user_access"],
@@ -124,7 +124,7 @@ describe("register action", () => {
 
     await expect(createUser({}, buildValidFormData({ email: "  JOHN@EXAMPLE.COM  " }))).rejects.toThrow("NEXT_REDIRECT");
     expect(mocks.createSessionMock).toHaveBeenCalledWith(
-      { name: "John Doe", userRoleId: "role-user", email: "john@example.com", password: "hashed", _id: "user-1" },
+      { name: "John Doe", userRoleId: "role-user", email: "john@example.com", passwordHash: "hashed", _id: "user-1" },
       ["user_access"]
     );
     expect(mocks.redirectMock).toHaveBeenCalledWith(

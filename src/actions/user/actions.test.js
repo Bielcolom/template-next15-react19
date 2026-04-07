@@ -71,13 +71,13 @@ describe("shared createUser helper", () => {
       name: "John",
       email: "  JOHN@EXAMPLE.COM  ",
       userRoleId: "role-1",
-      password: "hashed",
+      passwordHash: "hashed",
     });
     expect(result).toEqual({
       name: "John",
       email: "  JOHN@EXAMPLE.COM  ",
       userRoleId: "role-1",
-      password: "hashed",
+      passwordHash: "hashed",
       _id: "user-1",
     });
   });
@@ -240,7 +240,7 @@ describe("shared authenticateUser helper", () => {
     mocks.userFindOneMock.mockResolvedValueOnce({
       _id: "user-1",
       email: "john@example.com",
-      password: "hashed",
+      passwordHash: "hashed",
       userRoleId: "role-1",
     });
 
@@ -261,7 +261,7 @@ describe("shared authenticateUser helper", () => {
     mocks.userFindOneMock.mockResolvedValueOnce({
       _id: { toString: () => "user-1" },
       email: "john@example.com",
-      password: "hashed",
+      passwordHash: "hashed",
       userRoleId: "role-1",
       toObject: () => ({
         email: "john@example.com",

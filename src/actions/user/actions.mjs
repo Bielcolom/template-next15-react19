@@ -57,7 +57,7 @@ export async function createUser({
       name: user.name,
       email: user.email,
       userRoleId: user.userRoleId,
-      password: user.passwordHash,
+      passwordHash: user.passwordHash,
     });
   } catch (error) {
     if (isDuplicateKeyError(error)) {
@@ -147,11 +147,11 @@ export async function authenticateUser({
 
   const storedUser = await User.findOne({ email: user.email });
 
-  if (!storedUser || !storedUser.password) {
+  if (!storedUser || !storedUser.passwordHash) {
     throw createActionError(ERROR_CODES.INVALID_CREDENTIALS);
   }
 
-  const isValidPassword = await bcrypt.compare(user.password, storedUser.password);
+  const isValidPassword = await bcrypt.compare(user.password, storedUser.passwordHash);
   if (!isValidPassword) {
     throw createActionError(ERROR_CODES.INVALID_CREDENTIALS);
   }
