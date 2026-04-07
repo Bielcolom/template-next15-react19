@@ -102,7 +102,7 @@ export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
 
         const { name, permissions } = sanitizeRoleInput(payload);
         if (!name || permissions.length === 0) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+            return createLocalizedDataErrorResponse(ERROR_CODES.INVALID_USER_ROLE_DATA, null, locale);
         }
 
         const userRoleCreation = await createUserRoleRecord({
@@ -111,7 +111,7 @@ export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
             permissions,
         });
         if (userRoleCreation.status === "exists") {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+            return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_ALREADY_EXISTS, null, locale);
         }
 
         const userRole = typeof userRoleCreation.userRole?.toObject === "function"
@@ -138,7 +138,7 @@ export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCAL
 
         const { name, permissions } = sanitizeRoleInput(payload);
         if (!name || permissions.length === 0) {
-            return createLocalizedDataErrorResponse(ERROR_CODES.FETCH_USER_ROLE_FAILED, null, locale);
+            return createLocalizedDataErrorResponse(ERROR_CODES.INVALID_USER_ROLE_DATA, null, locale);
         }
 
         const userRoleUpdate = await updateUserRoleRecord({
