@@ -9,6 +9,11 @@ const TOAST_TYPES = {
   success: "success",
 };
 
+const TOAST_LABELS = {
+  [TOAST_TYPES.error]: "Error",
+  [TOAST_TYPES.success]: "Success",
+};
+
 const ToastContext = createContext(null);
 
 const buildToast = (message, type, duration) => ({
@@ -86,7 +91,7 @@ export function ToastProvider({ children }) {
             <span className={styles.accent} />
             <div className={styles.content}>
               <span className={styles.label}>
-                {toast.type === TOAST_TYPES.error ? "Error" : "Success"}
+                {TOAST_LABELS[toast.type]}
               </span>
               <p className={styles.message}>{toast.message}</p>
             </div>
