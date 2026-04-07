@@ -39,8 +39,6 @@ const serializeUserRole = (userRole) => ({
 });
 
 export async function getUserRoles(locale = DEFAULT_LOCALE) {
-    "use server";
-
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
@@ -65,8 +63,6 @@ export async function getUserRoles(locale = DEFAULT_LOCALE) {
 }
 
 export async function getUserRoleById(userRoleId, locale = DEFAULT_LOCALE) {
-    "use server";
-
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
@@ -86,8 +82,6 @@ export async function getUserRoleById(userRoleId, locale = DEFAULT_LOCALE) {
 }
 
 export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
-    "use server";
-
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
@@ -118,8 +112,6 @@ export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
 }
 
 export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCALE) {
-    "use server";
-
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
@@ -157,8 +149,6 @@ export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCAL
 }
 
 export async function deleteUserRole(userRoleId, locale = DEFAULT_LOCALE) {
-    "use server";
-
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
