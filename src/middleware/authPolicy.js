@@ -27,6 +27,7 @@ const matchesProtectedRoute = (path, route) => {
 
 export const evaluateAuthPolicy = ({ pathWithoutLocale, payload }) => {
   const isPublicRoute = ROUTES.PUBLIC.some((route) => matchesExactRoute(pathWithoutLocale, route));
+  const isOpenRoute = ROUTES.OPEN.some((route) => matchesExactRoute(pathWithoutLocale, route));
   const isPrivateRoute = ROUTES.PRIVATE.some((route) => matchesProtectedRoute(pathWithoutLocale, route));
   const isSuperAdminRoute = ROUTES.SUPERADMIN.some((route) => matchesProtectedRoute(pathWithoutLocale, route));
   const isProtectedRoute = isPrivateRoute || isSuperAdminRoute;
@@ -35,7 +36,11 @@ export const evaluateAuthPolicy = ({ pathWithoutLocale, payload }) => {
     if (isProtectedRoute) {
       return { action: AUTH_ACTIONS.REDIRECT_LOGIN, clearCookies: false };
     }
-    return { action: AUTH_ACTIONS.ALLOW, clearCookies: false };
+    if (isPublicRoute || isOpenRoute) {
+      return { action: AUTH_ACTIONS.ALLOW, clearCookies: false };
+    }
+    // Deny-by-default: unknown routes require authentication
+    return { action: AUTH_ACTIONS.REDIRECT_LOGIN, clearCookies: false };
   }
 
   const expiresAtMs = new Date(payload.expiresAt).getTime();

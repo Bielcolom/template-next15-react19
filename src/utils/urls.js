@@ -16,8 +16,19 @@ export const REGISTER_URL = "/register";
 export const BACKOFFICE_URL = "/backoffice";
 export const BACKOFFICE_USERROLES_URL = `${BACKOFFICE_URL}/userRoles`;
 
+/**
+ * Route access policy:
+ * - PUBLIC:    Auth users are redirected away (e.g. login, register).
+ * - OPEN:      Accessible to everyone including unauthenticated users.
+ * - PRIVATE:   Require authentication; unauthenticated users → login.
+ * - SUPERADMIN: Require authentication; unauthenticated users → login.
+ *
+ * Any route NOT listed here requires authentication by default (deny-by-default).
+ * Add new public pages to OPEN to make them accessible without a session.
+ */
 export const ROUTES = {
     PUBLIC: [LOGIN_URL, REGISTER_URL],
+    OPEN: [INDEX_URL, ABOUT_URL, FORGOT_PASSWORD_URL],
     PRIVATE: [BACKOFFICE_URL],
     SUPERADMIN: [BACKOFFICE_USERROLES_URL],
 };
