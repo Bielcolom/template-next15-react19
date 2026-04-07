@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import styles from "./input.module.scss";
 
@@ -28,6 +28,7 @@ const Input = ({
     const [passwordVisible, setPasswordVisible] = useState(!showPassword);
     const [focused, setFocused] = useState(isFocused);
     const [validationError, setValidationError] = useState("");
+    const touchedRef = useRef(false);
 
     const handleFocus = (e) => {
         setFocused(true);
@@ -36,19 +37,19 @@ const Input = ({
 
     const handleBlur = () => {
         setFocused(false);
+        touchedRef.current = true;
         if (validation) {
-            const error = validation(value);
-            setValidationError(error || "");
+            setValidationError(validation(value) || "");
         }
     };
 
     const handleChange = (e) => {
-        const value = e.target.value;
-        if (onChange) onChange(value);
-
-        if (validation) {
-            const error = validation(value);
-            setValidationError(error || "");
+        const val = e.target.value;
+        if (onChange) onChange(val);
+        // Only validate on change after the field has been touched (first blur),
+        // avoiding expensive validation calls on every keystroke.
+        if (validation && touchedRef.current) {
+            setValidationError(validation(val) || "");
         }
     };
 
