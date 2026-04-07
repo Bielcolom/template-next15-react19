@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { LoginForm } from "./LoginForm/LoginForm";
 import { LoginHeader } from "./LoginHeader/LoginHeader";
 import styles from "./login.module.scss";
-import logo from "@/../../public/logo/rectangular.png";
+import logo from "@public/logo/rectangular.png";
 
 export default async function Login({ params }) {
   const { lang } = await params;

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import styles from "./register.module.scss";
-import logo from "@/../../public/logo/rectangular.png";
+import logo from "@public/logo/rectangular.png";
 import RegisterForm from "./RegisterForm/RegisterForm";
 
 export default async function RegisterPage({ params }) {
