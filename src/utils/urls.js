@@ -33,26 +33,23 @@ export const ROUTES = {
     SUPERADMIN: [BACKOFFICE_USERROLES_URL],
 };
 
-export const PUBLIC_SIGNED_OUT_URLS = [INDEX_URL, FORGOT_PASSWORD_URL, LOGIN_URL, REGISTER_URL];
+// Derived from ROUTES — single source of truth for what's accessible without auth
+export const PUBLIC_SIGNED_OUT_URLS = [...ROUTES.OPEN, ...ROUTES.PUBLIC];
 
-export const PRIVATE_USER_URLS = [
-    INDEX_URL,
-];
+export const PRIVATE_USER_URLS = [INDEX_URL];
 
 export const PRIVATE_ADMIN_URLS = [
-    BACKOFFICE_URL,
+    ...ROUTES.PRIVATE,
     ...PRIVATE_USER_URLS,
 ];
 
 export const PRIVATE_SUPERADMIN_URLS = [
-    BACKOFFICE_USERROLES_URL,
+    ...ROUTES.SUPERADMIN,
     ...PRIVATE_ADMIN_URLS,
 ];
 
-export const ALL_URLS = [
-    ...PUBLIC_SIGNED_OUT_URLS,
-    ...PRIVATE_SUPERADMIN_URLS,
-];
+// Deduplicated union of all known URLs (INDEX_URL appears in both lists)
+export const ALL_URLS = [...new Set([...PUBLIC_SIGNED_OUT_URLS, ...PRIVATE_SUPERADMIN_URLS])];
 
 export const getLocaleFromPath = (url) => {
     const normalizedUrl = url?.startsWith("/") ? url : `/${url || ""}`;
