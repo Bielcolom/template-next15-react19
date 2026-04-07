@@ -1,7 +1,7 @@
 "use client";
 
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import Icon from "../Icon";
 import styles from "./table.module.scss";
@@ -84,8 +84,14 @@ TableViewport.propTypes = {
 };
 
 const Table = ({ data, visibleColumns = [], loading }) => {
-    const columns = data.length > 0 ? Object.keys(data[0]).map((key) => ({ value: key, label: key })) : [];
-    const tableStateKey = `${data.length}:${columns.map((column) => column.value).join("|")}`;
+    const columns = useMemo(
+        () => data.length > 0 ? Object.keys(data[0]).map((key) => ({ value: key, label: key })) : [],
+        [data]
+    );
+    const tableStateKey = useMemo(
+        () => `${data.length}:${columns.map((col) => col.value).join("|")}`,
+        [columns, data.length]
+    );
 
     return (
         <TableViewport
