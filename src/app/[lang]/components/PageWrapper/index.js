@@ -1,7 +1,7 @@
 "use client";
 
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Sidebar from "../backoffice/SideBar";
 import Navbar from "../Navbar";
 import { useSession } from "@/app/context/sessionProvider";
@@ -26,16 +26,20 @@ const PageWrapper = ({ children }) => {
     const pathname = usePathname();
     const { permissions, userId } = useSession();
     const [sidebarPreference, setSidebarPreference] = useState(getStoredSidebarVisibility);
+    const saveTimeoutRef = useRef(null);
     const isBackofficePath = pathname === BACKOFFICE_URL || pathname.startsWith(`${BACKOFFICE_URL}/`);
     const isSidebarVisible = isBackofficePath ? sidebarPreference : false;
 
     const handleSidebarVisibilityChange = (isVisible) => {
         setSidebarPreference(isVisible);
-        try {
-            window.localStorage.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, String(isVisible));
-        } catch {
-            // localStorage unavailable (e.g. private browsing mode)
-        }
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = setTimeout(() => {
+            try {
+                window.localStorage.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, String(isVisible));
+            } catch {
+                // localStorage unavailable (e.g. private browsing mode)
+            }
+        }, 300);
     };
 
     return (
