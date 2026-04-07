@@ -15,7 +15,11 @@ const getStoredSidebarVisibility = () => {
         return false;
     }
 
-    return window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) === "true";
+    try {
+        return window.localStorage.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) === "true";
+    } catch {
+        return false;
+    }
 };
 
 const PageWrapper = ({ children }) => {
@@ -27,7 +31,11 @@ const PageWrapper = ({ children }) => {
 
     const handleSidebarVisibilityChange = (isVisible) => {
         setSidebarPreference(isVisible);
-        window.localStorage.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, String(isVisible));
+        try {
+            window.localStorage.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, String(isVisible));
+        } catch {
+            // localStorage unavailable (e.g. private browsing mode)
+        }
     };
 
     return (
