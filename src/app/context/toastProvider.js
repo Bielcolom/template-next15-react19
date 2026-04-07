@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import styles from "./toastProvider.module.scss";
 
@@ -46,6 +46,14 @@ export function ToastProvider({ children }) {
 
     timeoutRegistry.current.set(nextToast.id, timeoutId);
   }, [removeToast]);
+
+  useEffect(() => {
+    const registry = timeoutRegistry.current;
+    return () => {
+      registry.forEach((timeoutId) => clearTimeout(timeoutId));
+      registry.clear();
+    };
+  }, []);
 
   const contextValue = useMemo(() => ({
     removeToast,
