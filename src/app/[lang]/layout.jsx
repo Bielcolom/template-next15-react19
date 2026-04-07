@@ -8,6 +8,7 @@ import { getCurrentSession } from "../lib/session";
 import { SessionProvider } from "../context/sessionProvider";
 import { ToastProvider } from "../context/toastProvider";
 import PageWrapper from "./components/PageWrapper";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { hasLocale } from "@/utils/urls";
 
 const geistSans = localFont({
@@ -44,11 +45,13 @@ export default async function LocaleLayout({ children, params }) {
     <html lang={lang}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <NextIntlClientProvider>
-          <ToastProvider>
-            <SessionProvider permissions={permissions} userId={userId}>
-              <PageWrapper>{children}</PageWrapper>
-            </SessionProvider>
-          </ToastProvider>
+          <ErrorBoundary>
+            <ToastProvider>
+              <SessionProvider permissions={permissions} userId={userId}>
+                <PageWrapper>{children}</PageWrapper>
+              </SessionProvider>
+            </ToastProvider>
+          </ErrorBoundary>
         </NextIntlClientProvider>
       </body>
     </html>
