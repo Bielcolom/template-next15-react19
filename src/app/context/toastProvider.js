@@ -55,13 +55,23 @@ export function ToastProvider({ children }) {
     };
   }, []);
 
+  const showError = useCallback(
+    (message, duration) => showToast(message, TOAST_TYPES.error, duration),
+    [showToast]
+  );
+
+  const showSuccess = useCallback(
+    (message, duration) => showToast(message, TOAST_TYPES.success, duration),
+    [showToast]
+  );
+
   const contextValue = useMemo(() => ({
     removeToast,
-    showError: (message, duration) => showToast(message, TOAST_TYPES.error, duration),
-    showSuccess: (message, duration) => showToast(message, TOAST_TYPES.success, duration),
+    showError,
+    showSuccess,
     showToast,
     toastTypes: TOAST_TYPES,
-  }), [removeToast, showToast]);
+  }), [removeToast, showError, showSuccess, showToast]);
 
   return (
     <ToastContext.Provider value={contextValue}>
