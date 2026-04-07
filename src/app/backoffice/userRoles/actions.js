@@ -8,7 +8,7 @@ import {
 import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
-import { normalizePermissions } from "@/utils/helpers";
+import { normalizeFormPayload, normalizePermissions } from "@/utils/helpers";
 import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
 import { createLocalizedDataErrorResponse } from "@/errors/serverResponses";
@@ -16,16 +16,8 @@ import { handleUserRolesDataError } from "@/errors/handlers/userRoleErrorHandler
 import { invalidatePermissionsCacheForRole } from "@/app/lib/permissionCache";
 import { DEFAULT_LOCALE } from "@/utils/urls";
 
-const normalizeUserRolePayload = (payload) => {
-    if (payload instanceof FormData) {
-        return Object.fromEntries(payload);
-    }
-
-    return payload || {};
-};
-
 const sanitizeRoleInput = (payload) => {
-    const rawData = normalizeUserRolePayload(payload);
+    const rawData = normalizeFormPayload(payload);
     const name = typeof rawData?.name === "string" ? rawData.name.trim() : "";
     const permissions = [
         ...new Set(

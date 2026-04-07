@@ -7,6 +7,7 @@ import { createSession, deleteSession } from "@/app/lib/session";
 import { authenticateUser } from "@/actions/user/actions.mjs";
 import { checkRateLimit } from "@/app/lib/rateLimiter";
 import { connectDB } from "@/utils/connectDB";
+import { normalizeFormPayload } from "@/utils/helpers";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
@@ -28,20 +29,12 @@ const buildLoginSchema = (validationMessages) => z.object({
     .trim(),
 });
 
-const normalizeLoginPayload = (payload) => {
-  if (payload instanceof FormData) {
-    return Object.fromEntries(payload);
-  }
-
-  return payload || {};
-};
-
 export async function login(prevState, formData) {
   try {
-    const rawData = normalizeLoginPayload(formData ?? prevState);
+    const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    const headersList = await headers();
+    const headersList = headers();
     const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim()
       || headersList.get("x-real-ip")
       || "unknown";
@@ -81,7 +74,7 @@ export async function login(prevState, formData) {
       throw error;
     }
 
-    const rawData = normalizeLoginPayload(formData ?? prevState);
+    const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
     console.error("Error in login function:", error);

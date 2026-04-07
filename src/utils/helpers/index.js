@@ -9,6 +9,13 @@ import {
     getLocalizedPath,
 } from "../urls";
 
+export const normalizeFormPayload = (payload) => {
+    if (payload instanceof FormData) {
+        return Object.fromEntries(payload);
+    }
+    return payload || {};
+};
+
 export const userIsSuperAdmin = (permissons) => permissons.includes(ROLES.SUPERADMIN);
 export const userIsAdmin = (permissons) => permissons.includes(ROLES.ADMIN);
 export const userIsAdminOrMore = (userRole) => userIsAdmin(userRole) || userIsSuperAdmin(userRole);

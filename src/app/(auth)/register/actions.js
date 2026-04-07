@@ -8,6 +8,7 @@ import { registerUser as registerUserRecord } from "@/actions/user/actions.mjs";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { checkRateLimit } from "@/app/lib/rateLimiter";
+import { normalizeFormPayload } from "@/utils/helpers";
 import { ROLES } from "@/utils/constants";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
@@ -38,20 +39,12 @@ const buildRegisterSchema = (validationMessages) => z.object({
   path: ["confirmPassword"],
 });
 
-const normalizeRegisterPayload = (payload) => {
-  if (payload instanceof FormData) {
-    return Object.fromEntries(payload);
-  }
-
-  return payload || {};
-};
-
 export async function createUser(prevState, formData) {
   try {
-    const rawData = normalizeRegisterPayload(formData ?? prevState);
+    const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    const headersList = await headers();
+    const headersList = headers();
     const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim()
       || headersList.get("x-real-ip")
       || "unknown";
@@ -93,7 +86,7 @@ export async function createUser(prevState, formData) {
       throw err;
     }
 
-    const rawData = normalizeRegisterPayload(formData ?? prevState);
+    const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
     console.error("Error during registration:", err);
