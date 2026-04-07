@@ -10,16 +10,9 @@ import {
   stripLocaleFromPath,
 } from "./utils/urls";
 import { jwtVerify } from "jose";
-import { ERROR_CODES } from "./errors/codes";
-import { ERROR_MESSAGES } from "./errors/messages";
 import { routing } from "./i18n/routing";
+import { encodedKey } from "./utils/sessionSecret";
 
-const secretKey = process.env.SESSION_SECRET;
-if (!secretKey || secretKey.length < 32) {
-  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
-}
-
-const encodedKey = new TextEncoder().encode(secretKey);
 const isProduction = process.env.NODE_ENV === "production";
 
 const buildCsp = () => {

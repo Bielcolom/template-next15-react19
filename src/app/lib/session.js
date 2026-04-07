@@ -10,13 +10,7 @@ import {
 import { AppError } from "@/errors/AppError";
 import { ERROR_CODES } from "@/errors/codes";
 import { ERROR_MESSAGES } from "@/errors/messages";
-
-const secretKey = process.env.SESSION_SECRET;
-if (!secretKey || secretKey.length < 32) {
-  throw new Error(ERROR_MESSAGES[ERROR_CODES.CONFIG_INVALID_SESSION_SECRET]);
-}
-
-const encodedKey = new TextEncoder().encode(secretKey);
+import { encodedKey } from "@/utils/sessionSecret";
 const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 const isProduction = process.env.NODE_ENV === "production";
 
