@@ -20,6 +20,7 @@ export const ERROR_MESSAGES = {
   [ERROR_CODES.REGISTRATION_FAILED]: "An error occurred. Please try again later.",
   [ERROR_CODES.INVALID_USER_ROLE_DATA]: "Invalid user role data. Name and at least one permission are required.",
   [ERROR_CODES.USER_ROLE_ALREADY_EXISTS]: "A user role with this name already exists.",
+  [ERROR_CODES.RATE_LIMIT_EXCEEDED]: "Too many attempts. Please try again later.",
 };
 
 export const ERROR_MESSAGE_KEYS = {
@@ -40,6 +41,7 @@ export const ERROR_MESSAGE_KEYS = {
   [ERROR_CODES.REGISTRATION_FAILED]: "errors.registrationFailed",
   [ERROR_CODES.INVALID_USER_ROLE_DATA]: "errors.invalidUserRoleData",
   [ERROR_CODES.USER_ROLE_ALREADY_EXISTS]: "errors.userRoleAlreadyExists",
+  [ERROR_CODES.RATE_LIMIT_EXCEEDED]: "errors.rateLimitExceeded",
 };
 
 export const VALIDATION_MESSAGES = {

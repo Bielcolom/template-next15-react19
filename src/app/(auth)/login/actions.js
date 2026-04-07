@@ -2,8 +2,10 @@
 
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createSession, deleteSession } from "@/app/lib/session";
 import { authenticateUser } from "@/actions/user/actions.mjs";
+import { checkRateLimit } from "@/app/lib/rateLimiter";
 import { connectDB } from "@/utils/connectDB";
 import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
@@ -38,6 +40,15 @@ export async function login(prevState, formData) {
   try {
     const rawData = normalizeLoginPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
+
+    const headersList = await headers();
+    const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim()
+      || headersList.get("x-real-ip")
+      || "unknown";
+    const rateLimit = await checkRateLimit("login", ip);
+    if (!rateLimit.allowed) {
+      return createLocalizedGeneralErrorResponse(ERROR_CODES.RATE_LIMIT_EXCEEDED, locale);
+    }
     const validationMessages = await getValidationMessages(locale);
     const loginSchema = buildLoginSchema(validationMessages);
     const result = loginSchema.safeParse(rawData);
