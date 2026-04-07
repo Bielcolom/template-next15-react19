@@ -29,7 +29,11 @@ const RouteToastHandler = ({ toastMessages }) => {
     nextSearchParams.delete(TOAST_QUERY_PARAM);
     const nextUrl = nextSearchParams.toString() ? `${pathname}?${nextSearchParams.toString()}` : pathname;
 
-    router.replace(nextUrl);
+    try {
+      router.replace(nextUrl);
+    } catch {
+      // Navigation may fail if the component unmounts — safe to ignore
+    }
   }, [pathname, router, searchParams, showSuccess, toastMessages]);
 
   return null;
