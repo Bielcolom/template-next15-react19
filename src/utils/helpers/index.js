@@ -41,47 +41,38 @@ export const pathIsUserProtected = (url) => -1 !== PRIVATE_USER_URLS.indexOf(url
 export const pathIsPublicSignedOut = (url) => -1 !== PUBLIC_SIGNED_OUT_URLS.indexOf(url);
 export const pathIsPrivate = (url) => pathIsUserProtected(url) || pathisSuperAdminProtected(url);
 
-const getComparator = (element, param) => {
-    if (!param) {
+const getComparator = (element, sortKey) => {
+    if (!sortKey) {
         return element;
     }
 
-    const parameter = param && -1 < param.indexOf(".") ? param.split(".") : param;
+    const keys = sortKey.includes(".") ? sortKey.split(".") : sortKey;
 
-    if (Array.isArray(parameter)) {
-        for (let i = 0, { length } = parameter; i < length; ++i) {
-            const elem = parameter[i];
-            if ("object" === typeof element && elem in element) {
-                element = element[elem];
+    if (Array.isArray(keys)) {
+        let current = element;
+        for (const key of keys) {
+            if (current !== null && typeof current === "object" && key in current) {
+                current = current[key];
             } else {
                 return null;
             }
         }
-        return element;
+        return current;
     }
-    if (element && parameter) {
-        return element[parameter];
-    }
-    return null;
+
+    return element?.[keys] ?? null;
 };
 
-export const sortArray = (elements, param, descending) => {
-    let sortedElems = [];
-    if (elements && elements.length) {
-        sortedElems = [...elements];
-        let elemA = null;
-        let elemB = null;
-        sortedElems.sort((a, b) => {
-            elemA = getComparator(a, param);
-            elemB = getComparator(b, param);
-
-            if (elemA === elemB) {
-                return 0;
-            }
-
-            const val = (descending && elemA < elemB) || (!descending && elemA > elemB) ? 1 : -1;
-            return val;
-        });
+export const sortArray = (elements, sortKey, descending) => {
+    if (!elements || !elements.length) {
+        return [];
     }
-    return sortedElems;
+
+    return [...elements].sort((a, b) => {
+        const valueA = getComparator(a, sortKey);
+        const valueB = getComparator(b, sortKey);
+
+        if (valueA === valueB) return 0;
+        return (descending && valueA < valueB) || (!descending && valueA > valueB) ? 1 : -1;
+    });
 };
