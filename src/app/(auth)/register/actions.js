@@ -14,6 +14,7 @@ import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
 import { handleRegisterUserError } from "@/errors/handlers/userErrorHandler";
+import { logger } from "@/utils/logger";
 import { createLocalizedGeneralErrorResponse } from "@/errors/serverResponses";
 
 const buildRegisterSchema = (validationMessages) => z.object({
@@ -89,7 +90,7 @@ export async function createUser(prevState, formData) {
     const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    console.error("Error during registration:", err);
+    logger.error("Error during registration", err);
     return handleRegisterUserError({ error: err, locale });
   }
 }

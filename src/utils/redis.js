@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "redis";
+import { logger } from "./logger";
 
 const REDIS_URL = process.env.REDIS_URL || "";
 
@@ -13,7 +14,7 @@ const logRedisErrorOnce = (error) => {
   }
 
   hasLoggedRedisError = true;
-  console.error("Redis unavailable:", error?.message || error);
+  logger.error("Redis unavailable", error);
 };
 
 const createRedisConnection = async () => {
@@ -68,6 +69,7 @@ export async function getRedisJson(key) {
   } catch (error) {
     logRedisErrorOnce(error);
     return null;
+
   }
 
   if (!rawValue) {
@@ -79,6 +81,7 @@ export async function getRedisJson(key) {
   } catch (error) {
     logRedisErrorOnce(error);
     return null;
+
   }
 }
 

@@ -9,6 +9,7 @@ import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
 import { normalizeFormPayload, normalizePermissions } from "@/utils/helpers";
+import { logger } from "@/utils/logger";
 import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
 import { createLocalizedDataErrorResponse } from "@/errors/serverResponses";
@@ -52,7 +53,7 @@ export async function getUserRoles(locale = DEFAULT_LOCALE) {
 
         return createDataResponse(serializedUserRoles);
     } catch (error) {
-        console.error("Error in getUserRoles function:", error);
+        logger.error("Error in getUserRoles function", error);
         return handleUserRolesDataError({
             error,
             locale,
@@ -76,7 +77,7 @@ export async function getUserRoleById(userRoleId, locale = DEFAULT_LOCALE) {
 
         return createDataResponse(serializeUserRole(userRole));
     } catch (error) {
-        console.error("Error in getUserRoleById function:", error);
+        logger.error("Error in getUserRoleById function", error);
         return handleUserRolesDataError({ error, locale });
     }
 }
@@ -106,7 +107,7 @@ export async function createUserRole(payload, locale = DEFAULT_LOCALE) {
 
         return createDataResponse(serializeUserRole(userRole));
     } catch (error) {
-        console.error("Error in createUserRole function:", error);
+        logger.error("Error in createUserRole function", error);
         return handleUserRolesDataError({ error, locale });
     }
 }
@@ -143,7 +144,7 @@ export async function updateUserRole(userRoleId, payload, locale = DEFAULT_LOCAL
 
         return createDataResponse(serializeUserRole(updatedUserRole));
     } catch (error) {
-        console.error("Error in updateUserRole function:", error);
+        logger.error("Error in updateUserRole function", error);
         return handleUserRolesDataError({ error, locale });
     }
 }
@@ -169,7 +170,7 @@ export async function deleteUserRole(userRoleId, locale = DEFAULT_LOCALE) {
             deleted: true,
         });
     } catch (error) {
-        console.error("Error in deleteUserRole function:", error);
+        logger.error("Error in deleteUserRole function", error);
         return handleUserRolesDataError({ error, locale });
     }
 }

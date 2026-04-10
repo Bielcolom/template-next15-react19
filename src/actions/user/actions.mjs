@@ -7,6 +7,7 @@ import { DEFAULT_LOCALE } from "../../utils/urls.js";
 import { createDataResponse } from "../../errors/responses.js";
 import { handleUsersDataError } from "../../errors/handlers/userErrorHandler.js";
 import { normalizePermissions } from "../../utils/helpers/index.js";
+import { logger } from "../../utils/logger.js";
 
 export const isValid = (user, requiredFields = []) => {
   if (!user) {
@@ -188,7 +189,7 @@ export async function getUserCount(locale = DEFAULT_LOCALE) {
     const userCount = await User.countDocuments();
     return createDataResponse(userCount);
   } catch (error) {
-    console.error("Error in getUserCount function:", error);
+    logger.error("Error in getUserCount function", error);
     return handleUsersDataError({ error, locale,  fallbackCode: ERROR_CODES.COUNT_USERS_FAILED});
   }
 }

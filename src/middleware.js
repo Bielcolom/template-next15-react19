@@ -12,6 +12,7 @@ import {
 import { jwtVerify } from "jose";
 import { routing } from "./i18n/routing";
 import { encodedKey } from "./utils/sessionSecret";
+import { logger } from "./utils/logger";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -116,7 +117,7 @@ export default async function middleware(req) {
     const policyResult = evaluateAuthPolicy({ pathWithoutLocale, payload });
     return resolveAuthResponse(req, locale, policyResult) || addSecurityHeaders(intlResponse);
   } catch (error) {
-    console.error("Middleware Error:", error.message);
+    logger.error("Middleware Error", error);
     return redirectToLogin(req, locale, true);
   }
 }

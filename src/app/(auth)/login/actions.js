@@ -12,6 +12,7 @@ import { DEFAULT_LOCALE, INDEX_URL, getLocalizedPath } from "@/utils/urls";
 import { ERROR_CODES } from "@/errors/codes";
 import { getValidationMessages } from "@/errors/i18n";
 import { handleLoginUserError } from "@/errors/handlers/userErrorHandler";
+import { logger } from "@/utils/logger";
 import {
   createLocalizedFieldErrorResponse,
   createLocalizedGeneralErrorResponse,
@@ -77,7 +78,7 @@ export async function login(prevState, formData) {
     const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    console.error("Error in login function:", error);
+    logger.error("Error in login function", error);
     return handleLoginUserError({ error, locale });
   }
 }
@@ -87,7 +88,7 @@ export async function logout(locale = DEFAULT_LOCALE) {
     await deleteSession();
     return { success: true };
   } catch (error) {
-    console.error("Error in logout function:", error);
+    logger.error("Error in logout function", error);
     return createLocalizedGeneralErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, locale);
   }
 }
