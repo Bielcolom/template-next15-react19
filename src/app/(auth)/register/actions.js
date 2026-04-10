@@ -45,7 +45,7 @@ export async function createUser(prevState, formData) {
     const rawData = normalizeFormPayload(formData ?? prevState);
     const locale = rawData?.locale || DEFAULT_LOCALE;
 
-    const headersList = headers();
+    const headersList = await headers();
     const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim()
       || headersList.get("x-real-ip")
       || "unknown";
