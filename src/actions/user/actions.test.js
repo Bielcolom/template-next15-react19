@@ -40,7 +40,7 @@ vi.mock("../../models/UserRole.js", () => ({
   },
 }));
 
-import { authenticateUser, createUser, findFiltered, getUserCount, registerUser, updateUser } from "./actions.mjs";
+import { authenticateUser, createUser, findFiltered, getUserCount, registerUser, updateUser } from "./actions.js";
 
 beforeEach(() => {
   vi.clearAllMocks();

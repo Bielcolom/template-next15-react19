@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
-import { createUser as createUserRecord } from "../src/actions/user/actions.mjs";
-import { createUserRole as createUserRoleRecord } from "../src/actions/userRole/actions.mjs";
+import { createUser as createUserRecord } from "../src/actions/user/actions.js";
+import { createUserRole as createUserRoleRecord } from "../src/actions/userRole/actions.js";
 import { ERROR_CODES } from "../src/errors/codes.js";
 import UserRole from "../src/models/UserRole.js";
 

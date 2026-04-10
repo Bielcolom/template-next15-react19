@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { getTranslations } from "next-intl/server";
-import { getUserCount } from "@/actions/user/actions.mjs";
+import { getUserCount } from "@/actions/user/actions.js";
 import BackofficeCard from "@/app/[lang]/components/backoffice/BackofficeCard";
 import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../RouteToastHandler";

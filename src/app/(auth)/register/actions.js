@@ -4,7 +4,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { registerUser as registerUserRecord } from "@/actions/user/actions.mjs";
+import { registerUser as registerUserRecord } from "@/actions/user/actions.js";
 import { connectDB } from "@/utils/connectDB";
 import { createSession } from "@/app/lib/session";
 import { checkRateLimit } from "@/app/lib/rateLimiter";

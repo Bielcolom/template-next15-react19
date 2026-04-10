@@ -4,7 +4,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createSession, deleteSession } from "@/app/lib/session";
-import { authenticateUser } from "@/actions/user/actions.mjs";
+import { authenticateUser } from "@/actions/user/actions.js";
 import { checkRateLimit } from "@/app/lib/rateLimiter";
 import { connectDB } from "@/utils/connectDB";
 import { normalizeFormPayload } from "@/utils/helpers";

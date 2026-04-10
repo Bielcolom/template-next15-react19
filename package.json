@@ -2,6 +2,7 @@
   "name": "template-next15-react19",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "node --env-file=.env scripts/seedUsersAndRoles.mjs"
+    "seed": "node --env-file=.env scripts/seedUsersAndRoles.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

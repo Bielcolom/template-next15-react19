@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => ({
   checkRateLimitMock: vi.fn(),
 }));
 
-vi.mock("@/actions/user/actions.mjs", () => ({
+vi.mock("@/actions/user/actions.js", () => ({
   authenticateUser: mocks.authenticateUserMock,
 }));
 

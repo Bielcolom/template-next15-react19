@@ -31,7 +31,7 @@ vi.mock("@/app/lib/session", () => ({
   createSession: mocks.createSessionMock,
 }));
 
-vi.mock("@/actions/user/actions.mjs", () => ({
+vi.mock("@/actions/user/actions.js", () => ({
   registerUser: mocks.registerUserMock,
 }));
 

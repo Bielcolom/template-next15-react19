@@ -4,7 +4,7 @@ import UserRole from "@/models/UserRole";
 import {
     createUserRole as createUserRoleRecord,
     updateUserRole as updateUserRoleRecord,
-} from "@/actions/userRole/actions.mjs";
+} from "@/actions/userRole/actions.js";
 import { connectDB } from "@/utils/connectDB";
 import { requirePermission } from "@/app/lib/session";
 import { ROLES } from "@/utils/constants";
