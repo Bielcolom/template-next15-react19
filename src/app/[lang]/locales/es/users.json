@@ -7,24 +7,11 @@
     "lastLogin": "Último acceso",
     "registered": "Registrado",
     "role": "Rol",
-    "status": "Estado",
     "user": "Usuario"
   },
   "empty": "No se han encontrado usuarios",
   "exportCsv": "Exportar CSV",
-  "filters": {
-    "active": "Activos",
-    "all": "Todos",
-    "disabled": "Desactivados",
-    "pending": "Pendientes"
-  },
   "invite": "Invitar usuario",
-  "status": {
-    "active": "Activo",
-    "disabled": "Desactivado",
-    "pending": "Pendiente",
-    "unknown": "-"
-  },
-  "subtitle": "Gestiona las cuentas con acceso a la plataforma, sus roles y su estado.",
+  "subtitle": "Gestiona las cuentas con acceso a la plataforma y sus roles.",
   "title": "Usuarios"
 }

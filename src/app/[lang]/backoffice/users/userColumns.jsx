@@ -9,14 +9,11 @@ export function normalizeUser(raw) {
     ? (role.name ?? role.label ?? "")
     : (role ?? "");
 
-  const status = raw.status ?? (raw.active === false ? "inactive" : raw.active === true ? "active" : "pending");
-
   return {
     id: raw.id ?? raw._id ?? raw.email,
     name: raw.name ?? raw.fullName ?? "",
     email: raw.email ?? "",
     roleName: String(roleName),
-    status: String(status).toLowerCase(),
     lastLogin: raw.lastLogin ?? raw.lastLoginAt ?? null,
     createdAt: raw.createdAt ?? raw.created_at ?? null,
   };
@@ -28,15 +25,6 @@ export function roleVariant(roleName) {
   if (r.includes("admin")) return "danger";
   if (r.includes("edit")) return "primary";
   return "neutral";
-}
-
-export function statusMeta(status) {
-  const s = (status || "").toLowerCase();
-  if (s === "active" || s === "activo") return { variant: "success", key: "active" };
-  if (s === "pending" || s === "pendiente") return { variant: "warn", key: "pending" };
-  if (s === "inactive" || s === "disabled" || s === "desactivado")
-    return { variant: "neutral", key: "disabled" };
-  return { variant: "neutral", key: "unknown" };
 }
 
 export function formatRelative(iso, locale = "es") {
@@ -88,14 +76,6 @@ export function userColumns({ t, locale = "es", onEdit, onMore }) {
       render: (u) => u.roleName
         ? <Badge variant={roleVariant(u.roleName)}>{u.roleName}</Badge>
         : <span className={tableStyles.muted}>—</span>,
-    },
-    {
-      key: "status",
-      label: t("columns.status"),
-      render: (u) => {
-        const s = statusMeta(u.status);
-        return <Badge variant={s.variant}>{t(`status.${s.key}`)}</Badge>;
-      },
     },
     {
       key: "lastLogin",
