@@ -1,27 +1,111 @@
 @use '../../../../constants.scss' as *;
 
-.languageSelector {
+.wrapper {
+    position: relative;
     display: flex;
-    gap: 10px;
+    align-items: center;
+}
 
-    button {
-        padding: 5px 10px;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        background-color: #fff;
-        transition: background-color 0.3s;
+// Trigger — mismo look que los .link del navbar
+.trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $ink-70;
+    font-family: $font-sans;
+    font-size: $font-sm;
+    font-weight: $weight-medium;
+    padding: ($size-md - 0.2rem) ($size-md + 0.4rem);
+    border-radius: $radius-sm;
+    transition: color $transition-fast $ease, background $transition-fast $ease;
+    line-height: 1;
 
-        span {
-            color: $black !important;
+    &:hover,
+    &.triggerOpen {
+        color: $primary-darker;
+        background: $primary-tint;
+    }
+}
+
+.globeIcon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    color: $primary;
+}
+
+.locale {
+    font-size: $font-xs;
+    font-weight: $weight-semibold;
+    letter-spacing: 0.06em;
+    color: inherit;
+}
+
+// Dropdown
+.dropdown {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    right: 0;
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    box-shadow: 0 4px 16px rgba(10, 61, 66, 0.08), 0 1px 3px rgba(10, 61, 66, 0.04);
+    overflow: hidden;
+    min-width: 11rem;
+    z-index: 50;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: $size-md;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $size-md $size-lg;
+    font-family: $font-sans;
+    text-align: left;
+    transition: background $transition-fast $ease;
+
+    &:hover {
+        background: $primary-tint;
+
+        .itemLocale {
+            color: $primary-darker;
         }
 
-        &.active {
-            background-color: #0070f3;
-            color: $white;
-        }
-
-        &:hover {
-            background-color: #f0f0f0;
+        .itemLabel {
+            color: $primary-darker;
         }
     }
+
+    &.itemActive {
+        background: $primary-tint;
+
+        .itemLocale {
+            color: $primary;
+        }
+
+        .itemLabel {
+            color: $primary-darker;
+            font-weight: $weight-semibold;
+        }
+    }
+}
+
+.itemLocale {
+    font-size: $font-xs;
+    font-weight: $weight-bold;
+    letter-spacing: 0.08em;
+    color: $primary;
+    min-width: 2rem;
+}
+
+.itemLabel {
+    font-size: $font-sm;
+    font-weight: $weight-regular;
+    color: $ink-70;
 }
