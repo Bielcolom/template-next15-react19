@@ -13,6 +13,8 @@
   align-items: flex-end;
   gap: $size-xl;
   flex-wrap: wrap;
+  padding: $size-lg;
+  border-radius: $size-md - 0.2rem;
 
   h1 {
     font-family: $font-serif;
