@@ -1,13 +1,17 @@
 @use '../../constants.scss' as *;
 
-// ═══ Login page — split panel: brand left, form right ═══
+// ═══ Login page — full viewport split panel ═══
+// Se fija sobre todo lo demás (navbar, sidebar, .content wrapper).
 
 .formPage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  min-height: 100vh;
-  width: 100%;
   background: $surface;
-  margin: -$eighty 0 0 0; // compensa el margin-top de .content
+  z-index: 100;
+  overflow: hidden;
 }
 
 .brandPanel {
@@ -84,6 +88,8 @@
   align-items: center;
   justify-content: center;
   padding: $size-xl + 2rem;
+  overflow-y: auto;
+  background: $surface;
 }
 
 .formBody {
@@ -119,8 +125,10 @@
     }
   }
 
-  .logo {
-    // compatibilidad con <Image> del page actual
-    display: none; // ya no se usa el logo grande aquí
+  .helper {
+    text-align: center;
+    font-size: $font-xxs;
+    color: $ink-50;
+    margin-top: -$size-md;
   }
 }
