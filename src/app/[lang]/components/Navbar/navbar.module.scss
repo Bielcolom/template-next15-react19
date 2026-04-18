@@ -9,7 +9,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0 $size-lg;
+  padding: 0 $font-sm;
   background: $surface;
   border-bottom: 1px solid $border;
   height: 6.4rem;
@@ -30,12 +30,6 @@
     margin-right: $size-xs;
   }
 
-  .logo {
-    height: 32px;
-    width: auto;
-    object-fit: contain;
-    display: block;
-  }
 
   .sidebarToggle {
     display: flex;

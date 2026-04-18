@@ -2,8 +2,8 @@
 
 import { useTransition } from "react";
 import PropTypes from "prop-types";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
+import BrandMandala from "../base/BrandMandala";
 import styles from "./navbar.module.scss";
 import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
 import { logout } from "@/app/(auth)/login/actions";
@@ -41,14 +41,7 @@ export const Navbar = ({ userId, permissions, isSidebarVisible, isBackofficePath
     >
       <div className={styles.leftElements}>
         <AppLink href={INDEX_URL} className={styles.logoLink}>
-          <Image
-            src="/logo/rectangular.png"
-            alt="Logo"
-            height={32}
-            width={120}
-            className={styles.logo}
-            priority
-          />
+          <BrandMandala size={32} />
         </AppLink>
         {isBackofficePath && (
           <Button
