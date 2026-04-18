@@ -1,0 +1,50 @@
+@use '../../../constants.scss' as *;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: $weight-medium;
+  line-height: 1;
+  white-space: nowrap;
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.success {
+  background: #e8efe4;
+  color: #3e6a3e;
+}
+
+.warn {
+  background: #f5e9d6;
+  color: #8a6525;
+}
+
+.danger {
+  background: #f0e4e4;
+  color: #8a3333;
+}
+
+.neutral {
+  background: #f4f5f2;
+  color: #4a5555;
+}
+
+.primary {
+  background: #e6f0f1;
+  color: #055058;
+}
+
+.dark {
+  background: #033940;
+  color: #ffffff;
+}
