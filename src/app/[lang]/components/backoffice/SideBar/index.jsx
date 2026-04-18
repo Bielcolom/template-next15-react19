@@ -8,7 +8,6 @@ import {
 } from "@/utils/urls";
 import styles from "./sidebar.module.scss";
 import { userIsAdminOrMore, userIsSuperAdmin } from "@/utils/helpers";
-import Button from "../../base/Button";
 import Icon from "../../base/Icon";
 import AppLink from "../../base/AppLink";
 
@@ -17,20 +16,11 @@ const NAV_ITEMS = [
     { key: "userRoles", icon: "shield", href: BACKOFFICE_USERROLES_URL, guard: userIsSuperAdmin },
 ];
 
-export default function Sidebar({ isVisible, userId, permissions, onVisibilityChange }) {
+export default function Sidebar({ isVisible, userId, permissions }) {
     const t = useTranslations("backoffice.sidebar");
-
-    const toggleSidebar = () => {
-        onVisibilityChange(!isVisible);
-    };
 
     return (
         <div className={styles.containerSidebar}>
-            <Button
-                className={`${styles.buttonShowSidebar} ${isVisible ? styles.withSidebar : styles.noSidebar}`}
-                onClick={toggleSidebar}
-                text={<Icon icon="chevron_left" />}
-            />
             <div className={`${styles.sidebar} ${isVisible ? "" : styles.collapsed}`}>
                 <div className={styles.sidebarHeader}>
                     <span className={styles.headerFull}>Backoffice</span>
@@ -62,12 +52,10 @@ Sidebar.propTypes = {
     isVisible: PropTypes.bool,
     permissions: PropTypes.array,
     userId: PropTypes.string,
-    onVisibilityChange: PropTypes.func,
 };
 
 Sidebar.defaultProps = {
     isVisible: false,
     permissions: [],
     userId: null,
-    onVisibilityChange: () => { },
 };

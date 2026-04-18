@@ -9,7 +9,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0 $size-xl;
+  padding: 0 $size-lg;
   background: $surface;
   border-bottom: 1px solid $border;
   height: 6.4rem;
@@ -21,6 +21,40 @@
     flex-direction: row;
     align-items: center;
     gap: $size-sm;
+  }
+
+  .logoLink {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: $size-xs;
+  }
+
+  .logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .sidebarToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $size-sm;
+    border-radius: $radius-sm;
+    color: $ink-70;
+    font-size: 1.25rem;
+    margin-right: $size-xs;
+
+    &:hover {
+      color: $primary-darker;
+      background: $primary-tint;
+    }
+
+    span {
+      color: inherit;
+    }
   }
 
   .rightElements {

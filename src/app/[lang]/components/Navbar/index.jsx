@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import PropTypes from "prop-types";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import styles from "./navbar.module.scss";
 import Button, { BUTTON_STYLE_TYPES } from "../base/Button";
@@ -14,7 +15,7 @@ import { useAppRouter } from "@/app/[lang]/hooks/useAppRouter";
 import AppLink from "../base/AppLink";
 import { useToast } from "@/app/context/toastProvider";
 
-export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
+export const Navbar = ({ userId, permissions, isSidebarVisible, isBackofficePath, onSidebarToggle }) => {
   const t = useTranslations("navbar");
   const appRouter = useAppRouter();
   const { showError } = useToast();
@@ -36,10 +37,28 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
 
   return (
     <nav
-      className={`${styles.nav} ${isSidebarVisible ? styles.navWithSidebar : styles.navFullWidth
-        }`}
+      className={`${styles.nav} ${isSidebarVisible ? styles.navWithSidebar : styles.navFullWidth}`}
     >
       <div className={styles.leftElements}>
+        <AppLink href={INDEX_URL} className={styles.logoLink}>
+          <Image
+            src="/logo/rectangular.png"
+            alt="Logo"
+            height={32}
+            width={120}
+            className={styles.logo}
+            priority
+          />
+        </AppLink>
+        {isBackofficePath && (
+          <Button
+            className={styles.sidebarToggle}
+            styleType={BUTTON_STYLE_TYPES.transparent}
+            onClick={() => onSidebarToggle(!isSidebarVisible)}
+            text={<Icon icon="sidebar" />}
+            aria-label="Toggle sidebar"
+          />
+        )}
         <AppLink
           href={INDEX_URL}
           className={`${styles.link} ${pathWithoutLocale === INDEX_URL ? styles.active : ""}`}
@@ -71,7 +90,6 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
             disabled={isLoggingOut}
             onClick={handleLogout}
           />
-
         ) : (
           <Button
             text={t("login")}
@@ -86,12 +104,16 @@ export const Navbar = ({ userId, permissions, isSidebarVisible }) => {
 Navbar.defaultProps = {
   userId: null,
   permissions: [],
+  isBackofficePath: false,
+  onSidebarToggle: () => {},
 };
 
 Navbar.propTypes = {
   permissions: PropTypes.array,
   userId: PropTypes.string,
   isSidebarVisible: PropTypes.bool.isRequired,
+  isBackofficePath: PropTypes.bool,
+  onSidebarToggle: PropTypes.func,
 };
 
 export default Navbar;

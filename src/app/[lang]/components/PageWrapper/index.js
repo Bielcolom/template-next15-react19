@@ -71,7 +71,13 @@ const PageWrapper = ({ children }) => {
         />
       )}
       <main>
-        <Navbar userId={userId} permissions={permissions} isSidebarVisible={isSidebarVisible} />
+        <Navbar
+          userId={userId}
+          permissions={permissions}
+          isSidebarVisible={isSidebarVisible}
+          isBackofficePath={isBackofficePath}
+          onSidebarToggle={handleSidebarVisibilityChange}
+        />
         <div className="content">
           {children}
         </div>
