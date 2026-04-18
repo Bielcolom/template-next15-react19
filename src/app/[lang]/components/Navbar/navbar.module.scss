@@ -1,32 +1,37 @@
 @use '../../../constants.scss' as *;
 
+// ═══ Navbar — blanco, borde inferior, links con hover tinted ═══
+
 .nav {
   position: fixed;
+  top: 0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem;
-  background-color: $secondary;
-  height: 8rem;
+  padding: 0 $size-xl;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  height: 6.4rem;
   z-index: 10;
-
+  font-family: $font-sans;
 
   .leftElements {
     display: flex;
     flex-direction: row;
-    gap: $size-xl;
+    align-items: center;
+    gap: $size-sm;
   }
 
   .rightElements {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: $size-lg;
+    gap: $size-md + 0.4rem;
 
     button {
       span {
-        color: $white;
+        color: inherit;
       }
     }
   }
@@ -34,37 +39,39 @@
 
 .navFullWidth {
   width: 100%;
-  transition: width 0.3s ease-in-out;
+  transition: width $transition-mid $ease;
 
   .leftElements {
-    margin-left: $size-xxl + $size-md;
-    transition: margin-left 0.3s ease-in-out;
+    margin-left: 0;
   }
 }
 
 .navWithSidebar {
-  width: calc(100% - 250px);
-  transition: width 0.3s ease-in-out;
+  width: calc(100% - 240px);
+  transition: width $transition-mid $ease;
 
   .leftElements {
     margin-left: 0;
-    transition: margin-left 0.3s ease-in-out;
-
   }
-
-}
-
-.active {
-  font-weight: bold;
-  color: #0070f3;
 }
 
 .link {
   text-decoration: none;
-  color: $white;
-  transition: color 0.3s;
+  color: $ink-70;
+  font-size: $font-sm;
+  font-weight: $weight-medium;
+  padding: $size-md - 0.2rem $size-md + 0.4rem;
+  border-radius: $radius-sm;
+  transition: all $transition-fast $ease;
+
+  &:hover {
+    color: $primary-darker;
+    background: $primary-tint;
+  }
 }
 
-.link:hover {
-  color: $tertiary-dark;
+.active {
+  color: $primary-darker;
+  background: $primary-tint;
+  font-weight: $weight-semibold;
 }
