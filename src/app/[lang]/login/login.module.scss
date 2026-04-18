@@ -1,15 +1,126 @@
-@use '../../constants.scss';
+@use '../../constants.scss' as *;
+
+// ═══ Login page — split panel: brand left, form right ═══
 
 .formPage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 80%;
-    gap: constants.$size-lg;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: $surface;
+  margin: -$eighty 0 0 0; // compensa el margin-top de .content
+}
 
-    .logo {
-        width: 500px;
-        border-radius: 10%;
+.brandPanel {
+  width: 52rem;
+  flex-shrink: 0;
+  background: $primary-darker;
+  color: $white;
+  padding: 5.6rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: $screen-md) {
+    display: none;
+  }
+
+  .brandPanelBg {
+    position: absolute;
+    right: -12rem;
+    top: -6rem;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .brandMark {
+    display: flex;
+    align-items: center;
+    gap: $size-md;
+    position: relative;
+
+    .brandText {
+      font-family: $font-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: $weight-regular;
     }
+  }
+
+  .brandCopy {
+    margin-top: auto;
+    position: relative;
+
+    h2 {
+      font-family: $font-serif;
+      font-size: 4.4rem;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: $white;
+      margin: 0;
+
+      em {
+        font-style: italic;
+        opacity: 0.85;
+        font-weight: $weight-light;
+      }
+    }
+
+    p {
+      font-family: $font-sans;
+      font-size: $font-sm;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: $size-lg;
+      max-width: 36rem;
+    }
+  }
+}
+
+.formPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $size-xl + 2rem;
+}
+
+.formBody {
+  width: 100%;
+  max-width: 38rem;
+  display: flex;
+  flex-direction: column;
+  gap: $size-xl - 0.4rem;
+
+  .formHeader {
+    h1 {
+      font-family: $font-serif;
+      font-size: 3.4rem;
+      font-weight: $weight-regular;
+      color: $primary-darker;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    p {
+      font-size: $font-sm;
+      color: $ink-70;
+      margin: $size-md 0 0;
+
+      a {
+        color: $primary;
+        font-weight: $weight-medium;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .logo {
+    // compatibilidad con <Image> del page actual
+    display: none; // ya no se usa el logo grande aquí
+  }
 }
