@@ -5,13 +5,19 @@ import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../../RouteToastHandler";
 import styles from "./users.module.scss";
 
-export default async function UsersPage({ params }) {
+const PAGE_SIZE = 10;
+
+export default async function UsersPage({ params, searchParams }) {
   const { lang } = await params;
-  const response = await getUsers(lang);
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+
+  const response = await getUsers(lang, { page, pageSize: PAGE_SIZE });
   const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
   const t = await getTranslations({ locale: lang, namespace: "users" });
 
-  const users = Array.isArray(response?.data) ? response.data : [];
+  const users = Array.isArray(response?.data?.users) ? response.data.users : [];
+  const total = response?.data?.total ?? 0;
   const errors = Array.isArray(response?.errors) ? response.errors : [];
   const toastMessages = {
     userCreated: feedbackT("userCreated"),
@@ -35,7 +41,7 @@ export default async function UsersPage({ params }) {
         </div>
       </header>
 
-      <UsersClient rawUsers={users} />
+      <UsersClient rawUsers={users} page={page} total={total} pageSize={PAGE_SIZE} />
     </div>
   );
 }

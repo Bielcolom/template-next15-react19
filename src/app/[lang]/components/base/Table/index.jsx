@@ -41,6 +41,7 @@ const Table = ({
   searchableKeys,
   pageSize,
   emptyMessage,
+  footer,
 }) => {
   const t = useTranslations("table");
   const [visibleRows, setVisibleRows] = useState(INITIAL_VISIBLE_ROWS);
@@ -157,7 +158,7 @@ const Table = ({
         </table>
       </div>
 
-      {usePagination && filtered.length > 0 ? (
+      {footer ?? (usePagination && filtered.length > 0 ? (
         <TablePagination
           page={currentPage}
           totalPages={totalPages}
@@ -169,7 +170,7 @@ const Table = ({
         <div className={styles.footer}>
           <p>{t("totalRows")}: {filtered.length}</p>
         </div>
-      )}
+      ))}
     </div>
   );
 };
@@ -190,6 +191,7 @@ Table.propTypes = {
   searchableKeys: PropTypes.arrayOf(PropTypes.string),
   pageSize: PropTypes.number,
   emptyMessage: PropTypes.string,
+  footer: PropTypes.node,
 };
 
 export default Table;

@@ -39,26 +39,29 @@ const serializeUserRole = (userRole) => ({
     _id: userRole._id.toString(),
 });
 
-export async function getUserRoles(locale = DEFAULT_LOCALE) {
+export async function getUserRoles(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10 } = {}) {
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
 
-        const userRoles = await UserRole.find({}).lean();
-        if (!userRoles || userRoles.length === 0) {
-            return createDataResponse([]);
-        }
+        const skip = (page - 1) * pageSize;
 
-        const serializedUserRoles = userRoles.map((role) => serializeUserRole(role));
+        const [userRoles, total] = await Promise.all([
+            UserRole.find({}).skip(skip).limit(pageSize).lean(),
+            UserRole.countDocuments({}),
+        ]);
 
-        return createDataResponse(serializedUserRoles);
+        return createDataResponse({
+            userRoles: userRoles.map((role) => serializeUserRole(role)),
+            total,
+        });
     } catch (error) {
         logger.error("Error in getUserRoles function", error);
         return handleUserRolesDataError({
             error,
             locale,
             fallbackCode: ERROR_CODES.FETCH_USER_ROLES_FAILED,
-            fallbackData: [],
+            fallbackData: { userRoles: [], total: 0 },
         });
     }
 }

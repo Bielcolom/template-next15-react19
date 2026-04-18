@@ -1,67 +1,55 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import PropTypes from "prop-types";
 import { useTranslations, useLocale } from "next-intl";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Table from "@/app/[lang]/components/base/Table";
-import tableStyles from "@/app/[lang]/components/base/Table/table.module.scss";
-import { normalizeUser, statusMeta, userColumns } from "./userColumns";
+import TablePagination from "@/app/[lang]/components/base/Table/TablePagination";
+import { normalizeUser, userColumns } from "./userColumns";
 
-const FILTERS = ["all", "active", "pending", "disabled"];
-
-/**
- * Client shell para la página Users. Mantiene el estado de filtros y delega
- * todo el render de la tabla a <Table>.
- */
-export default function UsersClient({ rawUsers }) {
+export default function UsersClient({ rawUsers, page, total, pageSize }) {
   const t = useTranslations("users");
   const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const users = useMemo(() => rawUsers.map(normalizeUser), [rawUsers]);
-  const [filter, setFilter] = useState("all");
-
-  const counts = useMemo(() => ({
-    all: users.length,
-    active: users.filter(u => statusMeta(u.status).key === "active").length,
-    pending: users.filter(u => statusMeta(u.status).key === "pending").length,
-    disabled: users.filter(u => statusMeta(u.status).key === "disabled").length,
-  }), [users]);
-
-  const filtered = useMemo(() => {
-    if (filter === "all") return users;
-    return users.filter(u => statusMeta(u.status).key === filter);
-  }, [users, filter]);
-
   const columns = useMemo(() => userColumns({ t, locale }), [t, locale]);
 
-  const chips = (
-    <div className={tableStyles.chips}>
-      {FILTERS.map(f => (
-        <button
-          key={f}
-          type="button"
-          onClick={() => setFilter(f)}
-          className={`${tableStyles.chip} ${filter === f ? tableStyles.chipActive : ""}`}
-        >
-          {t(`filters.${f}`)}
-          <span className={tableStyles.chipCount}>{counts[f]}</span>
-        </button>
-      ))}
-    </div>
-  );
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(newPage));
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <Table
-      data={filtered}
+      data={users}
       columns={columns}
       searchableKeys={["name", "email"]}
-      pageSize={10}
-      toolbar={chips}
       emptyMessage={t("empty")}
+      footer={
+        total > 0 && (
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={pageSize}
+            onChange={handlePageChange}
+          />
+        )
+      }
     />
   );
 }
 
 UsersClient.propTypes = {
   rawUsers: PropTypes.array.isRequired,
+  page: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+  pageSize: PropTypes.number.isRequired,
 };
