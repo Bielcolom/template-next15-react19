@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import localFont from "next/font/local";
+import { Fraunces, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -11,21 +11,24 @@ import PageWrapper from "./components/PageWrapper";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { hasLocale } from "@/utils/urls";
 
-const geistSans = localFont({
-  src: "../fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const geistMono = localFont({
-  src: "../fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata = {
-  title: "Next.js 15 Template",
-  description: "Production-ready Next.js 15 template with authentication, i18n, and role-based access control.",
+  title: "Colom Code Studio",
+  description: "Dando vida a tu presencia digital.",
 };
 
 export default async function LocaleLayout({ children, params }) {
@@ -42,8 +45,8 @@ export default async function LocaleLayout({ children, params }) {
   const permissions = session?.permissions || [];
 
   return (
-    <html lang={lang}>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang={lang} className={`${fraunces.variable} ${inter.variable}`}>
+      <body>
         <NextIntlClientProvider>
           <ErrorBoundary>
             <ToastProvider>
