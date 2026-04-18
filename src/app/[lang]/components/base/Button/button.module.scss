@@ -1,103 +1,148 @@
 @use "../../../../constants.scss" as *;
 
+// ═══ Button — jerarquía clara: primary / secondary / ghost / dark ═══
+
 .button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-    padding: $size-md $size-lg;
-    border-radius: $size-sm;
-    cursor: pointer;
-    font-size: $font-sm;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $size-md;
+  font-family: $font-sans;
+  font-weight: $weight-medium;
+  font-size: $font-sm;
+  letter-spacing: -0.01em;
+  padding: $size-md + 0.2rem $size-lg + 0.2rem;
+  border-radius: $radius;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all $transition-fast $ease;
+  white-space: nowrap;
 
-    >span {
-        font-size: unset;
+  >span {
+    font-size: unset;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.btnPress {
+    box-shadow: $card-shadow;
+    transform: scale(0.98);
+  }
+
+  &.inverted {
+    background: $white;
+    color: $primary;
+    border-color: $primary;
+  }
+
+  &.disabled,
+  &:disabled {
+    background: $border;
+    color: $ink-50;
+    border-color: $border;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  // ─── Primary: teal sólido (CTA principal) ───
+  &.primary {
+    background: $primary;
+    color: $white;
+    border-color: $primary;
+
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+      border-color: $primary-dark;
+      box-shadow: 0 4px 12px rgba(8, 105, 114, 0.25);
     }
+  }
 
-    &.btnPress {
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        transform: scale(0.98);
+  &.primaryDark,
+  &.primaryDarker,
+  &.dark {
+    background: $primary-darker;
+    color: $white;
+    border-color: $primary-darker;
+
+    &:hover:not(:disabled) {
+      background: $ink;
+      border-color: $ink;
     }
+  }
 
-    &.inverted {
-        background-color: $white;
-        color: $primary;
-        border-color: $primary;
+  // ─── Secondary: outline sobre blanco ───
+  &.secondary,
+  &.primaryLight {
+    background: $white;
+    color: $primary-darker;
+    border-color: $border;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary;
+      background: $primary-tint;
     }
+  }
 
-    &.disabled {
-        background-color: $gray;
-        cursor: not-allowed;
+  &.secondaryDark,
+  &.secondaryDarker {
+    background: $primary-darker;
+    color: $white;
+    border-color: $primary-darker;
+  }
+
+  &.secondaryLight,
+  &.secondaryLighter,
+  &.primaryLighter {
+    background: $primary-lighter;
+    color: $primary-darker;
+    border-color: $primary-lighter;
+
+    &:hover:not(:disabled) {
+      background: $primary-tint;
     }
+  }
 
-    &:focus {
-        outline: none;
+  &.accent {
+    background: $primary;
+    color: $white;
+    border-color: $primary;
+  }
+
+  &.gray {
+    background: $surface-alt;
+    color: $ink-70;
+    border-color: $border;
+  }
+
+  &.black {
+    background: $ink;
+    color: $white;
+    border-color: $ink;
+  }
+
+  &.white {
+    background: $white;
+    color: $primary-darker;
+    border-color: $border;
+  }
+
+  // ─── Ghost: sin fondo, sin borde — para toolbars ───
+  &.transparent {
+    background: transparent;
+    color: $ink-70;
+    border-color: transparent;
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      background: $primary-tint;
+      color: $primary-darker;
     }
-
-    &.primary {
-        background-color: $primary;
-    }
-
-    &.primaryDark {
-        background-color: $primary-dark;
-    }
-
-    &.primaryDarker {
-        background-color: $primary-darker;
-    }
-
-    &.primaryLight {
-        background-color: $primary-light;
-    }
-
-    &.primaryLighter {
-        background-color: $primary-lighter;
-        border-color: $primary-lighter;
-    }
-
-    &.secondary {
-        background-color: $secondary;
-    }
-
-    &.secondaryDark {
-        background-color: $secondary-dark;
-    }
-
-    &.secondaryDarker {
-        background-color: $secondary-darker;
-    }
-
-    &.secondaryLight {
-        background-color: $secondary-light;
-    }
-
-    &.secondaryLighter {
-        background-color: $secondary-lighter;
-    }
-
-    &.accent {
-        background-color: $accent;
-    }
-
-    &.gray {
-        background-color: $gray;
-    }
-
-    &.black {
-        background-color: $black;
-    }
-
-    &.white {
-        background-color: $white;
-    }
-
-    &.transparent {
-        background-color: transparent;
-        border-color: transparent;
-        box-shadow: 0px 0px 0px 0px;
-
-        &:hover {
-            background-color: transparent;
-        }
-    }
+  }
 }
