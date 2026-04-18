@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -8,17 +8,46 @@ import Table from "@/app/[lang]/components/base/Table";
 import TablePagination from "@/app/[lang]/components/base/Table/TablePagination";
 import { normalizeUser, userColumns } from "./userColumns";
 
-export default function UsersClient({ rawUsers, page, total, pageSize }) {
+const SEARCH_DEBOUNCE_MS = 300;
+
+export default function UsersClient({ rawUsers, page, total, pageSize, query }) {
   const t = useTranslations("users");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [searchValue, setSearchValue] = useState(query);
 
   const users = useMemo(() => rawUsers.map(normalizeUser), [rawUsers]);
   const columns = useMemo(() => userColumns({ t, locale }), [t, locale]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  useEffect(() => {
+    setSearchValue(query);
+  }, [query]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchValue === query) {
+        return;
+      }
+
+      const params = new URLSearchParams(searchParams.toString());
+      const normalizedSearchValue = searchValue.trim();
+
+      if (normalizedSearchValue) {
+        params.set("q", normalizedSearchValue);
+      } else {
+        params.delete("q");
+      }
+
+      params.set("page", "1");
+      router.replace(`${pathname}?${params.toString()}`);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [pathname, query, router, searchParams, searchValue]);
 
   const handlePageChange = (newPage) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -30,7 +59,9 @@ export default function UsersClient({ rawUsers, page, total, pageSize }) {
     <Table
       data={users}
       columns={columns}
-      searchableKeys={["name", "email"]}
+      searchable
+      searchValue={searchValue}
+      onSearchChange={setSearchValue}
       emptyMessage={t("empty")}
       footer={
         total > 0 && (
@@ -52,4 +83,5 @@ UsersClient.propTypes = {
   page: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
   pageSize: PropTypes.number.isRequired,
+  query: PropTypes.string.isRequired,
 };

@@ -17,6 +17,8 @@ import { handleUserRolesDataError } from "@/errors/handlers/userRoleErrorHandler
 import { invalidatePermissionsCacheForRole } from "@/app/lib/permissionCache";
 import { DEFAULT_LOCALE } from "@/utils/urls";
 
+const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const sanitizeRoleInput = (payload) => {
     const rawData = normalizeFormPayload(payload);
     const name = typeof rawData?.name === "string" ? rawData.name.trim() : "";
@@ -39,16 +41,20 @@ const serializeUserRole = (userRole) => ({
     _id: userRole._id.toString(),
 });
 
-export async function getUserRoles(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10 } = {}) {
+export async function getUserRoles(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10, query = "" } = {}) {
     try {
         await requirePermission(ROLES.SUPERADMIN);
         await connectDB();
 
         const skip = (page - 1) * pageSize;
+        const normalizedQuery = typeof query === "string" ? query.trim() : "";
+        const filters = normalizedQuery
+            ? { name: { $regex: escapeRegex(normalizedQuery), $options: "i" } }
+            : {};
 
         const [userRoles, total] = await Promise.all([
-            UserRole.find({}).skip(skip).limit(pageSize).lean(),
-            UserRole.countDocuments({}),
+            UserRole.find(filters).skip(skip).limit(pageSize).lean(),
+            UserRole.countDocuments(filters),
         ]);
 
         return createDataResponse({

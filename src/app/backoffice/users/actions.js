@@ -11,6 +11,8 @@ import { createDataResponse } from "@/errors/responses";
 import { handleUsersDataError } from "@/errors/handlers/userErrorHandler";
 import { DEFAULT_LOCALE } from "@/utils/urls";
 
+const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const serializeUser = (user, roleNameMap) => ({
   _id: user._id.toString(),
   name: user.name,
@@ -20,17 +22,26 @@ const serializeUser = (user, roleNameMap) => ({
   updatedAt: user.updatedAt,
 });
 
-export async function getUsers(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10 } = {}) {
+export async function getUsers(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10, query = "" } = {}) {
   try {
     await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
     await connectDB();
 
     const skip = (page - 1) * pageSize;
+    const normalizedQuery = typeof query === "string" ? query.trim() : "";
+    const filters = normalizedQuery
+      ? {
+          $or: [
+            { name: { $regex: escapeRegex(normalizedQuery), $options: "i" } },
+            { email: { $regex: escapeRegex(normalizedQuery), $options: "i" } },
+          ],
+        }
+      : {};
 
     const [users, userRoles, total] = await Promise.all([
-      User.find({}).skip(skip).limit(pageSize).lean(),
+      User.find(filters).skip(skip).limit(pageSize).lean(),
       UserRole.find({}).lean(),
-      User.countDocuments({}),
+      User.countDocuments(filters),
     ]);
 
     const roleNameMap = Object.fromEntries(

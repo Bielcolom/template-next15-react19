@@ -39,14 +39,18 @@ const Table = ({
   toolbar,
   searchable,
   searchableKeys,
+  searchValue,
+  onSearchChange,
   pageSize,
   emptyMessage,
   footer,
 }) => {
   const t = useTranslations("table");
   const [visibleRows, setVisibleRows] = useState(INITIAL_VISIBLE_ROWS);
-  const [query, setQuery] = useState("");
+  const [internalQuery, setInternalQuery] = useState("");
   const [page, setPage] = useState(1);
+  const hasControlledSearch = typeof onSearchChange === "function";
+  const query = hasControlledSearch ? (searchValue ?? "") : internalQuery;
 
   // Modo legacy: inferir columnas del primer row
   const columns = useMemo(() => {
@@ -61,6 +65,12 @@ const Table = ({
   }, [columns, visibleColumns]);
 
   const showSearch = searchable || (Array.isArray(searchableKeys) && searchableKeys.length > 0);
+  const handleSearchChange = hasControlledSearch
+    ? onSearchChange
+    : (value) => {
+        setInternalQuery(value);
+        setPage(1);
+      };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -105,7 +115,7 @@ const Table = ({
       {showToolbar && (
         <TableToolbar
           searchValue={showSearch ? query : undefined}
-          onSearchChange={showSearch ? (v) => { setQuery(v); setPage(1); } : undefined}
+          onSearchChange={showSearch ? handleSearchChange : undefined}
         >
           {toolbar}
         </TableToolbar>
@@ -137,7 +147,7 @@ const Table = ({
               <tr className={styles.noResults}>
                 <td colSpan={Math.max(effectiveColumns.length, 1)}>
                   <Icon icon="exclamation" />
-                  {emptyMessage ?? (query ? t("noMatch") : t("empty"))}
+                  {query ? t("noMatch") : (emptyMessage ?? t("empty"))}
                 </td>
               </tr>
             ) : (
@@ -189,6 +199,8 @@ Table.propTypes = {
   toolbar: PropTypes.node,
   searchable: PropTypes.bool,
   searchableKeys: PropTypes.arrayOf(PropTypes.string),
+  searchValue: PropTypes.string,
+  onSearchChange: PropTypes.func,
   pageSize: PropTypes.number,
   emptyMessage: PropTypes.string,
   footer: PropTypes.node,

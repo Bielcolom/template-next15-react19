@@ -10,10 +10,11 @@ const PAGE_SIZE = 10;
 
 export default async function UserRolesPage({ params, searchParams }) {
     const { lang } = await params;
-    const { page: pageParam } = await searchParams;
+    const { page: pageParam, q: queryParam } = await searchParams;
     const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+    const query = typeof queryParam === "string" ? queryParam : "";
 
-    const response = await getUserRoles(lang, { page, pageSize: PAGE_SIZE });
+    const response = await getUserRoles(lang, { page, pageSize: PAGE_SIZE, query });
     const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
     const t = await getTranslations({ locale: lang, namespace: "userRoles" });
     const userRoles = Array.isArray(response?.data?.userRoles) ? response.data.userRoles : [];
@@ -32,7 +33,7 @@ export default async function UserRolesPage({ params, searchParams }) {
             <header className={styles.head}>
                 <PageTitle title={t("title")} subtitle={t("subtitle")} />
             </header>
-            <UserRolesClient rawUserRoles={userRoles} page={page} total={total} pageSize={PAGE_SIZE} />
+            <UserRolesClient rawUserRoles={userRoles} page={page} total={total} pageSize={PAGE_SIZE} query={query} />
         </div>
     );
 }
