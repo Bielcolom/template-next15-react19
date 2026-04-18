@@ -1,17 +1,12 @@
 @use './constants' as *;
 
-// ═══════════════════════════════════════════════════════════
-//  COLOM CODE STUDIO — GLOBAL STYLES
-//  Base tipográfica, resets, layout shell.
-// ═══════════════════════════════════════════════════════════
-
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 10px; // base: 1rem = 10px (consistente con el template)
+  font-size: 10px;
 }
 
 html {
@@ -85,7 +80,6 @@ main {
   width: 100%;
 }
 
-// Header/footer: ahora limpios, sin el color plano anterior.
 header {
   background: $surface;
   border-bottom: 1px solid $border;
@@ -103,7 +97,6 @@ footer {
   font-size: $font-sm;
 }
 
-// Sidebar layout — reemplaza el margin-left hardcoded.
 .layout-general {
   height: 100%;
 
@@ -118,14 +111,43 @@ footer {
   }
 }
 
-// Focus visible por defecto — accesibilidad.
+// ═══════════════════════════════════════════════════════════
+//  AUTH PAGES — fullscreen, sin navbar ni sidebar
+//  Activado por <AuthBodyClass /> que añade `auth-page` al body.
+// ═══════════════════════════════════════════════════════════
+body.auth-page {
+  overflow: hidden;
+
+  // Oculta la navbar fija
+  main>nav {
+    display: none !important;
+  }
+
+  // Oculta el sidebar del backoffice (si localStorage lo deja abierto)
+  .layout-general> :not(main) {
+    display: none !important;
+  }
+
+  // Reset del wrapper .content para que la página auth pueda ocupar todo
+  .content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  // Reset de margin en layout.general
+  .layout-general.with-sidebar>*,
+  .layout-general.no-sidebar>* {
+    margin-left: 0 !important;
+  }
+}
+
 :focus-visible {
   outline: 2px solid $primary;
   outline-offset: 2px;
   border-radius: $radius-sm;
 }
 
-// Scrollbar suave.
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
