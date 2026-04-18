@@ -1,13 +1,16 @@
 {
-  "loading": "Loading...",
-  "empty": "No items found",
-  "totalRows": "Total rows",
   "columns": {
+    "__v": "Version",
     "_id": "ID",
+    "createdAt": "Created at",
     "name": "Name",
     "permissions": "Permissions",
-    "createdAt": "Created at",
-    "updatedAt": "Updated at",
-    "__v": "Version"
-  }
+    "updatedAt": "Updated at"
+  },
+  "empty": "No items found",
+  "loading": "Loading...",
+  "noMatch": "No results for your search",
+  "search": "Search...",
+  "showing": "Showing <b>{from}-{to}</b> of <b>{total}</b>",
+  "totalRows": "Total rows"
 }
