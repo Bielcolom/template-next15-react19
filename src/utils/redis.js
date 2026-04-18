@@ -2,7 +2,41 @@ import "server-only";
 import { createClient } from "redis";
 import { logger } from "./logger";
 
-const REDIS_URL = process.env.REDIS_URL || "";
+const isDev = process.env.NODE_ENV !== "production";
+const LOCAL_REDIS_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const REDIS_URL = normalizeRedisUrl(process.env.REDIS_URL || "");
+const REDIS_HOST = getRedisHost(REDIS_URL);
+
+const normalizeRedisUrl = (value = "") => {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(value);
+    if (parsedUrl.hostname === "localhost") {
+      parsedUrl.hostname = "127.0.0.1";
+      return parsedUrl.toString();
+    }
+
+    return parsedUrl.toString();
+  } catch {
+    return value;
+  }
+};
+
+const getRedisHost = (value = "") => {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    return new URL(value).hostname;
+  } catch {
+    return "";
+  }
+};
+
 
 let redisClientPromise = null;
 let redisUnavailable = false;
@@ -14,6 +48,15 @@ const logRedisErrorOnce = (error) => {
   }
 
   hasLoggedRedisError = true;
+
+  if (isDev && error?.code === "ECONNREFUSED" && LOCAL_REDIS_HOSTS.has(REDIS_HOST)) {
+    logger.warn(
+      "Redis unavailable in local development. Falling back to MongoDB for auth helpers. Start Redis or unset REDIS_URL to silence this warning.",
+      { code: error.code, address: error.address, port: error.port }
+    );
+    return;
+  }
+
   logger.error("Redis unavailable", error);
 };
 
