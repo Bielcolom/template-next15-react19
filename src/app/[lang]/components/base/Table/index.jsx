@@ -7,6 +7,25 @@ import Icon from "../Icon";
 import styles from "./table.module.scss";
 
 const INITIAL_VISIBLE_ROWS = 500;
+const formatCellValue = (value) => {
+  if (value === null || typeof value === "undefined") {
+      return "";
+   }
+
+   if (value instanceof Date) {
+      return value.toLocaleString();
+  }
+
+  if (Array.isArray(value)) {
+      return value.map((item) => formatCellValue(item)).filter(Boolean).join(", ");
+  }
+
+   if (typeof value === "object") {
+      return JSON.stringify(value);
+  }
+
+  return String(value);
+};
 
 const TableViewport = ({ columns, data, loading, visibleColumns }) => {
     const t = useTranslations("table");
@@ -60,7 +79,7 @@ const TableViewport = ({ columns, data, loading, visibleColumns }) => {
                                 <tr key={idx} className={`${styles.data} ${idx % 2 === 0 ? styles.evenRow : styles.oddRow}`}>
                                     {columns.map((col) => isColumnVisible(col.value) && (
                                         <td key={col.value}>
-                                            {row[col.value]}
+                                            {formatCellValue(row[col.value])}
                                         </td>
                                     ))}
                                 </tr>
