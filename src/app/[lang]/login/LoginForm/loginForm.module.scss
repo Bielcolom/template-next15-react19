@@ -1,17 +1,35 @@
-@use '../../../constants.scss';
+// handoff/src/app/[lang]/login/LoginForm/loginForm.module.scss
+@use '../../../constants.scss' as *;
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: constants.$size-md;
-  width: 40%;
+  gap: $size-lg;
+  width: 100%;
+
+  .inputContainer { width: 100%; }
 
   .submitButton {
-    background-color: constants.$white;
-    border-color: constants.$white;
+    margin-top: $size-sm;
+    width: 100%;
+    background: $primary;
+    color: $white;
+    border-color: $primary;
+    padding: 1.3rem $size-lg;
+    font-size: $font-sm;
+    font-weight: $weight-medium;
 
-    &:hover {
-      background-color: constants.$gray-lighter;
+    &:hover:not(:disabled) {
+      background: $primary-dark;
+      border-color: $primary-dark;
+      box-shadow: 0 4px 12px rgba(8, 105, 114, 0.25);
     }
+  }
+
+  .helper {
+    text-align: center;
+    font-size: $font-xxs;
+    color: $ink-50;
+    margin-top: $size-sm;
   }
 }
