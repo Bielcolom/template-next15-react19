@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import Table from "@/app/[lang]/components/base/Table";
 import { getUserRoles } from "../../../backoffice/userRoles/actions";
 import styles from "./userRoles.module.scss";
 import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../../RouteToastHandler";
+import UserRolesClient from "./UserRolesClient";
 
 export default async function UserRolesPage({ params }) {
     const { lang } = await params;
@@ -21,7 +21,7 @@ export default async function UserRolesPage({ params }) {
         <div className={styles.userRolesPage}>
             <RouteToastHandler toastMessages={toastMessages} />
             <ToastOnMount messages={errors} />
-            <Table data={userRoles} loading={false} />
+            <UserRolesClient rawUserRoles={userRoles} />
         </div>
     );
 }

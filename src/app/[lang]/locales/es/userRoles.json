@@ -1,0 +1,9 @@
+{
+  "columns": {
+    "name": "Rol",
+    "permissions": "Permisos"
+  },
+  "empty": "No se han encontrado roles",
+  "subtitle": "Gestiona los roles de acceso y sus permisos asociados.",
+  "title": "Roles de usuario"
+}
