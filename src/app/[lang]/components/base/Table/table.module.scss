@@ -1,51 +1,168 @@
 @use "../../../../constants.scss" as *;
 
+.tableRoot {
+  display: flex;
+  flex-direction: column;
+  gap: $size-md;
+  width: 100%;
+}
+
+/* ─── Toolbar ─── */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $size-md;
+  flex-wrap: wrap;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: $size-sm + 0.2rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  max-width: 36rem;
+  min-width: 20rem;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $ink-50;
+  pointer-events: none;
+  display: flex;
+
+  :global(svg) {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.searchInput {
+  width: 100%;
+  height: 3.8rem;
+  padding: 0 $size-md 0 3.6rem;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  font-family: inherit;
+  font-size: $font-sm;
+  color: $ink;
+  transition: border-color $transition-fast $ease, box-shadow $transition-fast $ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(8, 105, 114, 0.12);
+  }
+
+  &::placeholder {
+    color: $ink-50;
+  }
+}
+
+/* ─── Chips (usable desde page pasando <span className="...">) ─── */
+.chips {
+  display: flex;
+  gap: $size-xs;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 3rem;
+  padding: 0 $size-md;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: $font-xs;
+  font-weight: $weight-medium;
+  color: $ink-70;
+  cursor: pointer;
+  transition: all $transition-fast $ease;
+
+  &:hover {
+    color: $ink;
+    background: $surface-alt;
+  }
+
+  .chipCount {
+    color: $ink-30;
+    font-weight: $weight-regular;
+    margin-left: 2px;
+  }
+}
+
+.chipActive {
+  background: #e6f0f1;
+  color: #055058;
+  border-color: transparent;
+
+  .chipCount {
+    color: $primary;
+  }
+
+  &:hover {
+    background: #e6f0f1;
+    color: #055058;
+  }
+}
+
+/* ─── Table ─── */
 .tableContainer {
   background: $surface;
   border: 1px solid $border;
   border-radius: $radius-lg;
-  max-height: 70vh;
   overflow: auto;
+  max-height: 70vh;
   font-family: $font-sans;
 }
 
 .genericTable {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 
   thead th {
     position: sticky;
     top: 0;
     z-index: 1;
-    text-align: left;
     padding: $size-md + 0.2rem $size-lg + 0.4rem;
     font-size: $font-xxs;
     font-weight: $weight-semibold;
     color: $ink-50;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    background: $surface-alt;
+    background: $surface-sunken;
     border-bottom: 1px solid $border;
-  }
-
-  tbody tr {
-    border-bottom: 1px solid $border-soft;
-    transition: background $transition-fast $ease;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &:hover {
-      background: $surface-alt;
-    }
+    white-space: nowrap;
   }
 
   tbody td {
-    padding: $size-md + 0.6rem $size-lg + 0.4rem;
+    padding: $size-md + 0.4rem $size-lg + 0.4rem;
     font-size: $font-sm;
-    color: $ink-70;
+    color: $ink;
     vertical-align: middle;
+    border-bottom: 1px solid $border-soft;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background: $surface-alt;
   }
 }
 
@@ -71,18 +188,123 @@
   color: $ink-50;
 }
 
-.data.evenRow {
-  background: $surface;
-}
-
-.data.oddRow {
-  background: $surface-alt;
-}
-
 .footer {
   display: flex;
   justify-content: flex-end;
-  padding: $size-md $size-lg + 0.4rem;
   color: $ink-50;
   font-size: $font-xs;
+  padding: 0 $size-xs;
+}
+
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $size-md;
+  font-size: $font-sm;
+  color: $ink-70;
+  flex-wrap: wrap;
+  padding: 0 $size-xs;
+}
+
+.pagInfo b {
+  color: $ink;
+  font-weight: $weight-medium;
+}
+
+.pagPages {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  button {
+    min-width: 3.2rem;
+    height: 3.2rem;
+    border-radius: $radius-sm;
+    border: 1px solid $border;
+    background: $surface;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: $font-xs;
+    color: $ink-70;
+    padding: 0 $size-xs;
+    transition: all $transition-fast $ease;
+
+    &:hover:not(:disabled) {
+      border-color: $primary;
+      color: $primary-dark;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.pagActive {
+  background: $primary !important;
+  color: $white !important;
+  border-color: $primary !important;
+}
+
+.pagEllipsis {
+  color: $ink-30;
+  padding: 0 4px;
+}
+
+/* ─── Helpers para render custom en columnas (Users) ─── */
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: $size-sm + 0.2rem;
+
+  .userWho {
+    min-width: 0;
+  }
+
+  .userWho b {
+    display: block;
+    font-weight: $weight-medium;
+    color: $ink;
+  }
+
+  .userWho span {
+    font-size: $font-xs;
+    color: $ink-50;
+  }
+}
+
+.muted {
+  color: $ink-50;
+}
+
+.rowActions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+
+  button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: $radius-sm;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: $ink-50;
+    display: grid;
+    place-items: center;
+    transition: all $transition-fast $ease;
+
+    &:hover {
+      background: $surface-sunken;
+      color: $ink;
+    }
+
+    :global(svg) {
+      width: 14px;
+      height: 14px;
+    }
+  }
 }
