@@ -12,6 +12,7 @@ const messageLoaders = {
 
     forgotPassword: () => import("../app/[lang]/locales/en/forgotPassword.json").then((module) => module.default),
     backoffice: () => import("../app/[lang]/locales/en/backoffice.json").then((module) => module.default),
+    users: () => import("../app/[lang]/locales/en/users.json").then((module) => module.default),
     table: () => import("../app/[lang]/locales/en/table.json").then((module) => module.default),
   },
   es: {
@@ -23,6 +24,7 @@ const messageLoaders = {
     about: () => import("../app/[lang]/locales/es/about.json").then((module) => module.default),
     forgotPassword: () => import("../app/[lang]/locales/es/forgotPassword.json").then((module) => module.default),
     backoffice: () => import("../app/[lang]/locales/es/backoffice.json").then((module) => module.default),
+    users: () => import("../app/[lang]/locales/es/users.json").then((module) => module.default),
     table: () => import("../app/[lang]/locales/es/table.json").then((module) => module.default),
   },
 };

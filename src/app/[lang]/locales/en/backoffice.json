@@ -6,35 +6,5 @@
     "home": "Home",
     "userRoles": "User roles",
     "users": "Users"
-  },
-  "users": {
-    "actions": {
-      "edit": "Edit",
-      "more": "More actions"
-    },
-    "columns": {
-      "lastLogin": "Last login",
-      "registered": "Registered",
-      "role": "Role",
-      "status": "Status",
-      "user": "User"
-    },
-    "empty": "No users found",
-    "exportCsv": "Export CSV",
-    "filters": {
-      "active": "Active",
-      "all": "All",
-      "disabled": "Disabled",
-      "pending": "Pending"
-    },
-    "invite": "Invite user",
-    "status": {
-      "active": "Active",
-      "disabled": "Disabled",
-      "pending": "Pending",
-      "unknown": "—"
-    },
-    "subtitle": "Manage accounts with access to the platform, their roles and status.",
-    "title": "Users"
   }
 }

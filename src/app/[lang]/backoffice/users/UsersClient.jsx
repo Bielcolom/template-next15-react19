@@ -14,7 +14,7 @@ const FILTERS = ["all", "active", "pending", "disabled"];
  * todo el render de la tabla a <Table>.
  */
 export default function UsersClient({ rawUsers }) {
-  const t = useTranslations("backoffice.users");
+  const t = useTranslations("users");
   const locale = useLocale();
 
   const users = useMemo(() => rawUsers.map(normalizeUser), [rawUsers]);

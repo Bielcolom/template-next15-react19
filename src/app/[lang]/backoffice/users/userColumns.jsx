@@ -64,7 +64,7 @@ export function formatRelative(iso, locale = "es") {
 
 /**
  * Devuelve las columnas del Table para la vista Users.
- * - `t` es el translator del namespace "backoffice.users"
+ * - `t` es el translator del namespace "users"
  * - `locale` para fechas relativas
  */
 export function userColumns({ t, locale = "es", onEdit, onMore }) {

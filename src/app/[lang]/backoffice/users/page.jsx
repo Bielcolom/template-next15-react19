@@ -9,7 +9,7 @@ export default async function UsersPage({ params }) {
   const { lang } = await params;
   const response = await getUsers(lang);
   const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
-  const t = await getTranslations({ locale: lang, namespace: "backoffice.users" });
+  const t = await getTranslations({ locale: lang, namespace: "users" });
 
   const users = Array.isArray(response?.data) ? response.data : [];
   const errors = Array.isArray(response?.errors) ? response.errors : [];
