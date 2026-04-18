@@ -12,6 +12,8 @@ const RINGS = [
   { r: 42, n: 24, dot: 1.4 },
 ];
 
+const formatCoord = (value) => value.toFixed(6);
+
 export default function BrandMandala({ size = 36, color = "#086972" }) {
   return (
     <svg
@@ -29,11 +31,13 @@ export default function BrandMandala({ size = 36, color = "#086972" }) {
         }
         return Array.from({ length: ring.n }).map((_, j) => {
           const a = (j / ring.n) * Math.PI * 2;
+          const cx = formatCoord(Math.cos(a) * ring.r);
+          const cy = formatCoord(Math.sin(a) * ring.r);
           return (
             <circle
               key={`${i}-${j}`}
-              cx={Math.cos(a) * ring.r}
-              cy={Math.sin(a) * ring.r}
+              cx={cx}
+              cy={cy}
               r={ring.dot}
               fill={color}
               opacity={1 - i * 0.1}
