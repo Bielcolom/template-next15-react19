@@ -15,22 +15,6 @@
   flex-wrap: wrap;
   padding: $size-lg;
   border-radius: $size-md - 0.2rem;
-
-  h1 {
-    font-family: $font-serif;
-    font-size: 3.6rem;
-    font-weight: $weight-regular;
-    color: $primary-darker;
-    letter-spacing: -0.02em;
-    margin: 0;
-  }
-
-  p {
-    font-size: $font-sm;
-    color: $ink-70;
-    margin: $size-xs 0 0;
-    max-width: 52rem;
-  }
 }
 
 .headActions {

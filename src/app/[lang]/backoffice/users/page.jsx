@@ -3,6 +3,7 @@ import { getUsers } from "../../../backoffice/users/actions";
 import UsersClient from "./UsersClient";
 import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../../RouteToastHandler";
+import PageTitle from "@/app/[lang]/components/backoffice/PageTitle";
 import styles from "./users.module.scss";
 
 const PAGE_SIZE = 10;
@@ -31,10 +32,7 @@ export default async function UsersPage({ params, searchParams }) {
       <ToastOnMount messages={errors} />
 
       <header className={styles.head}>
-        <div>
-          <h1>{t("title")}</h1>
-          <p>{t("subtitle")}</p>
-        </div>
+        <PageTitle title={t("title")} subtitle={t("subtitle")} />
         <div className={styles.headActions}>
           <button type="button" className={styles.btnGhost}>{t("exportCsv")}</button>
           <button type="button" className={styles.btnPrimary}>+ {t("invite")}</button>

@@ -1,0 +1,19 @@
+@use '../../../../constants.scss' as *;
+
+.titleBlock {
+  h1 {
+    font-family: $font-serif;
+    font-size: 3.6rem;
+    font-weight: $weight-regular;
+    color: $primary-darker;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  p {
+    font-size: $font-sm;
+    color: $ink-70;
+    margin: $size-xs 0 0;
+    max-width: 52rem;
+  }
+}

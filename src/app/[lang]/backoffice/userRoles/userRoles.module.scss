@@ -1,0 +1,13 @@
+@use '../../../constants.scss' as *;
+
+.userRolesPage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $size-xl;
+}
+
+.head {
+  padding: $size-lg;
+  border-radius: $size-md - 0.2rem;
+}
