@@ -98,16 +98,22 @@ footer {
 }
 
 .layout-general {
-  height: 100%;
+  display: flex;
+  min-height: 100vh;
 
-  &.with-sidebar>* {
+  &.with-sidebar>main {
     margin-left: 240px;
     transition: margin-left $transition-mid $ease;
   }
 
-  &.no-sidebar>* {
+  &.no-sidebar>main {
     margin-left: 0;
     transition: margin-left $transition-mid $ease;
+  }
+
+  >main {
+    flex: 1;
+    min-width: 0;
   }
 }
 
