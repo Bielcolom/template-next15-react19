@@ -1,7 +1,7 @@
 {
   "loading": "Cargando...",
   "empty": "No hay elementos",
-  "noMatch": "No hay resultados para tu busqueda",
+  "noMatch": "No hay resultados para tu búsqueda",
   "search": "Buscar...",
   "showing": "Mostrando <b>{from}-{to}</b> de <b>{total}</b>",
   "totalRows": "Total de filas",
@@ -11,6 +11,6 @@
     "permissions": "Permisos",
     "createdAt": "Creado",
     "updatedAt": "Actualizado",
-    "__v": "Version"
+    "__v": "Versión"
   }
 }
