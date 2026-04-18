@@ -1,75 +1,83 @@
 @use "sass:color";
 
-// ***********
-// COLORS
-// ***********
-// Primary
-$primary: #086972ad;
-$primary-dark: color.adjust($primary, $lightness: -10%);
+// ---------- COLORS ----------
+
+// Primary — teal de marca (del logo)
+$primary: #086972;
+$primary-dark: color.adjust($primary, $lightness: -8%);
+$primary-darker: #0a3d42; // teal profundo para texto/headers
 $primary-light: color.adjust($primary, $lightness: 10%);
-$primary-darker: color.adjust($primary, $lightness: -20%);
-$primary-lighter: color.adjust($primary, $lightness: 20%);
+$primary-lighter: #e6f0f1; // fondo tint para estados hover/active
+$primary-tint: #f3f8f8; // aún más suave para backgrounds sutiles
 
-// Secondary
-$secondary: #3B8C8B;
-$secondary-dark: color.adjust($secondary, $lightness: -10%);
-$secondary-light: color.adjust($secondary, $lightness: 10%);
-$secondary-darker: color.adjust($secondary, $lightness: -20%);
-$secondary-lighter: color.adjust($secondary, $lightness: 20%);
+// Secondary — mismo teal (compatibilidad). Todo el UI anterior que usaba
+// $secondary para fondos sólidos ahora debe usar $white o $surface-alt.
+$secondary: $primary;
+$secondary-dark: $primary-dark;
+$secondary-darker: $primary-darker;
+$secondary-light: $primary-light;
+$secondary-lighter: $primary-lighter;
 
-// Tertiary
-$tertiary: #F1F1F1;
-$tertiary-dark: color.adjust($tertiary, $lightness: -10%);
-$tertiary-light: color.adjust($tertiary, $lightness: 10%);
-$tertiary-darker: color.adjust($tertiary, $lightness: -20%);
-$tertiary-lighter: color.adjust($tertiary, $lightness: 20%);
+// Tertiary — neutros cálidos
+$tertiary: #faf9f6; // surface-alt (warm off-white)
+$tertiary-dark: #f0eeea; // border-soft
+$tertiary-light: #ffffff;
+$tertiary-darker: #e8e6e1; // border
+$tertiary-lighter: #ffffff;
 
-// Accent
-$accent: #39c2ff;
-$accent-dark: color.adjust($accent, $lightness: -10%);
-$accent-light: color.adjust($accent, $lightness: 10%);
-$accent-darker: color.adjust($accent, $lightness: -20%);
-$accent-lighter: color.adjust($accent, $lightness: 20%);
+// Accent — OUT. Si algo sigue usando $accent, cae al teal.
+$accent: $primary;
+$accent-dark: $primary-dark;
+$accent-light: $primary-light;
+$accent-darker: $primary-darker;
+$accent-lighter: $primary-lighter;
 
-// Gray
-$gray: #888888;
-$gray-dark: color.adjust($gray, $lightness: -10%);
-$gray-light: color.adjust($gray, $lightness: 10%);
-$gray-darker: color.adjust($gray, $lightness: -20%);
-$gray-lighter: color.adjust($gray, $lightness: 20%);
-$gray-border: 0.1rem solid rgba(color.adjust($gray, $lightness: 10%), 0.5); // 1px equiv.
-// B&W
-$background-gray: #f4f4f4;
-$background-gray-lighter: #f9f9f9;
+// Ink / gray — neutros cálidos, reemplazan los grises fríos
+$ink: #1a1f21;
+$ink-70: #4a5558;
+$ink-50: #737e81;
+$ink-30: #aab3b5;
+
+$gray: $ink-50;
+$gray-dark: $ink-70;
+$gray-darker: $ink;
+$gray-light: $ink-30;
+$gray-lighter: #e8e6e1;
+$gray-border: 1px solid #e8e6e1;
+
+// B&W y superficies
+$background-gray: #faf9f6; // surface-alt
+$background-gray-lighter: #ffffff;
 $white: #ffffff;
-$black: #282828;
+$black: #1a1f21;
+$surface: #ffffff;
+$surface-alt: #faf9f6;
+$border: #e8e6e1;
+$border-soft: #f0eeea;
 
-// Error, info...
-$color-error: #db341a;
-$color-error-border: #ff745e;
-$color-warning: #e8b125;
-$color-warning-border: #ffef5e;
+// Feedback
+$color-error: #c23a1f;
+$color-error-border: #fbeae6;
+$color-warning: #b17a0a;
+$color-warning-border: #f3e8c6;
 $color-info: $primary;
-$color-info-border: $primary-light;
-$color-success: #699c1c;
-$color-success-border: #acde5b;
-$color-star: #FBBC05;
-$color-contact-card: #F7F4F4;
-$color-contact-border: #B8B3B3;
+$color-info-border: $primary-lighter;
+$color-success: #4f7a1e;
+$color-success-border: #d8e9c3;
+$color-star: #e0a814;
+$color-contact-card: $surface;
+$color-contact-border: $border;
 
-// ***********
-// CUSTOM
-// ***********
-$primary-gradient: linear-gradient(90deg, $primary-lighter 0%, $secondary 100%);
-$primary-gradient-btn: linear-gradient(to right, $primary-lighter, $secondary, $primary-lighter);
-$card-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2); // 10px equiv.
+// Custom
+$primary-gradient: linear-gradient(135deg, $primary-darker 0%, $primary 100%);
+$primary-gradient-btn: $primary; // se elimina el gradient-btn, se usa sólido
+$card-shadow: 0 1px 2px rgba(10, 61, 66, 0.04), 0 4px 16px rgba(10, 61, 66, 0.06);
+$card-shadow-hover: 0 4px 24px rgba(10, 61, 66, 0.10);
 $color-whatsapp: #25D366;
 $color-whatsapp-dark: #075E54;
 
-// ***********
-// PADDING, MARGIN AND RADIUS
-// ***********
-$size-xs: 0.2rem;
+// ---------- SPACING / RADIUS ----------
+$size-xs: 0.2rem; // 2px
 $size-sm: 0.4rem; // 4px
 $size-md: 0.8rem; // 8px
 $size-lg: 1.6rem; // 16px
@@ -77,57 +85,60 @@ $size-xl: 3.2rem; // 32px
 $size-xxl: 6.4rem; // 64px
 $size-xxxl: 12.8rem; // 128px
 
-$padding-section: 25.6rem; // 256px
-$content-max-width: 170rem; // 1700px
-$margin-top-section: 10rem; // 100px
+$radius-sm: 0.6rem; // 6px
+$radius: 1rem; // 10px
+$radius-lg: 1.4rem; // 14px
+$radius-pill: 999px;
 
-// ***********
-// TRANSITIONS
-// ***********
-$transition-slow: 0.5s;
-$transition-mid: 0.25s;
-$transition-fast: 0.1s;
+$padding-section: 25.6rem;
+$content-max-width: 170rem;
+$margin-top-section: 10rem;
 
-// ***********
-// FONT
-// ***********
-$font-xxs: 1.2rem; // 12px
-$font-xs: 1.4rem; // 14px
-$font-sm: 1.6rem; // 16px
-$font-md: 2rem; // 20px
-$font-lg: 2.4rem; // 24px
-$font-xl: 3.2rem; // 32px
+// ---------- TRANSITIONS ----------
+$transition-slow: 0.4s;
+$transition-mid: 0.2s;
+$transition-fast: 0.12s;
+$ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-$font-title: 10rem; // 100px
-$font-title-lg: 6.4rem; // 64px
-$font-title-sm: 4.5rem; // 45px
+// ---------- FONT ----------
+// Pairing: Fraunces (serif, display) + Inter (sans, UI).
+// Configurado como CSS vars en layout.jsx con next/font/google.
+$font-serif: var(--font-fraunces), "Fraunces", Georgia, serif;
+$font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-$font-subtitle: 4rem; // 40px
+$font-xxs: 1.1rem; // 11px
+$font-xs: 1.2rem; // 12px
+$font-sm: 1.4rem; // 14px
+$font-md: 1.6rem; // 16px
+$font-lg: 2rem; // 20px
+$font-xl: 2.4rem; // 24px
+
+$font-title: 6.8rem; // 68px — hero
+$font-title-lg: 4.4rem; // 44px
+$font-title-sm: 3rem; // 30px
+$font-subtitle: 2.4rem; // 24px
 
 $weight-light: 300;
 $weight-regular: 400;
 $weight-medium: 500;
-$weight-bold: bold;
+$weight-semibold: 600;
+$weight-bold: 700;
 $weight-black: 900;
 
-// ***********
-// SCREEN SIZES
-// ***********
-$screen-xs: 40rem; // 400px
-$screen-sm: 57.6rem; // 576px
-$screen-md: 76.8rem; // 768px
-$screen-lg: 99.2rem; // 992px
-$screen-xl: 120rem; // 1200px
+// ---------- SCREEN SIZES ----------
+$screen-xs: 40rem;
+$screen-sm: 57.6rem;
+$screen-md: 76.8rem;
+$screen-lg: 99.2rem;
+$screen-xl: 120rem;
 
-// ***********
-// EXTRA SIZES
-// ***********
-$thirty: 3rem; // 30px
-$forty: 4rem; // 40px
-$fifty: 5rem; // 50px
-$eighty: 8rem; // 80px
-$one-hundred-fifty: 15rem; // 150px
-$two-hundred: 20rem; // 200px
-$two-hundred-fifty: 25rem; // 250px
-$three-hundred: 30rem; // 300px
-$screen-md-includes: 76.9rem; // 769px
+// ---------- EXTRA SIZES ----------
+$thirty: 3rem;
+$forty: 4rem;
+$fifty: 5rem;
+$eighty: 8rem;
+$one-hundred-fifty: 15rem;
+$two-hundred: 20rem;
+$two-hundred-fifty: 25rem;
+$three-hundred: 30rem;
+$screen-md-includes: 76.9rem;
