@@ -1,3 +1,18 @@
 {
-  "centeredText": "Elemento en el centro"
+  "availability": "Disponible para nuevos proyectos",
+  "card1Body": "React 19 · App Router",
+  "card1Title": "Next.js 15",
+  "card2Body": "Caso: Estudio Marín",
+  "card2Title": "+38% conversión",
+  "centeredText": "Elemento en el centro",
+  "ctaPrimary": "Empezar un proyecto",
+  "ctaSecondary": "Ver trabajos",
+  "heroLead": "Diseñamos y construimos productos web a medida — estudios, plataformas y experiencias que mueven números y corazones.",
+  "heroTitle": "Dando vida a tu<br></br><em>presencia digital.</em>",
+  "stat1Label": "Proyectos entregados",
+  "stat1Value": "40+",
+  "stat2Label": "Construyendo en la web",
+  "stat2Value": "8 años",
+  "stat3Label": "Código propio",
+  "stat3Value": "100%"
 }

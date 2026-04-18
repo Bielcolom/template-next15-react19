@@ -1,9 +1,16 @@
 {
-  "title": "Login",
-  "logoAlt": "Rectangular logo",
-  "emailPlaceholder": "Enter your email",
+  "brandSubtitle": "Access your dashboard to manage projects, users and settings.",
+  "brandTitle": "Welcome back to the<br></br><em>studio.</em>",
   "emailInfo": "We'll never share your email.",
+  "emailPlaceholder": "Enter your email",
+  "forgot": "Forgot your password?",
+  "logoAlt": "Rectangular logo",
+  "noAccount": "Don't have an account?",
   "passwordPlaceholder": "Enter your password",
-  "submit": "Login",
-  "submitting": "Logging in..."
+  "remember": "Remember me",
+  "secured": "Protected with end-to-end encryption",
+  "signUp": "Sign up",
+  "submit": "Sign in",
+  "submitting": "Signing in...",
+  "title": "Sign in"
 }

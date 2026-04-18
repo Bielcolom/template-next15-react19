@@ -1,16 +1,19 @@
 {
-  "title": "Crear cuenta",
-  "logoAlt": "Logo rectangular",
   "fields": {
+    "confirmPasswordLabel": "Confirmar contraseña",
+    "emailLabel": "Correo electrónico",
     "nameLabel": "Nombre",
-    "emailLabel": "Correo electronico",
-    "passwordLabel": "Contrasena",
-    "confirmPasswordLabel": "Confirmar contrasena"
+    "passwordLabel": "Contraseña"
   },
+  "haveAccount": "¿Ya tienes cuenta?",
+  "logoAlt": "Logo rectangular",
   "placeholders": {
-    "name": "John Doe",
-    "email": "john@example.com"
+    "email": "marta@ejemplo.com",
+    "name": "Marta Colom"
   },
-  "submit": "Registrarse",
-  "submitting": "Creando cuenta..."
+  "signIn": "Iniciar sesión",
+  "submit": "Crear cuenta",
+  "submitting": "Creando cuenta...",
+  "subtitle": "Empieza a gestionar tu presencia digital en minutos.",
+  "title": "Crea tu cuenta"
 }

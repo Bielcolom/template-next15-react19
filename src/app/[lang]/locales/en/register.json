@@ -1,16 +1,19 @@
 {
-  "title": "Register",
-  "logoAlt": "Rectangular logo",
   "fields": {
-    "nameLabel": "Name",
+    "confirmPasswordLabel": "Confirm password",
     "emailLabel": "Email",
-    "passwordLabel": "Password",
-    "confirmPasswordLabel": "Confirm Password"
+    "nameLabel": "Name",
+    "passwordLabel": "Password"
   },
+  "haveAccount": "Already have an account?",
+  "logoAlt": "Rectangular logo",
   "placeholders": {
-    "name": "John Doe",
-    "email": "john@example.com"
+    "email": "marta@example.com",
+    "name": "Marta Colom"
   },
-  "submit": "Sign up",
-  "submitting": "Signing up..."
+  "signIn": "Sign in",
+  "submit": "Create account",
+  "submitting": "Creating account...",
+  "subtitle": "Start managing your digital presence in minutes.",
+  "title": "Create your account"
 }

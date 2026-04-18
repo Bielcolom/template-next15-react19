@@ -1,9 +1,16 @@
 {
-  "title": "Iniciar sesion",
-  "logoAlt": "Logo rectangular",
-  "emailPlaceholder": "Introduce tu correo",
+  "brandSubtitle": "Accede a tu panel para gestionar proyectos, usuarios y configuración.",
+  "brandTitle": "Bienvenido de vuelta al<br></br><em>estudio.</em>",
   "emailInfo": "Nunca compartiremos tu correo.",
-  "passwordPlaceholder": "Introduce tu contrasena",
-  "submit": "Iniciar sesion",
-  "submitting": "Iniciando sesion..."
+  "emailPlaceholder": "Introduce tu correo",
+  "forgot": "¿Olvidaste tu contraseña?",
+  "logoAlt": "Logo rectangular",
+  "noAccount": "¿No tienes cuenta?",
+  "passwordPlaceholder": "Introduce tu contraseña",
+  "remember": "Recuérdame",
+  "secured": "Protegido con cifrado de extremo a extremo",
+  "signUp": "Regístrate",
+  "submit": "Entrar al panel",
+  "submitting": "Iniciando sesión...",
+  "title": "Iniciar sesión"
 }

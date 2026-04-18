@@ -1,3 +1,18 @@
 {
-  "centeredText": "Element in the center"
+  "availability": "Available for new projects",
+  "card1Body": "React 19 · App Router",
+  "card1Title": "Next.js 15",
+  "card2Body": "Case: Marín Studio",
+  "card2Title": "+38% conversion",
+  "centeredText": "Element in the center",
+  "ctaPrimary": "Start a project",
+  "ctaSecondary": "See our work",
+  "heroLead": "We design and build bespoke web products — studios, platforms and experiences that move numbers and hearts.",
+  "heroTitle": "Bringing your<br></br><em>digital presence to life.</em>",
+  "stat1Label": "Projects delivered",
+  "stat1Value": "40+",
+  "stat2Label": "Shipping on the web",
+  "stat2Value": "8 years",
+  "stat3Label": "Handcrafted code",
+  "stat3Value": "100%"
 }
