@@ -1,6 +1,9 @@
 @use '../../../../constants.scss' as *;
 
-// ═══ Sidebar — blanco con borde, links con active rail ═══
+$sidebar-width: 240px;
+$rail-width: 56px;
+$paddingline: $size-lg;
+
 
 .containerSidebar {
   position: relative;
@@ -8,24 +11,55 @@
   flex: 0 0 0;
 
   .sidebar {
-    width: 240px;
-    height: 100vh;
-    padding: $size-lg + 0.4rem $size-lg;
+    width: $sidebar-width;
+    height: calc(100vh - 6.4rem);
     position: fixed;
-    top: 0;
     left: 0;
     background: $surface;
     border-right: 1px solid $border;
     box-shadow: none;
-    transition: transform $transition-mid $ease;
-    transform: translateX(0);
+    transition: width $transition-mid $ease, padding $transition-mid $ease;
     display: flex;
     flex-direction: column;
     font-family: $font-sans;
+    overflow: hidden;
+
+    .sidebarHeader {
+      display: flex;
+      align-items: center;
+      height: 6.4rem;
+      border-bottom: 1px solid $border;
+      margin-bottom: $size-sm;
+      overflow: hidden;
+      white-space: nowrap;
+
+      .headerFull {
+        font-size: $font-sm;
+        font-weight: $weight-semibold;
+        padding-inline: $paddingline;
+        color: $ink-50;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 1;
+        transition: opacity $transition-mid $ease;
+      }
+
+      .headerShort {
+        font-size: $font-xs;
+        font-weight: $weight-semibold;
+        color: $ink-50;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+        transition: opacity $transition-mid $ease, width $transition-mid $ease;
+      }
+    }
 
     nav {
-      margin-top: $size-lg;
       flex: 1;
+      padding-inline: $size-sm;
 
       ul {
         list-style: none;
@@ -49,6 +83,8 @@
             font-size: $font-sm;
             transition: all $transition-fast $ease;
             position: relative;
+            white-space: nowrap;
+            overflow: hidden;
 
             &:hover {
               color: $primary-darker;
@@ -58,6 +94,7 @@
             &.active,
             &[aria-current="page"] {
               color: $primary-darker;
+
               background: $primary-tint;
               font-weight: $weight-semibold;
 
@@ -77,11 +114,66 @@
       }
     }
 
-    p {
+    .userId {
       margin-top: $size-md;
       font-size: $font-xxs;
       color: $ink-50;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+  }
+
+  .collapsed {
+    width: $rail-width;
+    padding-inline: $size-sm;
+
+    .sidebarHeader {
+      justify-content: center;
+
+      .headerFull {
+        opacity: 0;
+        width: 0;
+        overflow: hidden;
+      }
+
+      .headerShort {
+        opacity: 1;
+        width: auto;
+      }
+    }
+
+    .navLabel {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      transition: opacity $transition-mid $ease, width $transition-mid $ease;
+    }
+
+    .userId {
+      opacity: 0;
+    }
+
+    nav ul li a {
+      justify-content: center;
+      gap: 0;
+
+      &::before {
+        left: 0;
+      }
+    }
+  }
+
+  .navIcon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: $font-lg;
+  }
+
+  .navLabel {
+    opacity: 1;
+    transition: opacity $transition-mid $ease, width $transition-mid $ease;
   }
 
   .hidden {
@@ -90,7 +182,7 @@
 
   .buttonShowSidebar {
     position: fixed;
-    top: 1.8rem;
+    top: calc(6.4rem / 2 - 1.4rem);
     transition: left $transition-mid $ease;
     z-index: 11;
     background: $surface;
@@ -118,7 +210,7 @@
     }
 
     &.noSidebar {
-      left: 15px;
+      left: calc($rail-width + 4px);
       transform: rotate(180deg);
       transition: transform $transition-mid $ease, left $transition-mid $ease;
     }
