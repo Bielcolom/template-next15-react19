@@ -1,98 +1,63 @@
 @use '../../../../constants.scss' as *;
 
-.tableContainer {
-    font-weight: 400;
-    max-height: 570px;
-    overflow-y: scroll;
-    scrollbar-color: $white $primary;
-    border: 1px solid $primary;
+// ═══ Table — cabecera tipo UI admin moderna ═══
 
-    .genericTable {
-        background-color: $background-gray-lighter;
-        width: 100%;
-        border-collapse: collapse;
-        font-size: $font-xs;
-
-        thead {
-            position: sticky;
-            top: 0;
-            z-index: 1;
-            background-color: $primary;
-        }
-
-        th {
-            background-color: $primary;
-            padding: $size-md $size-lg;
-            color: $white;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        tbody {
-            overflow-y: auto;
-            min-height: 200px;
-            max-height: 570px;
-            width: 100%;
-            z-index: 1;
-            color: $black;
-
-            .noResults {
-                width: 100%;
-                text-align: center;
-                font-size: 16px;
-                color: $black;
-                background-color: $white;
-
-                td {
-                    padding: $size-md;
-                    background-color: $color-warning;
-
-                    >* {
-                        padding-inline: $size-lg;
-                    }
-
-                    >i {
-                        font-size: $font-lg;
-                    }
-                }
-            }
-
-            tr {
-                &.data {
-                    &.evenRow {
-                        background-color: $background-gray;
-                    }
-
-                    &.oddRow {
-                        background-color: $white;
-                    }
-                }
-
-                td {
-                    border-bottom: 1px solid #ddd;
-                    text-align: center;
-                    padding: $size-sm 0;
-
-                    &.cell-error {
-                        color: $color-error;
-                    }
-
-                    white-space: nowrap;
-                    padding-inline: $size-md;
-                }
-
-                .notFound {
-                    font-weight: 600;
-                    color: $color-warning;
-                }
-            }
-        }
-    }
+.tableWrapper {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  font-family: $font-sans;
 }
 
-.loading {
-    text-align: center;
-    font-size: 16px;
-    color: #555;
-    margin: 20px 0;
+.tableHeader {
+  padding: $size-lg $size-lg + 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: $size-md + 0.4rem;
+  border-bottom: 1px solid $border;
+
+  .title {
+    font-family: $font-serif;
+    font-size: $font-md;
+    font-weight: $weight-medium;
+    color: $primary-darker;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead th {
+    text-align: left;
+    padding: $size-md + 0.2rem $size-lg + 0.4rem;
+    font-size: $font-xxs;
+    font-weight: $weight-semibold;
+    color: $ink-50;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: $surface-alt;
+    border-bottom: 1px solid $border;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border-soft;
+    transition: background $transition-fast $ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: $surface-alt;
+    }
+  }
+
+  tbody td {
+    padding: $size-md + 0.6rem $size-lg + 0.4rem;
+    font-size: $font-sm;
+    color: $ink-70;
+    vertical-align: middle;
+  }
 }
