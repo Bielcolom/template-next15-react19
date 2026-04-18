@@ -1,6 +1,74 @@
+@use '../../constants.scss' as *;
+
 .usersPage {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $size-xl;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: $size-xl;
+  flex-wrap: wrap;
+
+  h1 {
+    font-family: $font-serif;
+    font-size: 3.6rem;
+    font-weight: $weight-regular;
+    color: $primary-darker;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  p {
+    font-size: $font-sm;
+    color: $ink-70;
+    margin: $size-xs 0 0;
+    max-width: 52rem;
+  }
+}
+
+.headActions {
+  display: flex;
+  gap: $size-xs + 0.2rem;
+}
+
+.btnPrimary,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: $size-xs;
+  height: 4rem;
+  padding: 0 $size-lg - 0.2rem;
+  border-radius: $radius-md - 0.2rem;
+  font-family: inherit;
+  font-size: $font-sm;
+  font-weight: $weight-medium;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all $transition-fast $ease;
+}
+
+.btnPrimary {
+  background: $primary;
+  color: $white;
+
+  &:hover {
+    background: $primary-dark;
+    box-shadow: 0 4px 12px rgba(8, 105, 114, 0.25);
+  }
+}
+
+.btnGhost {
+  background: transparent;
+  color: $ink;
+  border-color: $border;
+
+  &:hover {
+    background: $surface;
+    border-color: $ink-30;
+  }
 }
