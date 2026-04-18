@@ -1,14 +1,17 @@
-// handoff/src/app/[lang]/register/register.module.scss
 @use '../../constants.scss' as *;
 
 .registerPage {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: $size-xl;
+  padding: $size-lg;
   background: $surface-alt;
-  margin: -$eighty 0 0 0;
+  z-index: 100;
+  overflow-y: auto;
 }
 
 .card {
@@ -22,6 +25,7 @@
   flex-direction: column;
   gap: $size-xl - 0.4rem;
   box-shadow: $card-shadow;
+  margin: auto;
 
   .head {
     display: flex;
@@ -29,31 +33,21 @@
     align-items: center;
     gap: $size-lg;
     text-align: center;
-
-    h1 {
-      font-family: $font-serif;
-      font-size: 3rem;
-      font-weight: $weight-regular;
-      color: $primary-darker;
-      letter-spacing: -0.02em;
-      margin: 0;
-    }
-
-    p {
-      font-size: $font-sm;
-      color: $ink-70;
-      margin: $size-sm 0 0;
-    }
   }
 
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: $size-md + 0.4rem;
+  .title {
+    font-family: $font-serif;
+    font-size: 3rem;
+    font-weight: $weight-regular;
+    color: $primary-darker;
+    letter-spacing: -0.02em;
+    margin: 0;
   }
 
-  .submit {
-    width: 100%;
+  .subtitle {
+    font-size: $font-sm;
+    color: $ink-70;
+    margin: $size-sm 0 0;
   }
 
   .footer {
@@ -73,9 +67,5 @@
 
   @media (max-width: $screen-sm) {
     padding: $size-xl;
-
-    .row {
-      grid-template-columns: 1fr;
-    }
   }
 }
