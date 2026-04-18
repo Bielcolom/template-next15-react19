@@ -1,24 +1,81 @@
-@use '../../constants.scss';
+// handoff/src/app/[lang]/register/register.module.scss
+@use '../../constants.scss' as *;
 
-.formPage {
+.registerPage {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-direction: column;
-  height: 80%;
-  gap: constants.$size-lg;
-}
-
-.header {
-  display: flex;
   justify-content: center;
+  padding: $size-xl;
+  background: $surface-alt;
+  margin: -$eighty 0 0 0;
 }
 
-.title {
-  font-size: constants.$font-xl;
-}
+.card {
+  width: 100%;
+  max-width: 56rem;
+  background: $surface;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  padding: 4.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: $size-xl - 0.4rem;
+  box-shadow: $card-shadow;
 
-.logo {
-  width: 500px;
-  border-radius: 10%;
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $size-lg;
+    text-align: center;
+
+    h1 {
+      font-family: $font-serif;
+      font-size: 3rem;
+      font-weight: $weight-regular;
+      color: $primary-darker;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    p {
+      font-size: $font-sm;
+      color: $ink-70;
+      margin: $size-sm 0 0;
+    }
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $size-md + 0.4rem;
+  }
+
+  .submit {
+    width: 100%;
+  }
+
+  .footer {
+    text-align: center;
+    font-size: $font-sm;
+    color: $ink-70;
+
+    a {
+      color: $primary;
+      font-weight: $weight-medium;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  @media (max-width: $screen-sm) {
+    padding: $size-xl;
+
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
 }
