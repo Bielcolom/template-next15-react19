@@ -74,10 +74,16 @@ const getValidatedSessionState = async () => {
 
 async function createSession(user, permissions = []) {
   const userId = user?._id;
+  const userName = user?.name || null;
   const normalizedPermissions = normalizePermissions(permissions);
 
   const expiresAt = new Date(Date.now() + SESSION_TTL_SECONDS * 1000);
-  const session = await encrypt({ userId, expiresAt, permissions: normalizedPermissions });
+  const session = await encrypt({
+    userId,
+    userName,
+    expiresAt,
+    permissions: normalizedPermissions,
+  });
 
   const cookieStore = await cookies();
   cookieStore.set("session", session, buildSessionCookieOptions(expiresAt));

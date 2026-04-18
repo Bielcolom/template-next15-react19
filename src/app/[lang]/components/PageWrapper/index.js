@@ -45,7 +45,7 @@ const subscribeToSidebarVisibility = (callback) => {
 
 const PageWrapper = ({ children }) => {
   const pathname = usePathname();
-  const { permissions, userId } = useSession();
+  const { permissions, userId, userName } = useSession();
   const sidebarPreference = useSyncExternalStore(subscribeToSidebarVisibility, getStoredSidebarVisibility, () => false);
   const isBackofficePath = pathname === BACKOFFICE_URL || pathname.startsWith(`${BACKOFFICE_URL}/`);
   const isSidebarVisible = isBackofficePath ? sidebarPreference : false;
@@ -66,7 +66,7 @@ const PageWrapper = ({ children }) => {
         <Sidebar
           isVisible={isSidebarVisible}
           permissions={permissions}
-          userId={userId}
+          userName={userName}
           onVisibilityChange={handleSidebarVisibilityChange}
         />
       )}

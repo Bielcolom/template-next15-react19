@@ -42,6 +42,7 @@ export default async function LocaleLayout({ children, params }) {
 
   const session = await getCurrentSession();
   const userId = session?.userId || null;
+  const userName = session?.userName || null;
   const permissions = session?.permissions || [];
 
   return (
@@ -50,7 +51,7 @@ export default async function LocaleLayout({ children, params }) {
         <NextIntlClientProvider>
           <ErrorBoundary>
             <ToastProvider>
-              <SessionProvider permissions={permissions} userId={userId}>
+              <SessionProvider permissions={permissions} userId={userId} userName={userName}>
                 <PageWrapper>{children}</PageWrapper>
               </SessionProvider>
             </ToastProvider>

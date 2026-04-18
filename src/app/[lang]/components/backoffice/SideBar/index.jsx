@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { key: "userRoles", icon: "shield", href: BACKOFFICE_USERROLES_URL, guard: userIsSuperAdmin },
 ];
 
-export default function Sidebar({ isVisible, userId, permissions }) {
+export default function Sidebar({ isVisible, userName, permissions }) {
   const t = useTranslations("backoffice.sidebar");
 
   return (
@@ -41,7 +41,7 @@ export default function Sidebar({ isVisible, userId, permissions }) {
               ) : null
             )}
           </ul>
-          <p className={styles.userId}>{userId}</p>
+          <p className={styles.userName}>{userName}</p>
         </nav>
       </div>
     </div>
@@ -51,11 +51,11 @@ export default function Sidebar({ isVisible, userId, permissions }) {
 Sidebar.propTypes = {
   isVisible: PropTypes.bool,
   permissions: PropTypes.array,
-  userId: PropTypes.string,
+  userName: PropTypes.string,
 };
 
 Sidebar.defaultProps = {
   isVisible: false,
   permissions: [],
-  userId: null,
+  userName: null,
 };

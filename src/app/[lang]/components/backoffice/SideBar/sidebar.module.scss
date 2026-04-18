@@ -114,7 +114,7 @@ $paddingline: $size-lg;
       }
     }
 
-    .userId {
+    .userName {
       margin-top: $size-md;
       font-size: $font-xxs;
       color: $ink-50;
@@ -150,7 +150,7 @@ $paddingline: $size-lg;
       transition: opacity $transition-mid $ease, width $transition-mid $ease;
     }
 
-    .userId {
+    .userName {
       opacity: 0;
     }
 
