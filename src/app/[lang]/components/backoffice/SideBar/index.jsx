@@ -41,8 +41,12 @@ export default function Sidebar({ isVisible, userName, permissions }) {
               ) : null
             )}
           </ul>
-          <p className={styles.userName}>{userName}</p>
         </nav>
+        {userName && (
+          <div className={styles.userNameContainer}>
+            <p className={styles.userName}>{userName}</p>
+          </div>
+        )}
       </div>
     </div>
   );
