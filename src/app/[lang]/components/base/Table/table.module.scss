@@ -1,35 +1,22 @@
-@use '../../../../constants.scss' as *;
+@use "../../../../constants.scss" as *;
 
-// ═══ Table — cabecera tipo UI admin moderna ═══
-
-.tableWrapper {
+.tableContainer {
   background: $surface;
   border: 1px solid $border;
   border-radius: $radius-lg;
-  overflow: hidden;
+  max-height: 70vh;
+  overflow: auto;
   font-family: $font-sans;
 }
 
-.tableHeader {
-  padding: $size-lg $size-lg + 0.4rem;
-  display: flex;
-  align-items: center;
-  gap: $size-md + 0.4rem;
-  border-bottom: 1px solid $border;
-
-  .title {
-    font-family: $font-serif;
-    font-size: $font-md;
-    font-weight: $weight-medium;
-    color: $primary-darker;
-  }
-}
-
-.table {
+.genericTable {
   width: 100%;
   border-collapse: collapse;
 
   thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     text-align: left;
     padding: $size-md + 0.2rem $size-lg + 0.4rem;
     font-size: $font-xxs;
@@ -60,4 +47,42 @@
     color: $ink-70;
     vertical-align: middle;
   }
+}
+
+.loadingTd {
+  padding: 0;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  padding: $size-xl;
+  color: $ink-50;
+}
+
+.noResults td {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $size-sm;
+  min-height: 10rem;
+  color: $ink-50;
+}
+
+.data.evenRow {
+  background: $surface;
+}
+
+.data.oddRow {
+  background: $surface-alt;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: $size-md $size-lg + 0.4rem;
+  color: $ink-50;
+  font-size: $font-xs;
 }
