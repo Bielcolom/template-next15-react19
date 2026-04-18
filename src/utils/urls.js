@@ -15,6 +15,7 @@ export const REGISTER_URL = "/register";
 
 export const BACKOFFICE_URL = "/backoffice";
 export const BACKOFFICE_USERROLES_URL = `${BACKOFFICE_URL}/userRoles`;
+export const BACKOFFICE_USERS_URL = `${BACKOFFICE_URL}/users`;
 
 /**
  * Route access policy:

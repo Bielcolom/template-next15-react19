@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   BACKOFFICE_URL,
   BACKOFFICE_USERROLES_URL,
+  BACKOFFICE_USERS_URL,
 } from "@/utils/urls";
 import styles from "./sidebar.module.scss";
 import { userIsAdminOrMore, userIsSuperAdmin } from "@/utils/helpers";
@@ -13,6 +14,7 @@ import AppLink from "../../base/AppLink";
 
 const NAV_ITEMS = [
   { key: "home", icon: "home", href: BACKOFFICE_URL, guard: userIsAdminOrMore },
+  { key: "users", icon: "users", href: BACKOFFICE_USERS_URL, guard: userIsAdminOrMore },
   { key: "userRoles", icon: "shield", href: BACKOFFICE_USERROLES_URL, guard: userIsSuperAdmin },
 ];
 

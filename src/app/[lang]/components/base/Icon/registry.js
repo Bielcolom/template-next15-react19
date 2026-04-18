@@ -6,6 +6,7 @@ import HomeIcon from "./icons/HomeIcon";
 import LogoutIcon from "./icons/LogoutIcon";
 import ShieldIcon from "./icons/ShieldIcon";
 import SidebarIcon from "./icons/SidebarIcon";
+import UsersIcon from "./icons/UsersIcon";
 
 export const iconRegistry = {
   chevron_left: ChevronLeftIcon,
@@ -16,6 +17,7 @@ export const iconRegistry = {
   logout: LogoutIcon,
   shield: ShieldIcon,
   sidebar: SidebarIcon,
+  users: UsersIcon,
 };
 
 export const fallbackIcon = DefaultIcon;

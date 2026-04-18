@@ -4,6 +4,7 @@
   },
   "sidebar": {
     "home": "Home",
+    "users": "Users",
     "userRoles": "User roles"
   }
 }
