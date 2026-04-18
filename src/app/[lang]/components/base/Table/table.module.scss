@@ -52,7 +52,7 @@
   padding: 0 $size-md 0 3.6rem;
   background: $surface;
   border: 1px solid $border;
-  border-radius: $radius-md;
+  border-radius: $size-md;
   font-family: inherit;
   font-size: $font-sm;
   color: $ink;
@@ -144,7 +144,7 @@
     color: $ink-50;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    background: $surface-sunken;
+    // background: $surface-sunken;
     border-bottom: 1px solid $border;
     white-space: nowrap;
   }
@@ -298,7 +298,7 @@
     transition: all $transition-fast $ease;
 
     &:hover {
-      background: $surface-sunken;
+      // background: $surface-sunken;
       color: $ink;
     }
 

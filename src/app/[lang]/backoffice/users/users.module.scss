@@ -1,4 +1,4 @@
-@use '../../constants.scss' as *;
+@use '../../../constants.scss' as *;
 
 .usersPage {
   width: 100%;
@@ -43,7 +43,7 @@
   gap: $size-xs;
   height: 4rem;
   padding: 0 $size-lg - 0.2rem;
-  border-radius: $radius-md - 0.2rem;
+  border-radius: $size-md - 0.2rem;
   font-family: inherit;
   font-size: $font-sm;
   font-weight: $weight-medium;
