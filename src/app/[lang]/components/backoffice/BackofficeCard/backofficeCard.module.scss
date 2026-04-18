@@ -1,15 +1,55 @@
-@use '../../../../constants.scss';
+// handoff/src/app/[lang]/components/backoffice/BackofficeCard/backofficeCard.module.scss
+@use '../../../../constants.scss' as *;
 
 .backofficeClient {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    color: black;
-    width: 25rem;
-    padding: constants.$size-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $size-md + 0.4rem;
+  background: $surface;
+  color: $ink;
+  padding: $size-lg + 0.4rem;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  min-width: 24rem;
+  transition: all $transition-fast $ease;
 
-    .number {
-        font-weight: 600;
-    }
+  &:hover {
+    border-color: $primary;
+    box-shadow: $card-shadow-hover;
+    transform: translateY(-2px);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .text {
+    font-family: $font-sans;
+    font-size: $font-sm;
+    font-weight: $weight-medium;
+    color: $ink-70;
+  }
+
+  .icon {
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: $radius-sm + 0.2rem;
+    background: $primary-tint;
+    color: $primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-md;
+  }
+
+  .number {
+    font-family: $font-serif;
+    font-size: 3.6rem;
+    font-weight: $weight-regular;
+    color: $primary-darker;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
 }
