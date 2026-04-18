@@ -4,8 +4,6 @@ import { logger } from "./logger";
 
 const isDev = process.env.NODE_ENV !== "production";
 const LOCAL_REDIS_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
-const REDIS_URL = normalizeRedisUrl(process.env.REDIS_URL || "");
-const REDIS_HOST = getRedisHost(REDIS_URL);
 
 const normalizeRedisUrl = (value = "") => {
   if (!value) {
@@ -37,6 +35,8 @@ const getRedisHost = (value = "") => {
   }
 };
 
+const REDIS_URL = normalizeRedisUrl(process.env.REDIS_URL || "");
+const REDIS_HOST = getRedisHost(REDIS_URL);
 
 let redisClientPromise = null;
 let redisUnavailable = false;
