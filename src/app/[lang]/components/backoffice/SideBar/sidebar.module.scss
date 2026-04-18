@@ -1,97 +1,134 @@
-@use '../../../../constants.scss';
+@use '../../../../constants.scss' as *;
+
+// ═══ Sidebar — blanco con borde, links con active rail ═══
 
 .containerSidebar {
-    position: relative;
+  position: relative;
+  height: 100vh;
+
+  .sidebar {
+    width: 240px;
     height: 100vh;
+    padding: $size-lg + 0.4rem $size-lg;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: $surface;
+    border-right: 1px solid $border;
+    box-shadow: none;
+    transition: transform $transition-mid $ease;
+    transform: translateX(0);
+    display: flex;
+    flex-direction: column;
+    font-family: $font-sans;
 
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        border-right: 0px solid #ddd;
-        padding: 20px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 0;
-        left: 0;
-        transition: transform 0.3s ease-in-out;
-        transform: translateX(0);
-        background-color: constants.$secondary;
+    nav {
+      margin-top: $size-lg;
+      flex: 1;
 
-        nav {
-            margin-top: 20px;
+      ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: $size-xs;
 
-            ul {
-                list-style: none;
-                padding: 0;
+        li {
+          margin: 0;
 
-                li {
-                    margin: 10px 0;
+          a {
+            display: flex;
+            align-items: center;
+            gap: $size-md + 0.4rem;
+            padding: $size-md + 0.1rem $size-md + 0.2rem;
+            border-radius: $radius-sm + 0.2rem;
+            text-decoration: none;
+            color: $ink-70;
+            font-weight: $weight-medium;
+            font-size: $font-sm;
+            transition: all $transition-fast $ease;
+            position: relative;
 
-                    a {
-                        text-decoration: none;
-                        color: constants.$white;
-                        font-weight: bold;
-
-                        &:hover {
-                            color: constants.$tertiary;
-                        }
-                    }
-                }
+            &:hover {
+              color: $primary-darker;
+              background: $primary-tint;
             }
-        }
 
-        p {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #555;
+            &.active,
+            &[aria-current="page"] {
+              color: $primary-darker;
+              background: $primary-tint;
+              font-weight: $weight-semibold;
+
+              &::before {
+                content: '';
+                position: absolute;
+                left: -$size-lg;
+                top: $size-md;
+                bottom: $size-md;
+                width: 3px;
+                background: $primary;
+                border-radius: 0 3px 3px 0;
+              }
+            }
+          }
         }
+      }
     }
 
-    .hidden {
-        transform: translateX(-100%);
+    p {
+      margin-top: $size-md;
+      font-size: $font-xxs;
+      color: $ink-50;
+    }
+  }
+
+  .hidden {
+    transform: translateX(-100%);
+  }
+
+  .buttonShowSidebar {
+    position: fixed;
+    top: 1.8rem;
+    transition: left $transition-mid $ease;
+    z-index: 11;
+    background: $surface;
+    color: $ink-70;
+    padding: $size-sm $size-sm + 0.2rem;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    font-size: $font-sm;
+    box-shadow: $card-shadow;
+    cursor: pointer;
+
+    span {
+      color: inherit;
     }
 
-    .buttonShowSidebar {
-        position: fixed;
-        top: 2.5rem;
-        transition: left 0.3s ease-in-out;
-        z-index: 11;
-        background-color: constants.$secondary;
-        padding: 0px 0px;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-
-        span {
-            color: constants.$white;
-        }
-
-
-        &.withSidebar {
-            left: 180px;
-            transform: rotate(0deg);
-            /* Rotación de 180 grados */
-            transition: transform 0.3s ease, left 0.3s ease;
-            /* Para suavizar la transición */
-
-        }
-
-        &.noSidebar {
-            left: 15px;
-            transform: rotate(180deg);
-            /* Sin rotación cuando no hay sidebar */
-            transition: transform 0.3s ease, left 0.3s ease;
-            /* Para suavizar la transición */
-        }
-
-
-        &:focus {
-            box-shadow: 0 0 0 0px transparent;
-            border-color: transparent;
-        }
-
-        svg {
-            font-size: constants.$size-xl;
-        }
+    &:hover {
+      color: $primary-darker;
+      border-color: $primary;
     }
+
+    &.withSidebar {
+      left: 210px;
+      transform: rotate(0deg);
+      transition: transform $transition-mid $ease, left $transition-mid $ease;
+    }
+
+    &.noSidebar {
+      left: 15px;
+      transform: rotate(180deg);
+      transition: transform $transition-mid $ease, left $transition-mid $ease;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px $primary-lighter;
+      border-color: $primary;
+    }
+
+    svg {
+      font-size: $font-lg;
+    }
+  }
 }
