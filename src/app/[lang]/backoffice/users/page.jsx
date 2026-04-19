@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { getUsers } from "../../../backoffice/users/actions";
+import { getUsers, getRoles } from "../../../backoffice/users/actions";
 import UsersClient from "./UsersClient";
 import ToastOnMount from "@/app/context/ToastOnMount";
 import RouteToastHandler from "../../RouteToastHandler";
@@ -10,16 +10,22 @@ const PAGE_SIZE = 10;
 
 export default async function UsersPage({ params, searchParams }) {
   const { lang } = await params;
-  const { page: pageParam, q: queryParam } = await searchParams;
+  const { page: pageParam, q: queryParam, role: roleParam } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
   const query = typeof queryParam === "string" ? queryParam : "";
+  const role = typeof roleParam === "string" ? roleParam : "";
 
-  const response = await getUsers(lang, { page, pageSize: PAGE_SIZE, query });
+  const [response, rolesResponse] = await Promise.all([
+    getUsers(lang, { page, pageSize: PAGE_SIZE, query, role }),
+    getRoles(lang),
+  ]);
+
   const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
   const t = await getTranslations({ locale: lang, namespace: "users" });
 
   const users = Array.isArray(response?.data?.users) ? response.data.users : [];
   const total = response?.data?.total ?? 0;
+  const roles = Array.isArray(rolesResponse?.data?.roles) ? rolesResponse.data.roles : [];
   const errors = Array.isArray(response?.errors) ? response.errors : [];
   const toastMessages = {
     userCreated: feedbackT("userCreated"),
@@ -40,7 +46,15 @@ export default async function UsersPage({ params, searchParams }) {
         </div>
       </header>
 
-      <UsersClient rawUsers={users} page={page} total={total} pageSize={PAGE_SIZE} query={query} />
+      <UsersClient
+        rawUsers={users}
+        page={page}
+        total={total}
+        pageSize={PAGE_SIZE}
+        query={query}
+        roles={roles}
+        role={role}
+      />
     </div>
   );
 }

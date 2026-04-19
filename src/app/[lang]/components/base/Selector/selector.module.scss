@@ -1,0 +1,160 @@
+@use '../../../../constants.scss' as *;
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $size-sm + 0.2rem;
+  font-family: $font-sans;
+}
+
+.label {
+  display: block;
+  color: $ink-70;
+  font-size: $font-xs;
+  font-weight: $weight-medium;
+  letter-spacing: 0.02em;
+}
+
+// ─── Trigger ───
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $size-md;
+  height: 3.8rem;
+  min-width: 16rem;
+  padding: 0 $size-md;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $size-md;
+  cursor: pointer;
+  font-family: $font-sans;
+  transition: border-color $transition-fast $ease, box-shadow $transition-fast $ease;
+
+  &:hover:not(:disabled) {
+    border-color: $ink-30;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(8, 105, 114, 0.12);
+  }
+
+  &.triggerOpen {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(8, 105, 114, 0.12);
+  }
+
+  &.disabled {
+    background: $surface-alt;
+    cursor: not-allowed;
+  }
+}
+
+.triggerContent {
+  display: flex;
+  align-items: center;
+  gap: $size-sm + 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.triggerLabel {
+  font-size: $font-sm;
+  color: $ink;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placeholder {
+  font-size: $font-sm;
+  color: $ink-50;
+  white-space: nowrap;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  color: $ink-50;
+  transition: transform $transition-fast $ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+// ─── Dropdown ───
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  min-width: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  box-shadow: 0 8px 24px rgba(10, 61, 66, 0.10), 0 2px 6px rgba(10, 61, 66, 0.06);
+  overflow: hidden;
+  z-index: 50;
+  list-style: none;
+  margin: 0;
+  padding: $size-xs 0;
+}
+
+// ─── Options ───
+.option {
+  display: flex;
+  align-items: center;
+  gap: $size-sm + 0.2rem;
+  padding: $size-md $size-md + 0.4rem;
+  cursor: pointer;
+  transition: background $transition-fast $ease;
+  user-select: none;
+
+  &:hover:not(.optionActive) {
+    background: $primary-tint;
+
+    .optionLabel {
+      color: $primary-darker;
+    }
+  }
+
+  &.optionActive {
+    background: $primary-lighter;
+
+    .optionLabel {
+      color: $primary-darker;
+      font-weight: $weight-medium;
+    }
+  }
+}
+
+.optionLabel {
+  flex: 1;
+  font-size: $font-sm;
+  color: $ink;
+  white-space: nowrap;
+}
+
+.check {
+  color: $primary;
+  flex-shrink: 0;
+}
+
+// ─── Colored dots (matches Badge variants) ───
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.success { background: #3e6a3e; }
+.warn    { background: #8a6525; }
+.danger  { background: #8a3333; }
+.neutral { background: #aab3b5; }
+.primary { background: #055058; }
+.dark    { background: #033940; }

@@ -6,17 +6,19 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Table from "@/app/[lang]/components/base/Table";
 import TablePagination from "@/app/[lang]/components/base/Table/TablePagination";
-import { normalizeUser, userColumns } from "./userColumns";
+import Selector from "@/app/[lang]/components/base/Selector";
+import { normalizeUser, userColumns, translateRole } from "./userColumns";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-export default function UsersClient({ rawUsers, page, total, pageSize, query }) {
+export default function UsersClient({ rawUsers, page, total, pageSize, query, roles, role }) {
   const t = useTranslations("users");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(query);
+  const [roleValue, setRoleValue] = useState(role);
 
   const users = useMemo(() => rawUsers.map(normalizeUser), [rawUsers]);
   const columns = useMemo(() => userColumns({ t, locale }), [t, locale]);
@@ -28,10 +30,12 @@ export default function UsersClient({ rawUsers, page, total, pageSize, query }) 
   }, [query]);
 
   useEffect(() => {
+    setRoleValue(role);
+  }, [role]);
+
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (searchValue === query) {
-        return;
-      }
+      if (searchValue === query) return;
 
       const params = new URLSearchParams(searchParams.toString());
       const normalizedSearchValue = searchValue.trim();
@@ -49,11 +53,34 @@ export default function UsersClient({ rawUsers, page, total, pageSize, query }) 
     return () => clearTimeout(timeoutId);
   }, [pathname, query, router, searchParams, searchValue]);
 
+  const handleRoleChange = (newRole) => {
+    setRoleValue(newRole);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (newRole) {
+      params.set("role", newRole);
+    } else {
+      params.delete("role");
+    }
+
+    params.set("page", "1");
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   const handlePageChange = (newPage) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(newPage));
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  const roleFilter = roles.length > 0 && (
+    <Selector
+      value={roleValue}
+      onChange={handleRoleChange}
+      options={roles.map((r) => ({ ...r, label: translateRole(r.value, t) }))}
+      placeholder={t("filter.allRoles")}
+    />
+  );
 
   return (
     <Table
@@ -62,6 +89,7 @@ export default function UsersClient({ rawUsers, page, total, pageSize, query }) 
       searchable
       searchValue={searchValue}
       onSearchChange={setSearchValue}
+      toolbar={roleFilter}
       emptyMessage={t("empty")}
       footer={
         total > 0 && (
@@ -84,4 +112,11 @@ UsersClient.propTypes = {
   total: PropTypes.number.isRequired,
   pageSize: PropTypes.number.isRequired,
   query: PropTypes.string.isRequired,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  role: PropTypes.string.isRequired,
 };

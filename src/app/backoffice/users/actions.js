@@ -13,6 +13,14 @@ import { DEFAULT_LOCALE } from "@/utils/urls";
 
 const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const roleVariant = (name = "") => {
+  const n = name.toLowerCase();
+  if (n.includes("super")) return "dark";
+  if (n.includes("admin")) return "danger";
+  if (n.includes("edit")) return "primary";
+  return "neutral";
+};
+
 const serializeUser = (user, roleNameMap) => ({
   _id: user._id.toString(),
   name: user.name,
@@ -22,31 +30,40 @@ const serializeUser = (user, roleNameMap) => ({
   updatedAt: user.updatedAt,
 });
 
-export async function getUsers(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10, query = "" } = {}) {
+export async function getUsers(locale = DEFAULT_LOCALE, { page = 1, pageSize = 10, query = "", role = "" } = {}) {
   try {
     await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
     await connectDB();
 
     const skip = (page - 1) * pageSize;
     const normalizedQuery = typeof query === "string" ? query.trim() : "";
-    const filters = normalizedQuery
-      ? {
-          $or: [
-            { name: { $regex: escapeRegex(normalizedQuery), $options: "i" } },
-            { email: { $regex: escapeRegex(normalizedQuery), $options: "i" } },
-          ],
-        }
-      : {};
+    const normalizedRole = typeof role === "string" ? role.trim() : "";
 
-    const [users, userRoles, total] = await Promise.all([
+    const userRoles = await UserRole.find({}).lean();
+    const roleNameMap = Object.fromEntries(
+      userRoles.map((r) => [r._id.toString(), r.name])
+    );
+
+    const filters = {};
+
+    if (normalizedQuery) {
+      filters.$or = [
+        { name: { $regex: escapeRegex(normalizedQuery), $options: "i" } },
+        { email: { $regex: escapeRegex(normalizedQuery), $options: "i" } },
+      ];
+    }
+
+    if (normalizedRole) {
+      const matchingRole = userRoles.find((r) => r.name === normalizedRole);
+      if (matchingRole) {
+        filters.userRoleId = matchingRole._id;
+      }
+    }
+
+    const [users, total] = await Promise.all([
       User.find(filters).skip(skip).limit(pageSize).lean(),
-      UserRole.find({}).lean(),
       User.countDocuments(filters),
     ]);
-
-    const roleNameMap = Object.fromEntries(
-      userRoles.map((role) => [role._id.toString(), role.name])
-    );
 
     return createDataResponse({
       users: users.map((user) => serializeUser(user, roleNameMap)),
@@ -59,6 +76,27 @@ export async function getUsers(locale = DEFAULT_LOCALE, { page = 1, pageSize = 1
       locale,
       fallbackCode: ERROR_CODES.FETCH_USER_FAILED,
       fallbackData: { users: [], total: 0 },
+    });
+  }
+}
+
+export async function getRoles(locale = DEFAULT_LOCALE) {
+  try {
+    await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
+    await connectDB();
+
+    const roles = await UserRole.find({}).lean();
+
+    return createDataResponse({
+      roles: roles.map((r) => ({ value: r.name, label: r.name, variant: roleVariant(r.name) })),
+    });
+  } catch (error) {
+    logger.error("Error in getRoles function", error);
+    return handleUsersDataError({
+      error,
+      locale,
+      fallbackCode: ERROR_CODES.FETCH_USER_FAILED,
+      fallbackData: { roles: [] },
     });
   }
 }
