@@ -9,7 +9,7 @@ import BrandMandala from "./components/base/BrandMandala";
 export default async function Home({ params }) {
   const { lang } = await params;
   const homeT = await getTranslations({ locale: lang, namespace: "home" });
-  const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" }); 
+  const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });
   const toastMessages = { registrationSuccess: feedbackT("registrationSuccess") };
 
   return (
