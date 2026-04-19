@@ -14,9 +14,9 @@
     "allRoles": "Todos los roles"
   },
   "roles": {
-    "user_access": "Usuario",
-    "admin_access": "Administrador",
-    "superadmin_access": "Super Admin"
+    "user": "Usuario",
+    "admin": "Administrador",
+    "superadmin": "Superadministrador"
   },
   "exportCsv": "Exportar CSV",
   "invite": "Invitar usuario",

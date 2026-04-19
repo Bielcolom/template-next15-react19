@@ -10,6 +10,7 @@ import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
 import { handleUsersDataError } from "@/errors/handlers/userErrorHandler";
 import { DEFAULT_LOCALE } from "@/utils/urls";
+import { getTranslations } from "next-intl/server";
 
 const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -85,10 +86,19 @@ export async function getRoles(locale = DEFAULT_LOCALE) {
     await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
     await connectDB();
 
-    const roles = await UserRole.find({}).lean();
+    const [roles, t] = await Promise.all([
+      UserRole.find({}).lean(),
+      getTranslations({ locale, namespace: "users" }),
+    ]);
+
+    const roleNames = t.raw("roles");
 
     return createDataResponse({
-      roles: roles.map((r) => ({ value: r.name, label: r.name, variant: roleVariant(r.name) })),
+      roles: roles.map((r) => ({
+        value: r.name,
+        label: roleNames?.[r.name] ?? r.name,
+        variant: roleVariant(r.name),
+      })),
     });
   } catch (error) {
     logger.error("Error in getRoles function", error);

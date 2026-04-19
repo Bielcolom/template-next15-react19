@@ -7,7 +7,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Table from "@/app/[lang]/components/base/Table";
 import TablePagination from "@/app/[lang]/components/base/Table/TablePagination";
 import Selector from "@/app/[lang]/components/base/Selector";
-import { normalizeUser, userColumns, translateRole } from "./userColumns";
+import { normalizeUser, userColumns } from "./userColumns";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -77,7 +77,7 @@ export default function UsersClient({ rawUsers, page, total, pageSize, query, ro
     <Selector
       value={roleValue}
       onChange={handleRoleChange}
-      options={roles.map((r) => ({ ...r, label: translateRole(r.value, t) }))}
+      options={roles}
       placeholder={t("filter.allRoles")}
     />
   );
