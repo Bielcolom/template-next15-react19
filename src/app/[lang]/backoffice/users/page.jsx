@@ -17,7 +17,7 @@ export default async function UsersPage({ params, searchParams }) {
 
   const [response, rolesResponse] = await Promise.all([
     getUsers(lang, { page, pageSize: PAGE_SIZE, query, role }),
-    getRoles(lang),
+    getRoles(),
   ]);
 
   const feedbackT = await getTranslations({ locale: lang, namespace: "common.feedback" });

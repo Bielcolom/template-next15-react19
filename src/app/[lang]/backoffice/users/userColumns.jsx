@@ -19,11 +19,6 @@ export function normalizeUser(raw) {
   };
 }
 
-export function translateRole(name, t) {
-  const roleNames = t.raw("roles");
-  return roleNames?.[name] ?? name;
-}
-
 export function roleVariant(roleName) {
   const r = (roleName || "").toLowerCase();
   if (r.includes("super")) return "dark";
@@ -79,7 +74,7 @@ export function userColumns({ t, locale = "es", onEdit, onMore }) {
       key: "roleName",
       label: t("columns.role"),
       render: (u) => u.roleName
-        ? <Badge variant={roleVariant(u.roleName)}>{translateRole(u.roleName, t)}</Badge>
+        ? <Badge variant={roleVariant(u.roleName)}>{u.roleName}</Badge>
         : <span className={tableStyles.muted}>—</span>,
     },
     {

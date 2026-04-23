@@ -20,6 +20,7 @@ export default function UserRolesClient({ rawUserRoles, page, total, pageSize, q
     {
       key: "name",
       label: t("columns.name"),
+      render: (role) => role.name,
     },
     {
       key: "permissions",

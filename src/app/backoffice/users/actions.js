@@ -10,7 +10,6 @@ import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
 import { handleUsersDataError } from "@/errors/handlers/userErrorHandler";
 import { DEFAULT_LOCALE } from "@/utils/urls";
-import { getTranslations } from "next-intl/server";
 
 const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -81,22 +80,17 @@ export async function getUsers(locale = DEFAULT_LOCALE, { page = 1, pageSize = 1
   }
 }
 
-export async function getRoles(locale = DEFAULT_LOCALE) {
+export async function getRoles() {
   try {
     await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
     await connectDB();
 
-    const [roles, t] = await Promise.all([
-      UserRole.find({}).lean(),
-      getTranslations({ locale, namespace: "users" }),
-    ]);
-
-    const roleNames = t.raw("roles");
+    const roles = await UserRole.find({}).lean();
 
     return createDataResponse({
       roles: roles.map((r) => ({
         value: r.name,
-        label: roleNames?.[r.name] ?? r.name,
+        label: r.name,
         variant: roleVariant(r.name),
       })),
     });
@@ -104,7 +98,6 @@ export async function getRoles(locale = DEFAULT_LOCALE) {
     logger.error("Error in getRoles function", error);
     return handleUsersDataError({
       error,
-      locale,
       fallbackCode: ERROR_CODES.FETCH_USER_FAILED,
       fallbackData: { roles: [] },
     });

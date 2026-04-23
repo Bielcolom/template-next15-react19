@@ -10,15 +10,10 @@
     "user": "User"
   },
   "empty": "No users found",
+  "exportCsv": "Export CSV",
   "filter": {
     "allRoles": "All roles"
   },
-  "roles": {
-    "user": "User",
-    "admin": "Admin",
-    "superadmin": "Super Admin"
-  },
-  "exportCsv": "Export CSV",
   "invite": "Invite user",
   "subtitle": "Manage accounts with access to the platform and their roles.",
   "title": "Users"

@@ -10,15 +10,10 @@
     "user": "Usuario"
   },
   "empty": "No se han encontrado usuarios",
+  "exportCsv": "Exportar CSV",
   "filter": {
     "allRoles": "Todos los roles"
   },
-  "roles": {
-    "user": "Usuario",
-    "admin": "Administrador",
-    "superadmin": "Superadministrador"
-  },
-  "exportCsv": "Exportar CSV",
   "invite": "Invitar usuario",
   "subtitle": "Gestiona las cuentas con acceso a la plataforma y sus roles.",
   "title": "Usuarios"
