@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   userRoleCreateMock: vi.fn(),
   userRoleFindByIdAndUpdateMock: vi.fn(),
   userRoleFindByIdAndDeleteMock: vi.fn(),
+  userRoleCountDocumentsMock: vi.fn(),
   invalidatePermissionsCacheForRoleMock: vi.fn(),
 }));
 
@@ -33,6 +34,7 @@ vi.mock("@/models/UserRole", () => ({
     create: mocks.userRoleCreateMock,
     findByIdAndUpdate: mocks.userRoleFindByIdAndUpdateMock,
     findByIdAndDelete: mocks.userRoleFindByIdAndDeleteMock,
+    countDocuments: mocks.userRoleCountDocumentsMock,
   },
 }));
 
@@ -50,29 +52,26 @@ describe("backoffice userRoles actions", () => {
   });
 
   it("getUserRoles returns serialized roles", async () => {
+    const roles = [{ _id: { toString: () => "role-1" }, name: "Admin", permissions: ["admin_access"] }];
     mocks.requirePermissionMock.mockResolvedValueOnce(undefined);
     mocks.connectDBMock.mockResolvedValueOnce(undefined);
     mocks.userRoleFindMock.mockReturnValueOnce({
-      lean: vi.fn().mockResolvedValueOnce([
-        {
-          _id: { toString: () => "role-1" },
-          name: "Admin",
-          permissions: ["admin_access"],
-        },
-      ]),
+      skip: vi.fn().mockReturnValue({
+        limit: vi.fn().mockReturnValue({
+          lean: vi.fn().mockResolvedValueOnce(roles),
+        }),
+      }),
     });
+    mocks.userRoleCountDocumentsMock.mockResolvedValueOnce(1);
 
     const result = await getUserRoles("en");
 
     expect(mocks.requirePermissionMock).toHaveBeenCalledWith(ROLES.SUPERADMIN);
     expect(result).toEqual({
-      data: [
-        {
-          _id: "role-1",
-          name: "Admin",
-          permissions: ["admin_access"],
-        },
-      ],
+      data: {
+        userRoles: [{ _id: "role-1", name: "Admin", permissions: ["admin_access"] }],
+        total: 1,
+      },
       errors: [],
     });
   });
@@ -83,7 +82,7 @@ describe("backoffice userRoles actions", () => {
     const result = await getUserRoles("en");
 
     expect(result).toEqual({
-      data: [],
+      data: { userRoles: [], total: 0 },
       errors: ["Authentication required."],
     });
   });
