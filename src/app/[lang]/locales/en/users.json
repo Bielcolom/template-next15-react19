@@ -3,6 +3,7 @@
     "edit": "Edit",
     "more": "More actions"
   },
+  "add": "Add user",
   "columns": {
     "lastLogin": "Last login",
     "registered": "Registered",
@@ -14,7 +15,38 @@
   "filter": {
     "allRoles": "All roles"
   },
-  "create": "Add user",
+  "modal": {
+    "title": "Add user",
+    "tabs": {
+      "create": "Create manually",
+      "invite": "Send invitation"
+    },
+    "create": {
+      "name": "Full name",
+      "namePlaceholder": "Jane Smith",
+      "email": "Email address",
+      "password": "Password",
+      "passwordHint": "Minimum 8 characters",
+      "role": "Role",
+      "rolePlaceholder": "Select a role",
+      "requireChangePassword": "Force password change on first login",
+      "requireChangePasswordHint": "The user will be asked to set a new password when they log in for the first time.",
+      "errorRequired": "Please fill in all required fields."
+    },
+    "invite": {
+      "role": "Assign role",
+      "rolePlaceholder": "Select a role",
+      "emails": "Email addresses",
+      "addEmail": "Add another email",
+      "removeEmail": "Remove email",
+      "summary": "{count, plural, one {# invitation will be sent} other {# invitations will be sent}}",
+      "summaryRole": "role: {role}",
+      "errorNoEmails": "Enter at least one email address.",
+      "errorNoRole": "Please select a role for the invited users.",
+      "successMessage": "{count, plural, one {Invitation sent successfully} other {# invitations sent successfully}}",
+      "partialError": "{count, plural, one {# invitation could not be sent} other {# invitations could not be sent}}"
+    }
+  },
   "subtitle": "Manage accounts with access to the platform and their roles.",
   "title": "Users"
 }

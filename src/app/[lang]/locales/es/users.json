@@ -3,6 +3,7 @@
     "edit": "Editar",
     "more": "Más acciones"
   },
+  "add": "Añadir usuario",
   "columns": {
     "lastLogin": "Último acceso",
     "registered": "Registrado",
@@ -14,7 +15,38 @@
   "filter": {
     "allRoles": "Todos los roles"
   },
-  "add": "Añadir usuario",
+  "modal": {
+    "title": "Añadir usuario",
+    "tabs": {
+      "create": "Crear manualmente",
+      "invite": "Enviar invitación"
+    },
+    "create": {
+      "name": "Nombre completo",
+      "namePlaceholder": "Ana García",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "passwordHint": "Mínimo 8 caracteres",
+      "role": "Rol",
+      "rolePlaceholder": "Selecciona un rol",
+      "requireChangePassword": "Forzar cambio de contraseña en el primer acceso",
+      "requireChangePasswordHint": "El usuario deberá establecer una nueva contraseña la primera vez que inicie sesión.",
+      "errorRequired": "Por favor, rellena todos los campos obligatorios."
+    },
+    "invite": {
+      "role": "Asignar rol",
+      "rolePlaceholder": "Selecciona un rol",
+      "emails": "Correos electrónicos",
+      "addEmail": "Añadir otro correo",
+      "removeEmail": "Eliminar correo",
+      "summary": "{count, plural, one {Se enviará # invitación} other {Se enviarán # invitaciones}}",
+      "summaryRole": "rol: {role}",
+      "errorNoEmails": "Introduce al menos una dirección de correo.",
+      "errorNoRole": "Selecciona un rol para los usuarios invitados.",
+      "successMessage": "{count, plural, one {Invitación enviada correctamente} other {# invitaciones enviadas correctamente}}",
+      "partialError": "{count, plural, one {# invitación no se pudo enviar} other {# invitaciones no se pudieron enviar}}"
+    }
+  },
   "subtitle": "Gestiona las cuentas con acceso a la plataforma y sus roles.",
   "title": "Usuarios"
 }
