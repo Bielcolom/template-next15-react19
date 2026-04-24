@@ -1,0 +1,56 @@
+@use "../../../../constants.scss" as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabList {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid $border;
+  margin-bottom: $size-xl;
+}
+
+.tab {
+  position: relative;
+  padding: $size-md $size-lg;
+  font-family: $font-sans;
+  font-size: $font-sm;
+  font-weight: $weight-medium;
+  color: $ink-50;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color $transition-fast $ease;
+  white-space: nowrap;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: $primary;
+    border-radius: $radius-pill;
+    transform: scaleX(0);
+    transition: transform $transition-mid $ease;
+  }
+
+  &:hover {
+    color: $ink-70;
+  }
+
+  &.active {
+    color: $primary;
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.indicator {
+  display: none;
+}
