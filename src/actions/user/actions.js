@@ -48,6 +48,7 @@ export async function createUser({
       email: user.email,
       userRoleId: user.userRoleId,
       passwordHash: user.passwordHash,
+      requireChangePassword: user.requireChangePassword ?? false,
     });
   } catch (error) {
     if (isDuplicateKeyError(error)) {
