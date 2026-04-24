@@ -1,5 +1,7 @@
 "use server";
 
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 import User from "@/models/User";
 import UserRole from "@/models/UserRole";
 import { connectDB } from "@/utils/connectDB";
@@ -8,8 +10,24 @@ import { ROLES } from "@/utils/constants";
 import { logger } from "@/utils/logger";
 import { ERROR_CODES } from "@/errors/codes";
 import { createDataResponse } from "@/errors/responses";
+import { createLocalizedDataErrorResponse } from "@/errors/serverResponses";
 import { handleUsersDataError } from "@/errors/handlers/userErrorHandler";
-import { DEFAULT_LOCALE } from "@/utils/urls";
+import { DEFAULT_LOCALE, REGISTER_URL } from "@/utils/urls";
+import { sendEmail } from "@/lib/email";
+import { invitationEmailTemplate } from "@/emails/invitationEmail";
+
+const createUserSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+  password: z.string().min(8),
+  roleName: z.string().min(1),
+  requireChangePassword: z.boolean().default(true),
+});
+
+const inviteSchema = z.object({
+  emails: z.array(z.string().email()).min(1),
+  roleName: z.string().min(1),
+});
 
 const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -100,6 +118,86 @@ export async function getRoles() {
       error,
       fallbackCode: ERROR_CODES.FETCH_USER_FAILED,
       fallbackData: { roles: [] },
+    });
+  }
+}
+
+export async function adminCreateUser(locale = DEFAULT_LOCALE, payload) {
+  try {
+    await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
+
+    const parsed = createUserSchema.safeParse(payload);
+    if (!parsed.success) {
+      return createLocalizedDataErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, null, locale);
+    }
+
+    const { name, email, password, roleName, requireChangePassword } = parsed.data;
+
+    await connectDB();
+
+    const role = await UserRole.findOne({ name: roleName }).lean();
+    if (!role) {
+      return createLocalizedDataErrorResponse(ERROR_CODES.USER_ROLE_NOT_FOUND, null, locale);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email: email.toLowerCase().trim(),
+      passwordHash,
+      userRoleId: role._id,
+      requireChangePassword,
+    });
+
+    return createDataResponse({ _id: user._id.toString(), name: user.name, email: user.email });
+  } catch (error) {
+    logger.error("Error in adminCreateUser function", error);
+    if (error?.code === 11000) {
+      return createLocalizedDataErrorResponse(ERROR_CODES.EMAIL_ALREADY_REGISTERED, null, locale);
+    }
+    return handleUsersDataError({
+      error,
+      locale,
+      fallbackCode: ERROR_CODES.UNEXPECTED_ERROR,
+      fallbackData: null,
+    });
+  }
+}
+
+export async function sendUserInvitations(locale = DEFAULT_LOCALE, payload) {
+  try {
+    await requirePermission([ROLES.ADMIN, ROLES.SUPERADMIN]);
+
+    const parsed = inviteSchema.safeParse(payload);
+    if (!parsed.success) {
+      return createLocalizedDataErrorResponse(ERROR_CODES.UNEXPECTED_ERROR, null, locale);
+    }
+
+    const { emails, roleName } = parsed.data;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    const inviteUrl = `${appUrl}/${locale}${REGISTER_URL}`;
+    const brandName = process.env.NEXT_PUBLIC_BRAND_NAME ?? "Wozzo";
+
+    const results = await Promise.allSettled(
+      emails.map(async (email) => {
+        const { subject, html } = invitationEmailTemplate({ inviteUrl, roleName, brandName, locale });
+        await sendEmail({ to: email, subject, html });
+        return email;
+      })
+    );
+
+    const sent = results.filter((r) => r.status === "fulfilled").map((r) => r.value);
+    const failed = results.filter((r) => r.status === "rejected").map((_, i) => emails[i]);
+
+    return createDataResponse({ sent, failed });
+  } catch (error) {
+    logger.error("Error in sendUserInvitations function", error);
+    return handleUsersDataError({
+      error,
+      locale,
+      fallbackCode: ERROR_CODES.UNEXPECTED_ERROR,
+      fallbackData: { sent: [], failed: [] },
     });
   }
 }
