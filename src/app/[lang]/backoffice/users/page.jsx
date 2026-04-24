@@ -42,7 +42,7 @@ export default async function UsersPage({ params, searchParams }) {
         <PageTitle title={t("title")} subtitle={t("subtitle")} />
         <div className={styles.headActions}>
           <button type="button" className={styles.btnGhost}>{t("exportCsv")}</button>
-          <button type="button" className={styles.btnPrimary}>+ {t("invite")}</button>
+          <button type="button" className={styles.btnPrimary}>+ {t("add")}</button>
         </div>
       </header>
 

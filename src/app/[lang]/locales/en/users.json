@@ -14,7 +14,7 @@
   "filter": {
     "allRoles": "All roles"
   },
-  "invite": "Invite user",
+  "create": "Add user",
   "subtitle": "Manage accounts with access to the platform and their roles.",
   "title": "Users"
 }
