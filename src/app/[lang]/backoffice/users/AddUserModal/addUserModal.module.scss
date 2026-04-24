@@ -1,0 +1,160 @@
+@use "../../../../constants.scss" as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $size-lg;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $size-lg;
+
+  @media (max-width: #{$screen-sm}) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: flex-start;
+  gap: $size-md;
+  padding: $size-lg;
+  background: $primary-tint;
+  border: 1px solid $primary-lighter;
+  border-radius: $radius;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 1.8rem;
+  height: 1.8rem;
+  accent-color: $primary;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  flex-direction: column;
+  gap: $size-xs;
+  cursor: pointer;
+}
+
+.checkboxTitle {
+  font-family: $font-sans;
+  font-size: $font-sm;
+  font-weight: $weight-medium;
+  color: $primary-darker;
+}
+
+.checkboxHint {
+  font-family: $font-sans;
+  font-size: $font-xs;
+  color: $ink-50;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $size-md;
+  padding-top: $size-md;
+  border-top: 1px solid $border;
+}
+
+.errorBanner {
+  padding: $size-md $size-lg;
+  background: $color-error-border;
+  border: 1px solid rgba(194, 58, 31, 0.2);
+  border-radius: $radius;
+  color: $color-error;
+  font-family: $font-sans;
+  font-size: $font-xs;
+  font-weight: $weight-medium;
+}
+
+// ── Invite tab ──────────────────────────────────────────────
+
+.emailList {
+  display: flex;
+  flex-direction: column;
+  gap: $size-md;
+}
+
+.emailRow {
+  display: flex;
+  gap: $size-md;
+  align-items: flex-end;
+}
+
+.emailRowInput {
+  flex: 1;
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  border: 1px solid $border;
+  background: $white;
+  border-radius: $radius;
+  color: $ink-50;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all $transition-fast $ease;
+
+  &:hover:not(:disabled) {
+    border-color: $color-error;
+    color: $color-error;
+    background: $color-error-border;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.addEmailBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $size-sm;
+  background: transparent;
+  border: 1px dashed $border;
+  color: $ink-50;
+  font-family: $font-sans;
+  font-size: $font-sm;
+  font-weight: $weight-medium;
+  padding: $size-md $size-lg;
+  border-radius: $radius;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: all $transition-fast $ease;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: $primary-tint;
+  }
+}
+
+.summaryBox {
+  padding: $size-lg;
+  background: $primary-tint;
+  border: 1px solid $primary-lighter;
+  border-radius: $radius;
+  font-family: $font-sans;
+  font-size: $font-xs;
+  color: $ink-70;
+  line-height: 1.6;
+
+  strong {
+    color: $primary-darker;
+  }
+}

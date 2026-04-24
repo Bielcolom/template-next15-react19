@@ -9,6 +9,7 @@
   outline: none;
   max-height: 90vh;
   overflow-y: auto;
+  margin: auto;
 
   &::backdrop {
     background: rgba(10, 61, 66, 0.35);
