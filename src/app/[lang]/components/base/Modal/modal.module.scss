@@ -1,0 +1,72 @@
+@use "../../../../constants.scss" as *;
+
+.dialog {
+  border: none;
+  border-radius: $radius-lg;
+  padding: 0;
+  background: $white;
+  box-shadow: 0 8px 40px rgba(10, 61, 66, 0.16), 0 2px 8px rgba(10, 61, 66, 0.08);
+  outline: none;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  &::backdrop {
+    background: rgba(10, 61, 66, 0.35);
+    backdrop-filter: blur(3px);
+  }
+
+  &.sm { width: min(42rem, 90vw); }
+  &.md { width: min(56rem, 90vw); }
+  &.lg { width: min(72rem, 90vw); }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $size-xl $size-xl $size-lg;
+  border-bottom: 1px solid $border;
+  position: sticky;
+  top: 0;
+  background: $white;
+  z-index: 1;
+  border-radius: $radius-lg $radius-lg 0 0;
+}
+
+.title {
+  font-family: $font-sans;
+  font-size: $font-md;
+  font-weight: $weight-semibold;
+  color: $primary-darker;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  background: transparent;
+  color: $ink-50;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all $transition-fast $ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $surface-alt;
+    color: $ink;
+  }
+}
+
+.body {
+  padding: $size-xl;
+}
